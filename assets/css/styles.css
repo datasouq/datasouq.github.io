@@ -747,7 +747,10 @@ ul { list-style: none; }
   color: var(--tertiary-foreground);
 }
 
-.footer__links { display: flex; flex-wrap: wrap; gap: 4px; }
+/* The row still moves to the mirrored side in Arabic, but the icons keep one
+   fixed order. Their sequence carries no reading meaning — they are brand
+   marks, not words — so flipping it only made them feel like they had moved. */
+.footer__links { display: flex; flex-wrap: wrap; gap: 4px; direction: ltr; }
 
 /* Icon-only links, sized to the "small" control (34px) with 18px icons */
 .social {
