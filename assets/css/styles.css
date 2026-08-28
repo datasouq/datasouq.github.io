@@ -414,7 +414,6 @@ ul { list-style: none; }
    bottom padding only on the last one. */
 .section { padding-block: 48px 0; }
 .section:last-of-type { padding-bottom: 48px; }
-.section--alt { background: var(--secondary); border-block: 1px solid var(--border); }
 
 /* ==========================================================================
    Buttons — Button.tsx + constants.ts
