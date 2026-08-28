@@ -2,16 +2,8 @@
    DataSouq — configuration, translations and page logic
    الإعدادات والترجمة ومنطق الصفحة
 
-   ⚙️  EDIT HERE / عدّل من هنا:
-       CONFIG.whatsappNumber   رقم الواتساب
-       CONFIG.price            السعر (null = "on request" / "عند الطلب")
-       PRODUCT                 بيانات المنتج بالإنجليزي والعربي
-
-   ⚠️  TODO — املأ القيم دي قبل النشر / fill these before publishing:
-       PRODUCT.specs.records   عدد السجلات في القاعدة
-       CONFIG.price            السعر النهائي
-       PRODUCT.fields          تأكيد الحقول اللي فعلاً موجودة في القاعدة
-       (أي صف مواصفات قيمته فاضية بيتخفي تلقائيًا من الصفحة)
+   الصفحة تعريفية فقط — مفيش منتجات ولا أسعار معروضة حاليًا.
+   This is an introductory page only — no products or prices are listed yet.
    ========================================================================== */
 
 const CONFIG = {
@@ -19,65 +11,8 @@ const CONFIG = {
   email: "mbi.datasouq@gmail.com",
   github: "https://github.com/datasouq",
 
-  defaultLang: "en",   /* "en" أو "ar" */
-  defaultTheme: "light", /* "light" أو "dark" */
-
-  /* null = يعرض "عند الطلب" — حط رقم زي 3500 عشان يظهر السعر */
-  price: null,
-  currency: { en: "SAR", ar: "ريال" },
-};
-
-/* ==========================================================================
-   Product / المنتج
-   ========================================================================== */
-
-const PRODUCT = {
-  id: "saudi-contractors",
-
-  name: {
-    en: "Saudi Arabia Registered Contractors Database",
-    ar: "قاعدة بيانات المقاولين المسجّلين في المملكة العربية السعودية",
-  },
-
-  description: {
-    en: "A structured, cleaned dataset of contractors registered in Saudi Arabia — ready to use for sales outreach, market research and lead generation.",
-    ar: "قاعدة بيانات منظّمة ومنظّفة للمقاولين المسجّلين في المملكة العربية السعودية — جاهزة للاستخدام في المبيعات وأبحاث السوق واستهداف العملاء.",
-  },
-
-  /* الحقول المتاحة في القاعدة — عدّلها حسب اللي عندك فعلًا */
-  fields: {
-    en: [
-      "Contractor / company name",
-      "Commercial registration number",
-      "Classification grade",
-      "Activity & specialization",
-      "City and region",
-      "Contact details",
-    ],
-    ar: [
-      "اسم المقاول / الشركة",
-      "رقم السجل التجاري",
-      "درجة التصنيف",
-      "النشاط والتخصص",
-      "المدينة والمنطقة",
-      "بيانات التواصل",
-    ],
-  },
-
-  /* أي صف قيمته "" بيتخفي من الصفحة تلقائيًا */
-  specs: {
-    records: { en: "", ar: "" },        /* ← ⚠️ حط عدد السجلات هنا، مثال: "12,400" */
-    coverage: {
-      en: "All regions of Saudi Arabia",
-      ar: "كل مناطق المملكة العربية السعودية",
-    },
-    format: { en: "Excel (XLSX) & CSV", ar: "إكسل (XLSX) و CSV" },
-    delivery: {
-      en: "Within 24 hours of confirmation",
-      ar: "خلال ٢٤ ساعة من التأكيد",
-    },
-    sample: { en: "Free sample on request", ar: "عيّنة مجانية عند الطلب" },
-  },
+  defaultLang: "en",     /* "en" | "ar" */
+  defaultTheme: "light", /* "light" | "dark" */
 };
 
 /* ==========================================================================
@@ -87,37 +22,33 @@ const PRODUCT = {
 const I18N = {
   en: {
     dir: "ltr",
+    docTitle: "DataSouq — structured data, ready to work with",
     langBtn: "العربية",
     langBtnAria: "Switch to Arabic",
     themeAria: "Toggle theme",
 
-    heroBadge: "Available now",
-    heroTitle: "Saudi contractors data, ready to use",
+    heroBadge: "Datasets coming soon",
+    heroTitle: "Structured data, ready to work with",
     heroLead:
-      "One curated dataset of contractors registered in Saudi Arabia. No sign-up, no checkout — pick it, message us on WhatsApp, and we deliver.",
-    ctaOrder: "Order on WhatsApp",
-    ctaDetails: "See details",
+      "DataSouq turns raw, messy records into clean datasets you can actually use — for market research, outreach and analysis.",
+    ctaContact: "Talk to us",
+    ctaEmail: "Send an email",
 
-    productEyebrow: "Dataset",
-    includedTitle: "What's included",
-    specsTitle: "Details",
+    whatLabel: "What we do",
+    whatTitle: "Three things, done properly",
+    whatLead:
+      "We keep the scope narrow on purpose. Everything we deliver is cleaned, structured and documented before it reaches you.",
 
-    specRecords: "Records",
-    specCoverage: "Coverage",
-    specFormat: "Format",
-    specDelivery: "Delivery",
-    specSample: "Sample",
+    card1Title: "Curated datasets",
+    card1Body: "Ready-made datasets, deduplicated and normalised, delivered in Excel or CSV.",
+    card2Title: "Cleaning & structuring",
+    card2Body: "Send us the messy files. We standardise formats, remove duplicates and fill the gaps.",
+    card3Title: "Custom requests",
+    card3Body: "Need something specific? Describe it and we will tell you if we can build it.",
 
-    priceLabel: "Price",
-    priceOnRequest: "On request",
-
-    stepsTitle: "How to order",
-    step1Title: "Message us",
-    step1Body: "Tap the WhatsApp button — the message is written for you.",
-    step2Title: "Confirm details",
-    step2Body: "We agree on the scope, the price and the payment method.",
-    step3Title: "Receive your file",
-    step3Body: "The dataset is delivered within 24 hours of confirmation.",
+    soonTitle: "The catalogue is not published yet",
+    soonBody:
+      "We are preparing the first datasets for release. In the meantime, tell us what you are looking for and we will let you know when it is ready.",
 
     footerRights: "All rights reserved.",
     footerWhatsapp: "WhatsApp",
@@ -125,43 +56,39 @@ const I18N = {
     footerGithub: "GitHub",
 
     waMessage: () =>
-      `Hello 👋\n\nI'm interested in the *${PRODUCT.name.en}*.\n\n` +
-      `Could you share more details and the price?`,
+      "Hello 👋\n\nI came across DataSouq and I'd like to know more about " +
+      "the datasets you're preparing.\n\nCould you get in touch?",
   },
 
   ar: {
     dir: "rtl",
+    docTitle: "داتا سوق — بيانات منظّمة، جاهزة للشغل",
     langBtn: "English",
     langBtnAria: "التبديل إلى الإنجليزية",
     themeAria: "تبديل المظهر",
 
-    heroBadge: "متاح الآن",
-    heroTitle: "بيانات المقاولين السعوديين، جاهزة للاستخدام",
+    heroBadge: "قواعد البيانات قريبًا",
+    heroTitle: "بيانات منظّمة، جاهزة للشغل",
     heroLead:
-      "قاعدة بيانات واحدة منظّمة للمقاولين المسجّلين في السعودية. من غير تسجيل ولا بوابات دفع — كلّمنا على واتساب وإحنا نسلّمك.",
-    ctaOrder: "اطلب عبر واتساب",
-    ctaDetails: "شوف التفاصيل",
+      "داتا سوق بيحوّل السجلات الخام والمبعثرة لقواعد بيانات نضيفة تقدر تشتغل بيها فعلًا — في أبحاث السوق والتواصل والتحليل.",
+    ctaContact: "كلّمنا",
+    ctaEmail: "ابعت إيميل",
 
-    productEyebrow: "قاعدة بيانات",
-    includedTitle: "اللي هتستلمه",
-    specsTitle: "المواصفات",
+    whatLabel: "اللي بنعمله",
+    whatTitle: "تلات حاجات، بنعملهم صح",
+    whatLead:
+      "بنضيّق النطاق بقصد. أي حاجة بنسلّمها بتبقى منظّفة ومنظّمة وموثّقة قبل ما توصلك.",
 
-    specRecords: "عدد السجلات",
-    specCoverage: "التغطية",
-    specFormat: "صيغة الملف",
-    specDelivery: "التسليم",
-    specSample: "عيّنة",
+    card1Title: "قواعد بيانات جاهزة",
+    card1Body: "قواعد بيانات مجهّزة، من غير تكرار وبصيغة موحّدة، بتتسلّم إكسل أو CSV.",
+    card2Title: "تنظيف وتنظيم",
+    card2Body: "ابعتلنا الملفات المبعثرة. بنوحّد الصيغ ونشيل التكرار ونكمّل الناقص.",
+    card3Title: "طلبات مخصصة",
+    card3Body: "محتاج حاجة معيّنة؟ احكيلنا وإحنا نقولك لو نقدر نجهّزها.",
 
-    priceLabel: "السعر",
-    priceOnRequest: "عند الطلب",
-
-    stepsTitle: "طريقة الطلب",
-    step1Title: "كلّمنا",
-    step1Body: "اضغط زر الواتساب — الرسالة مكتوبة جاهزة.",
-    step2Title: "نتفق على التفاصيل",
-    step2Body: "نحدد المطلوب والسعر وطريقة الدفع.",
-    step3Title: "استلم الملف",
-    step3Body: "بيتسلّم خلال ٢٤ ساعة من التأكيد.",
+    soonTitle: "الكتالوج لسه متنشرش",
+    soonBody:
+      "بنجهّز أول قواعد بيانات للإطلاق. لحد ما تخلص، قول لنا بتدوّر على إيه وإحنا نعرّفك أول ما تجهز.",
 
     footerRights: "جميع الحقوق محفوظة.",
     footerWhatsapp: "واتساب",
@@ -169,8 +96,8 @@ const I18N = {
     footerGithub: "جيت هب",
 
     waMessage: () =>
-      `السلام عليكم 👋\n\nمهتم بـ *${PRODUCT.name.ar}*.\n\n` +
-      `ممكن تفاصيل أكتر والسعر؟`,
+      "السلام عليكم 👋\n\nشفت موقع داتا سوق وحابب أعرف أكتر عن قواعد " +
+      "البيانات اللي بتجهّزوها.\n\nممكن نتواصل؟",
   },
 };
 
@@ -182,14 +109,7 @@ const I18N = {
   "use strict";
 
   let lang = CONFIG.defaultLang;
-
   const $ = (id) => document.getElementById(id);
-
-  function escapeHtml(str) {
-    return String(str == null ? "" : str).replace(/[&<>"']/g, (ch) => ({
-      "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;",
-    })[ch]);
-  }
 
   function store(key, value) {
     try {
@@ -204,104 +124,39 @@ const I18N = {
     return `https://wa.me/${number}?text=${encodeURIComponent(I18N[lang].waMessage())}`;
   }
 
-  const checkIcon =
-    '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" ' +
-    'stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 12 5 5L20 7"/></svg>';
-
-  /* -------------------------------------------------------------------- */
-
-  function renderFields() {
-    $("included-list").innerHTML = PRODUCT.fields[lang]
-      .map((f) => `<li>${checkIcon}<span>${escapeHtml(f)}</span></li>`)
-      .join("");
-  }
-
-  function renderSpecs() {
-    const t = I18N[lang];
-    const rows = [
-      ["specRecords", PRODUCT.specs.records[lang]],
-      ["specCoverage", PRODUCT.specs.coverage[lang]],
-      ["specFormat", PRODUCT.specs.format[lang]],
-      ["specDelivery", PRODUCT.specs.delivery[lang]],
-      ["specSample", PRODUCT.specs.sample[lang]],
-    ];
-
-    $("specs-list").innerHTML = rows
-      .filter(([, value]) => value && String(value).trim() !== "")
-      .map(
-        ([key, value]) =>
-          `<div class="spec"><dt>${escapeHtml(t[key])}</dt><dd>${escapeHtml(value)}</dd></div>`
-      )
-      .join("");
-  }
-
-  function renderPrice() {
-    const t = I18N[lang];
-    $("price-label").textContent = t.priceLabel;
-
-    if (CONFIG.price === null || CONFIG.price === undefined) {
-      $("price-value").textContent = t.priceOnRequest;
-      return;
-    }
-
-    const formatted = new Intl.NumberFormat("en-US").format(CONFIG.price);
-    $("price-value").innerHTML =
-      `${escapeHtml(formatted)}<small>${escapeHtml(CONFIG.currency[lang])}</small>`;
-  }
-
   function applyLang(next) {
-    lang = next;
+    lang = I18N[next] ? next : "en";
     const t = I18N[lang];
 
     document.documentElement.lang = lang;
     document.documentElement.dir = t.dir;
+    document.title = t.docTitle;
 
-    /* Simple text nodes */
     document.querySelectorAll("[data-i18n]").forEach((node) => {
-      const key = node.dataset.i18n;
-      if (t[key] !== undefined) node.textContent = t[key];
+      const value = t[node.dataset.i18n];
+      if (value !== undefined) node.textContent = value;
     });
 
-    /* Product name + description live outside the dictionary */
-    $("product-name").textContent = PRODUCT.name[lang];
-    $("product-desc").textContent = PRODUCT.description[lang];
-    document.title = `${PRODUCT.name[lang]} — DataSouq`;
-
-    /* Language button */
     const btn = $("lang-toggle");
     btn.querySelector("span").textContent = t.langBtn;
     btn.setAttribute("aria-label", t.langBtnAria);
     $("theme-toggle").setAttribute("aria-label", t.themeAria);
 
-    renderFields();
-    renderSpecs();
-    renderPrice();
-    updateWhatsAppLinks();
+    const url = whatsappUrl();
+    document.querySelectorAll("[data-wa]").forEach((n) => n.setAttribute("href", url));
 
     store("datasouq-lang", lang);
   }
 
-  function updateWhatsAppLinks() {
-    const url = whatsappUrl();
-    document.querySelectorAll("[data-wa]").forEach((node) => node.setAttribute("href", url));
-  }
-
   function toggleTheme() {
-    const current = document.documentElement.getAttribute("data-theme");
-    const next = current === "dark" ? "light" : "dark";
+    const next =
+      document.documentElement.getAttribute("data-theme") === "dark" ? "light" : "dark";
     document.documentElement.setAttribute("data-theme", next);
     store("datasouq-theme", next);
   }
 
-  function initNotice() {
-    const missingRecords = !PRODUCT.specs.records.en && !PRODUCT.specs.records.ar;
-    const missingPrice = CONFIG.price === null || CONFIG.price === undefined;
-    if (missingRecords || missingPrice) $("config-notice").hidden = false;
-  }
-
   function init() {
     applyLang(store("datasouq-lang") || CONFIG.defaultLang);
-    initNotice();
 
     $("lang-toggle").addEventListener("click", () => applyLang(lang === "en" ? "ar" : "en"));
     $("theme-toggle").addEventListener("click", toggleTheme);

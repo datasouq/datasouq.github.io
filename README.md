@@ -1,9 +1,10 @@
 # DataSouq · داتا سوق
 
-A minimal bilingual (EN/AR) product page. One dataset, one call to action — every order goes
-straight to **WhatsApp**. No backend, no build step, no dependencies.
+An introductory page. **No products, prices or catalogue are listed yet** — the page explains
+what DataSouq does and routes enquiries to WhatsApp or email.
 
-صفحة منتج بسيطة بلغتين. قاعدة بيانات واحدة، وكل الطلبات بتروح على **واتساب** مباشرة.
+صفحة تعريفية. **مفيش منتجات ولا أسعار ولا كتالوج معروض حاليًا** — الصفحة بتعرّف بالنشاط
+وبتوجّه الاستفسارات على واتساب أو الإيميل.
 
 🔗 **Live:** https://datasouq.github.io
 
@@ -12,11 +13,10 @@ straight to **WhatsApp**. No backend, no build step, no dependencies.
 ## Features · المميزات
 
 - 🌍 **Bilingual** — English (default) + Arabic, with automatic `dir` switching (LTR ⇄ RTL)
-- 🎨 **Supabase-inspired design system** — light mode by default, dark mode toggle
-- 💬 **WhatsApp ordering** — prefilled message in the visitor's active language
-- 📱 Fully responsive
-- ⚡ Plain HTML/CSS/JS — three files, nothing to install
-- 💾 Language and theme preferences persist in `localStorage`
+- 🎨 **Supabase design system** — tokens traced to their actual source, not approximated
+- 🌓 Light mode by default, dark mode toggle; both persist in `localStorage`
+- 📱 Responsive
+- ⚡ Three files. No build step, no dependencies, no framework
 
 ---
 
@@ -27,65 +27,71 @@ straight to **WhatsApp**. No backend, no build step, no dependencies.
 ├── index.html            The page · الصفحة
 ├── assets/
 │   ├── css/styles.css    Design tokens + layout · التصميم
-│   └── js/site.js        ⚙️ Config + translations + logic · الإعدادات والترجمة والمنطق
+│   └── js/site.js        ⚙️ Config + translations + logic
 └── .nojekyll             Disable Jekyll processing
 ```
 
-Everything you normally need to edit lives in **one file**: [`assets/js/site.js`](assets/js/site.js).
+---
+
+## Design system provenance · مصدر نظام التصميم
+
+Token values are taken from the Supabase repository rather than eyeballed:
+
+| What | Source file |
+|---|---|
+| Brand scale (`brand-200…600`, `brand-link`) | `packages/ui/build/css/themes/{light,dark}.css` |
+| `--radius-panel: 6px`, font stack | `packages/config/css/theme.css` |
+| Button variants (`primary`, `default`, `outline`) | `packages/ui/src/components/Button/Button.tsx` |
+| Size scale (26/34/38/42/50px) | `packages/ui/src/lib/constants.ts` |
+
+Key rules this page follows:
+
+- **Brand green is identical in both themes** — `#3ECF8E`. Supabase does *not* darken it for
+  light mode; it uses a separate `--brand-link` (`#0A844E` light / `#00C573` dark) for text.
+- **Elevation brightens.** Their light theme comment: *"Soft-gray canvas (not pure white) so
+  elevated surfaces have headroom to brighten toward white."* So the canvas is `#f3f4f5` and
+  panels climb toward white — the same direction as dark mode.
+- **Primary buttons are tinted, not saturated** — `brand-400` fill in light (`#72E3AD`),
+  `brand-500` in dark (`#006239`), always with normal foreground text and a brand-tinted border.
+- **Buttons use font-weight 400**, height 38/42/50px, 14/16px text, 6px radius.
+- **Depth comes from surface layers and borders — never shadows.** Supabase ships no shadow scale.
+- **Type scale is 12/14/16/18/20/24/30/36/48px.** No arbitrary in-between sizes.
+
+### Two deliberate deviations · مخالفتان مقصودتان
+
+1. **Inter replaces Circular.** Supabase's `--font-sans` starts with `Circular`, a commercially
+   licensed typeface that cannot be redistributed. Inter is the closest free substitute.
+2. **WhatsApp green is not used.** WhatsApp's `#25D366` sits ~11° from the Supabase brand hue,
+   and the two greens side by side read as a muddy palette. The contact button uses the brand
+   token instead. To switch, set `--brand-fill` and `--brand-fill-border` in `styles.css`.
+
+### Bilingual typography note · ملاحظة الطباعة
+
+Negative letter-spacing and `text-transform: uppercase` are scoped to `[dir="ltr"]`. Arabic is
+cursive — tracking damages the letter joins, and uppercase has no meaning in Arabic at all.
+
+التتبّع السالب و`uppercase` محصورين في `[dir="ltr"]` فقط، لأن الخط العربي متصل والتتبّع بيضر
+الوصلات، و`uppercase` مالوش معنى في العربي أصلًا.
 
 ---
 
 ## ⚙️ Configuration · الإعداد
 
-### ⚠️ Before publishing · قبل النشر
-
-Two values are still empty. While either is missing, an owner-only warning shows on the page.
-
-لسه فيه قيمتين فاضيين. طول ما هما فاضيين هيظهر تنبيه على الصفحة.
-
-| Field · الحقل | Where · المكان | Note · ملاحظة |
-|---|---|---|
-| `PRODUCT.specs.records` | `site.js` | Number of records · عدد السجلات |
-| `CONFIG.price` | `site.js` | `null` shows "On request" · `null` يعرض "عند الطلب" |
+Everything editable lives in [`assets/js/site.js`](assets/js/site.js):
 
 ```js
-// assets/js/site.js
 const CONFIG = {
-  whatsappNumber: "mbi.group",
-  price: null,          // ← e.g. 3500
-  currency: { en: "SAR", ar: "ريال" },
-  defaultLang: "en",    // "en" | "ar"
-  defaultTheme: "light" // "light" | "dark"
-};
-
-const PRODUCT = {
-  specs: {
-    records: { en: "12,400", ar: "١٢٬٤٠٠" },  // ← fill this
-    ...
-  }
+  whatsappNumber: "mbi.group",   // country code + number, no +, no leading zero
+  email: "mbi.datasouq@gmail.com",
+  defaultLang: "en",                // "en" | "ar"
+  defaultTheme: "light",            // "light" | "dark"
 };
 ```
 
-> Any spec row with an empty value is **hidden automatically** — so nothing unfinished ever
-> shows up on the live page.
-> أي صف مواصفات قيمته فاضية بيتخفي تلقائيًا من الصفحة.
+All interface copy lives in the `I18N` object (`en` and `ar` blocks). Elements are wired with
+`data-i18n="key"` in the HTML — add a key to both language blocks and it appears in both.
 
-### WhatsApp number format · صيغة رقم الواتساب
-
-Country code + number. No `+`, no leading zero, no spaces.
-كود الدولة + الرقم، من غير `+` ولا صفر في الأول ولا مسافات.
-
-Current: `mbi.group` (🇪🇬 @mbi.group)
-
-### Product content · محتوى المنتج
-
-`PRODUCT.name`, `PRODUCT.description` and `PRODUCT.fields` each take an `en` and an `ar` value.
-Edit both so the page stays consistent in either language.
-
-### UI text · نصوص الواجهة
-
-All interface strings live in the `I18N` object (`en` and `ar` blocks). Elements are wired with
-`data-i18n="key"` in the HTML.
+نصوص الواجهة كلها في `I18N` (قسمين `en` و `ar`). العناصر مربوطة بـ `data-i18n="key"`.
 
 ---
 
@@ -98,16 +104,13 @@ py -m http.server 8000 --directory .
 Then open `http://localhost:8000`.
 
 > A local server is required — opening `index.html` directly may block the JS from loading.
-> لازم سيرفر محلي — فتح الملف مباشرة ممكن يمنع تحميل الجافاسكريبت.
 
 ---
 
 ## Deployment · النشر
 
-Published automatically via **GitHub Pages** from the `main` branch.
-Any push to `main` goes live within about a minute.
-
-منشور تلقائيًا عبر GitHub Pages من فرع `main`.
+Published via **GitHub Pages** from the `main` branch. Any push to `main` goes live in about a
+minute.
 
 ---
 
