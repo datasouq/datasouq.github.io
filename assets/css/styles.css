@@ -73,6 +73,13 @@
   --elevation-2: 1.5;
   --elevation-3: 2;
 
+  /* Foreground overlays. The alpha is tuned so each level matches the lightness
+     delta of the same elevation ratio on --background. */
+  --surface-overlay-unit: calc(
+    var(--elevation-step) / max(var(--tone-span), calc(var(--tone-span) * -1))
+  );
+  --accent-alpha: calc(var(--surface-overlay-unit) * var(--elevation-2));
+
   /* Signed span surface -> foreground: negative in light, positive in dark */
   --tone-span: calc(var(--foreground-lightness) - var(--surface));
 
@@ -191,7 +198,9 @@
   /* PageContainer size "small" — max-w-[768px]. The other variants are
      default 1200px, large 1600px, full none. */
   --container: 768px;
-  --ease: cubic-bezier(0.4, 0, 0.2, 1);
+  /* Tailwind ease-out, which the Button base class names. cubic-bezier(.4,0,.2,1)
+     is ease-in-out and made every control feel a beat behind the cursor. */
+  --ease: cubic-bezier(0, 0, 0.2, 1);
 }
 
 /* --------------------------------------------------------------------------
@@ -227,6 +236,11 @@
   --brand-fill: var(--brand-400);
   --brand-fill-hover: color-mix(in srgb, var(--brand-default) 80%, transparent);
   --brand-fill-border: color-mix(in srgb, var(--brand-500) 75%, transparent);
+  /* hover:border-brand-600 */
+  --brand-fill-border-hover: var(--brand-600);
+
+  /* default variant: bg-background in light, dark:bg-card in dark */
+  --btn-default-bg: var(--background);
   --brand-plate: var(--brand-200);
   --brand-text: var(--brand-link);
 
@@ -239,6 +253,7 @@
   --border: rgba(0, 0, 0, 0.107);
   --border-strong: rgba(0, 0, 0, 0.206);
   --border-stronger: rgba(0, 0, 0, 0.298);
+  --accent: rgba(5, 5, 5, 0.04);
   --ring: rgba(69, 206, 142, 0.55);
 
   color-scheme: light;
@@ -270,6 +285,10 @@
   --brand-fill: var(--brand-500);
   --brand-fill-hover: color-mix(in srgb, var(--brand-default) 50%, transparent);
   --brand-fill-border: color-mix(in srgb, var(--brand-default) 30%, transparent);
+  /* dark:hover:border-brand */
+  --brand-fill-border-hover: var(--brand-default);
+
+  --btn-default-bg: var(--card);
   --brand-plate: var(--brand-400);
   --brand-text: var(--brand-link);
 
@@ -280,6 +299,7 @@
   --border: rgba(240, 245, 242, 0.102);
   --border-strong: rgba(240, 245, 242, 0.196);
   --border-stronger: rgba(240, 245, 242, 0.278);
+  --accent: rgba(247, 250, 248, 0.06);
   --ring: rgba(69, 206, 142, 0.55);
 
   color-scheme: dark;
@@ -314,6 +334,9 @@
     --border-stronger: oklch(
       from var(--foreground) l calc(c * 0.5) h / calc(12% + 58% * var(--contrast-border))
     );
+
+    /* text variant: hover:bg-accent */
+    --accent: oklch(from var(--foreground) l c h / var(--accent-alpha));
 
     /* One shared focus colour. Variants never change it. */
     --ring: oklch(from var(--primary) l c h / 55%);
@@ -457,15 +480,21 @@ ul { list-style: none; }
   color: var(--foreground);
   border-color: var(--brand-fill-border);
 }
-.btn--primary:hover { background: var(--brand-fill-hover); }
+.btn--primary:hover {
+  background: var(--brand-fill-hover);
+  border-color: var(--brand-fill-border-hover);
+}
 
-/* default: bg-background dark:bg-card / border-strong */
+/* default: bg-background dark:bg-card / border-strong / hover:bg-popover */
 .btn--default {
-  background: var(--card);
+  background: var(--btn-default-bg);
   color: var(--foreground);
   border-color: var(--border-strong);
 }
-.btn--default:hover { border-color: var(--border-stronger); }
+.btn--default:hover {
+  background: var(--popover); /* hover:bg-popover */
+  border-color: var(--border-stronger);
+}
 
 /* outline: bg-transparent / border-strong / hover:border-foreground-muted */
 .btn--outline {
@@ -533,13 +562,14 @@ ul { list-style: none; }
   border-radius: var(--radius);
   border: 1px solid var(--border-strong);
   background: transparent;
-  color: var(--muted-foreground);
+  /* outline variant: text-foreground at rest and on hover; only the border moves */
+  color: var(--foreground);
   font-size: var(--text-responsive-sm);
   line-height: 1rem; /* the `leading-4` in SIZE.text.small */
   font-weight: var(--font-weight-normal);
-  transition: color 0.2s var(--ease), border-color 0.2s var(--ease);
+  transition: border-color 0.2s var(--ease);
 }
-.ctl:hover { color: var(--foreground); border-color: var(--border-stronger); }
+.ctl:hover { border-color: var(--tertiary-foreground); }
 .ctl--icon { padding-inline: 0; justify-content: center; }
 
 /* The label swaps between "العربية" and "English", which are 82px and 95px
@@ -617,9 +647,7 @@ ul { list-style: none; }
   border-radius: var(--radius-lg);
   box-shadow: var(--shadow-xs);
   padding: var(--card-padding-x);
-  transition: border-color 0.2s var(--ease);
 }
-.card:hover { border-color: var(--border-strong); }
 
 /* Same brand fill construction as the Badge, so the two read as one palette. */
 .card__icon {
@@ -742,9 +770,11 @@ ul { list-style: none; }
   border-radius: var(--radius);
   border: 1px solid transparent;
   color: var(--muted-foreground);
-  transition: color 0.2s var(--ease), border-color 0.2s var(--ease);
+  transition: background-color 0.2s var(--ease);
 }
-.social:hover { color: var(--foreground); border-color: var(--border-strong); }
+/* text variant: border stays transparent, hover brings a background, and the
+   colour does not move. */
+.social:hover { background: var(--accent); }
 .social svg { width: 18px; height: 18px; }
 
 /* ==========================================================================
