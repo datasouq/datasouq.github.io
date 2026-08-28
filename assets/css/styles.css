@@ -38,8 +38,15 @@
   --btn-h-large: 42px;
   --btn-h-xlarge: 50px;
 
-  --font: "Inter", "IBM Plex Sans Arabic", ui-sans-serif, system-ui,
-    -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+  /* apps/design-system/lib/fonts.ts binds --font-sans to Inter and
+     --font-heading to Manrope, with fallback
+     ['system-ui','Helvetica Neue','Helvetica','Arial','sans-serif'].
+     Both load subsets:['latin'] only, so IBM Plex Sans Arabic sits next in the
+     chain to carry the Arabic glyphs. */
+  --font: "Inter", "IBM Plex Sans Arabic", system-ui, "Helvetica Neue",
+    Helvetica, Arial, sans-serif;
+  --font-heading: "Manrope", "IBM Plex Sans Arabic", system-ui, "Helvetica Neue",
+    Helvetica, Arial, sans-serif;
 
   --nav-h: 60px;
   --container: 900px;
@@ -131,6 +138,8 @@ body {
   -moz-osx-font-smoothing: grayscale;
   transition: background-color 0.2s var(--ease), color 0.2s var(--ease);
 }
+
+h1, h2, h3 { font-family: var(--font-heading); }
 
 img, svg { display: block; max-width: 100%; }
 button { background: none; border: none; cursor: pointer; font: inherit; color: inherit; }
