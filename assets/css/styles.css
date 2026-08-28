@@ -119,6 +119,12 @@
   --btn-h-large: 42px;
   --btn-h-xlarge: 50px;
 
+  /* SIZE.text in constants.ts gives the small and medium sizes
+     `text-base md:text-sm`: text-base below the md breakpoint, text-sm from it
+     up. Mobile-first, so the base value here is text-base and the media query
+     below steps it down. large and xlarge are plain `text-base` at every width. */
+  --text-responsive-sm: var(--text-base);
+
   /* --- Fonts: --font-sans is Inter, --font-heading is Manrope ----------- */
   --font: "Inter", "IBM Plex Sans Arabic", "Helvetica Neue", Helvetica,
     ui-sans-serif, system-ui, sans-serif;
@@ -257,6 +263,11 @@
 }
 
 
+/* The md half of `text-base md:text-sm`. Tailwind's md breakpoint is 768px. */
+@media (min-width: 768px) {
+  :root { --text-responsive-sm: var(--text-sm); }
+}
+
 /* ==========================================================================
    Reset
    ========================================================================== */
@@ -361,7 +372,7 @@ ul { list-style: none; }
   padding-inline: 16px;
   border-radius: var(--radius);
   border: 1px solid transparent;
-  font-size: var(--text-sm);
+  font-size: var(--text-responsive-sm);
   font-weight: var(--font-weight-normal);
   white-space: nowrap;
   cursor: pointer;
@@ -369,7 +380,9 @@ ul { list-style: none; }
     color 0.2s var(--ease);
 }
 
-.btn svg { width: 18px; height: 18px; flex-shrink: 0; }
+/* IconContainerVariants: medium and large take 20px icons, xlarge 24px. */
+.btn svg { width: 20px; height: 20px; flex-shrink: 0; }
+.btn--xlarge svg { width: 24px; height: 24px; }
 
 /* primary: bg-brand-400 dark:bg-brand-500 / text-foreground / brand border */
 .btn--primary {
@@ -450,7 +463,8 @@ ul { list-style: none; }
   border: 1px solid var(--border-strong);
   background: transparent;
   color: var(--muted-foreground);
-  font-size: var(--text-sm);
+  font-size: var(--text-responsive-sm);
+  line-height: 1rem; /* the `leading-4` in SIZE.text.small */
   font-weight: var(--font-weight-normal);
   transition: color 0.2s var(--ease), border-color 0.2s var(--ease);
 }
