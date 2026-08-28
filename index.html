@@ -17,7 +17,7 @@
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;450;500;600&family=Manrope:wght@500;600;700&family=IBM+Plex+Sans+Arabic:wght@400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;450;500;600&family=Manrope:wght@500;600;700&family=Space+Grotesk:wght@300;500&family=IBM+Plex+Sans+Arabic:wght@400;500;600&display=swap" rel="stylesheet">
 
 <link rel="stylesheet" href="assets/css/styles.css">
 
@@ -53,10 +53,10 @@
 <!-- ============================ Nav ============================ -->
 <header class="nav">
   <div class="container nav__inner">
-    <a class="brand" href="#top" tabindex="0">
-      <span class="brand__mark">D</span>
-      <span>DataSouq</span>
-    </a>
+    <!-- Wordmark: one word, two weights. The break between "Data" and "Souq"
+         is carried by weight and tone, not by a space or a separator. -->
+    <a class="brand" href="#top" tabindex="0" aria-label="DataSouq — home"
+       ><span class="brand__data">Data</span><span class="brand__souq">Souq</span></a>
 
     <div class="nav__actions">
       <button class="ctl" id="lang-toggle" tabindex="0" aria-label="Switch language">

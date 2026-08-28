@@ -182,6 +182,11 @@
   --font-heading: "Manrope", "IBM Plex Sans Arabic", "Helvetica Neue", Helvetica,
     ui-sans-serif, system-ui, sans-serif;
 
+  /* The wordmark only. Kept off --font-sans so the logo never drifts with the
+     body type. */
+  --font-brand: "Space Grotesk", "Inter", "Helvetica Neue", Helvetica,
+    ui-sans-serif, system-ui, sans-serif;
+
   --nav-h: 60px;
   /* PageContainer size "small" — max-w-[768px]. The other variants are
      default 1200px, large 1600px, full none. */
@@ -498,27 +503,22 @@ ul { list-style: none; }
 /* The block moves to the right in RTL, as it should, but its contents must not
    reorder: a logo lockup is a fixed asset. Without this the mark lands after
    the Latin wordmark and reads "DataSouq D". */
+/* Wordmark. One word set in two weights of Space Grotesk: "Data" light and
+   muted, "Souq" medium and full contrast. No mark, no space, no separator —
+   the weight and tone shift carry the break. direction: ltr keeps it upright
+   in Arabic; a logo lockup never mirrors. */
 .brand {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  font-weight: 500;
-  font-size: var(--text-base);
+  display: inline-flex;
+  align-items: baseline;
+  font-family: var(--font-brand);
+  font-size: var(--text-lg);
+  letter-spacing: -0.01em;
   direction: ltr;
+  white-space: nowrap;
 }
 
-.brand__mark {
-  width: 26px;
-  height: 26px;
-  border-radius: var(--radius);
-  background: var(--primary);
-  display: grid;
-  place-items: center;
-  color: var(--primary-foreground);
-  font-weight: 600;
-  font-size: var(--text-xs);
-  flex-shrink: 0;
-}
+.brand__data { font-weight: 300; color: var(--muted-foreground); }
+.brand__souq { font-weight: 500; color: var(--foreground); }
 
 .nav__actions { margin-inline-start: auto; display: flex; align-items: center; gap: 8px; }
 
@@ -756,7 +756,6 @@ ul { list-style: none; }
   .container { padding-inline: 16px; }
   .panel { padding: 24px 20px; }
   .hero__cta .btn, .panel__actions .btn { width: 100%; }
-  .brand span:not(.brand__mark) { display: none; }
 }
 
 @media (prefers-reduced-motion: reduce) {
