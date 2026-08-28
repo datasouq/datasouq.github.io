@@ -26,18 +26,19 @@ const I18N = {
     langBtn: "العربية",
     langBtnAria: "Switch to Arabic",
     themeAria: "Toggle theme",
+    skipLink: "Skip to content",
 
     heroBadge: "Datasets coming soon",
     heroTitle: "Structured data, ready to work with",
     heroLead:
-      "DataSouq turns raw, messy records into clean datasets you can actually use — for market research, outreach and analysis.",
-    ctaContact: "Talk to us",
+      "DataSouq cleans, deduplicates and structures raw records, then delivers them as datasets ready to import.",
+    ctaContact: "Message us on WhatsApp",
     ctaEmail: "Send an email",
 
     whatLabel: "What we do",
-    whatTitle: "Three things, done properly",
+    whatTitle: "Datasets, cleaning, and custom work",
     whatLead:
-      "We keep the scope narrow on purpose. Everything we deliver is cleaned, structured and documented before it reaches you.",
+      "The scope is narrow on purpose. Everything is cleaned, structured and documented before it reaches you.",
 
     card1Title: "Curated datasets",
     card1Body: "Ready-made datasets, deduplicated and normalised, delivered in Excel or CSV.",
@@ -66,18 +67,19 @@ const I18N = {
     langBtn: "English",
     langBtnAria: "التبديل إلى الإنجليزية",
     themeAria: "تبديل المظهر",
+    skipLink: "تخطَّ إلى المحتوى",
 
     heroBadge: "قواعد البيانات قريبًا",
     heroTitle: "بيانات منظّمة، جاهزة للشغل",
     heroLead:
-      "داتا سوق بيحوّل السجلات الخام والمبعثرة لقواعد بيانات نضيفة تقدر تشتغل بيها فعلًا — في أبحاث السوق والتواصل والتحليل.",
-    ctaContact: "كلّمنا",
+      "داتا سوق بينظّف السجلات الخام ويشيل التكرار وينظّمها، وبيسلّمها قواعد بيانات جاهزة للاستيراد.",
+    ctaContact: "كلّمنا على واتساب",
     ctaEmail: "ابعت إيميل",
 
     whatLabel: "اللي بنعمله",
-    whatTitle: "تلات حاجات، بنعملهم صح",
+    whatTitle: "قواعد بيانات، تنظيف، وشغل مخصص",
     whatLead:
-      "بنضيّق النطاق بقصد. أي حاجة بنسلّمها بتبقى منظّفة ومنظّمة وموثّقة قبل ما توصلك.",
+      "النطاق ضيق بقصد. أي حاجة بنسلّمها بتبقى منظّفة ومنظّمة وموثّقة قبل ما توصلك.",
 
     card1Title: "قواعد بيانات جاهزة",
     card1Body: "قواعد بيانات مجهّزة، من غير تكرار وبصيغة موحّدة، بتتسلّم إكسل أو CSV.",
