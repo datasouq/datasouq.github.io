@@ -486,12 +486,16 @@ ul { list-style: none; }
 
 .nav__inner { height: 100%; display: flex; align-items: center; gap: 12px; }
 
+/* The block moves to the right in RTL, as it should, but its contents must not
+   reorder: a logo lockup is a fixed asset. Without this the mark lands after
+   the Latin wordmark and reads "DataSouq D". */
 .brand {
   display: flex;
   align-items: center;
   gap: 8px;
   font-weight: 500;
   font-size: var(--text-base);
+  direction: ltr;
 }
 
 .brand__mark {
