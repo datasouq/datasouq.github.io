@@ -2,8 +2,10 @@
    DataSouq — configuration, translations and page logic
    الإعدادات والترجمة ومنطق الصفحة
 
-   الصفحة تعريفية فقط — مفيش منتجات ولا أسعار معروضة حاليًا.
-   This is an introductory page only — no products or prices are listed yet.
+   الصفحة بتعرض قاعدة بيانات واحدة متاحة. الأسعار وعدد السجلات والحقول
+   مش معروضة — بتتحدد في المحادثة.
+   One dataset is listed. Price, record count and field list are not stated
+   anywhere on the page; the WhatsApp message asks for them instead.
    ========================================================================== */
 
 const CONFIG = {
@@ -28,7 +30,18 @@ const I18N = {
     themeAria: "Toggle theme",
     skipLink: "Skip to content",
 
-    heroBadge: "Datasets coming soon",
+    heroBadge: "First dataset available",
+
+    catalogueLabel: "Catalogue",
+    catalogueTitle: "Available now",
+    catalogueLead: "The first dataset is ready. More are in preparation.",
+    datasetTitle: "Saudi Contractors Authority registry",
+    /* Record count, fields, format and price were never supplied, so the copy
+       does not state them — it points to the conversation instead. */
+    datasetBody:
+      "Contractors registered with the Saudi Contractors Authority, cleaned and structured. Message us for the record count, the fields it covers and the price.",
+    datasetCta: "Ask about this dataset",
+
     heroTitle: "Structured data, ready to work with",
     heroLead:
       "DataSouq cleans, deduplicates and structures raw records, then delivers them as datasets ready to import.",
@@ -51,7 +64,7 @@ const I18N = {
        the value of taking it. Per the Empty State Presentational fragment. */
     soonTitle: "Tell us what you're looking for",
     soonBody:
-      "The first datasets are still being prepared. Describe what you need and we will tell you whether it is already in the pipeline, and let you know the moment it is ready.",
+      "More datasets are in preparation. Describe what you need and we will tell you whether it is already in the pipeline, and let you know the moment it is ready.",
 
     footerRights: "All rights reserved.",
     footerWhatsapp: "WhatsApp",
@@ -63,6 +76,11 @@ const I18N = {
     waMessage: () =>
       "Hello 👋\n\nI came across DataSouq and I'd like to know more about " +
       "the datasets you're preparing.\n\nCould you get in touch?",
+
+    waDatasetMessage: () =>
+      "Hello 👋\n\nI'm interested in the *Saudi Contractors Authority registry* " +
+      "dataset.\n\nCould you tell me the record count, the fields it covers and " +
+      "the price?",
   },
 
   ar: {
@@ -73,7 +91,16 @@ const I18N = {
     themeAria: "تبديل المظهر",
     skipLink: "تخطَّ إلى المحتوى",
 
-    heroBadge: "قواعد البيانات قريبًا",
+    heroBadge: "أول قاعدة بيانات متاحة",
+
+    catalogueLabel: "الكتالوج",
+    catalogueTitle: "متاح الآن",
+    catalogueLead: "أول قاعدة بيانات جاهزة، وفيه غيرها بيتجهّز.",
+    datasetTitle: "سجل الهيئة السعودية للمقاولين",
+    datasetBody:
+      "المقاولون المسجّلون في الهيئة السعودية للمقاولين، منظّفين ومنظّمين. كلّمنا تعرف عدد السجلات والحقول المتاحة والسعر.",
+    datasetCta: "اسأل عن القاعدة دي",
+
     heroTitle: "بيانات منظّمة، جاهزة للشغل",
     heroLead:
       "داتا سوق بينظّف السجلات الخام ويشيل التكرار وينظّمها، وبيسلّمها قواعد بيانات جاهزة للاستيراد.",
@@ -95,7 +122,7 @@ const I18N = {
     /* صيغة فعل: العنوان بيطلب إجراء والوصف بيشرح قيمته */
     soonTitle: "قول لنا بتدوّر على إيه",
     soonBody:
-      "أول قواعد بيانات لسه بتتجهّز. احكيلنا محتاج إيه وإحنا نقولك لو هو في الطريق فعلًا، ونعرّفك أول ما يجهز.",
+      "فيه قواعد بيانات تانية بتتجهّز. احكيلنا محتاج إيه وإحنا نقولك لو هو في الطريق فعلًا، ونعرّفك أول ما يجهز.",
 
     footerRights: "جميع الحقوق محفوظة.",
     footerWhatsapp: "واتساب",
@@ -107,6 +134,10 @@ const I18N = {
     waMessage: () =>
       "السلام عليكم 👋\n\nشفت موقع داتا سوق وحابب أعرف أكتر عن قواعد " +
       "البيانات اللي بتجهّزوها.\n\nممكن نتواصل؟",
+
+    waDatasetMessage: () =>
+      "السلام عليكم 👋\n\nمهتم بـ *سجل الهيئة السعودية للمقاولين*.\n\n" +
+      "ممكن تقولوا لي عدد السجلات والحقول المتاحة والسعر؟",
   },
 };
 
@@ -128,9 +159,10 @@ const I18N = {
     return null;
   }
 
-  function whatsappUrl() {
+  function whatsappUrl(key) {
     const number = String(CONFIG.whatsappNumber).replace(/\D/g, "");
-    return `https://wa.me/${number}?text=${encodeURIComponent(I18N[lang].waMessage())}`;
+    const build = I18N[lang][key] || I18N[lang].waMessage;
+    return `https://wa.me/${number}?text=${encodeURIComponent(build())}`;
   }
 
   function applyLang(next) {
@@ -159,8 +191,13 @@ const I18N = {
     btn.setAttribute("aria-label", t.langBtnAria);
     $("theme-toggle").setAttribute("aria-label", t.themeAria);
 
-    const url = whatsappUrl();
-    document.querySelectorAll("[data-wa]").forEach((n) => n.setAttribute("href", url));
+    const general = whatsappUrl("waMessage");
+    document.querySelectorAll("[data-wa]").forEach((n) => n.setAttribute("href", general));
+
+    /* The catalogue card opens WhatsApp naming the dataset and asking for the
+       three details the page deliberately does not state. */
+    const dataset = whatsappUrl("waDatasetMessage");
+    document.querySelectorAll("[data-wa-dataset]").forEach((n) => n.setAttribute("href", dataset));
 
     store("datasouq-lang", lang);
   }

@@ -16,11 +16,16 @@ We turn raw, messy records into clean, structured datasets you can actually use.
 
 ---
 
-### Status · الحالة
+### Available now · متاح الآن
 
-The catalogue is not published yet. The first datasets are being prepared.
+**Saudi Contractors Authority registry** — contractors registered with the Saudi
+Contractors Authority, cleaned and structured. Message us for the record count,
+the fields it covers and the price.
 
-الكتالوج لسه متنشرش. أول قواعد بيانات بتتجهّز.
+**سجل الهيئة السعودية للمقاولين** — المقاولون المسجّلون في الهيئة، منظّفين ومنظّمين.
+كلّمنا تعرف عدد السجلات والحقول المتاحة والسعر.
+
+More datasets are in preparation. · وفيه قواعد بيانات تانية بتتجهّز.
 
 ---
 

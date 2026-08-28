@@ -655,6 +655,13 @@ ul { list-style: none; }
 }
 .card__icon svg { width: 18px; height: 18px; }
 
+/* A card that stands alone in its grid gets --card-padding-x-md, the roomier
+   value global.css defines for exactly that. */
+.card--wide { padding: var(--card-padding-x-md); }
+
+/* PageSectionAside spacing for actions inside a card */
+.card__actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 16px; }
+
 /* CardTitle upstream is `text-xs font-mono uppercase` — a dense Studio-panel
    idiom. Kept as a heading here: uppercase carries no meaning in Arabic, and
    12px mono would read as a dashboard label on a public page.
