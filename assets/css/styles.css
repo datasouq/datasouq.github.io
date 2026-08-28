@@ -35,11 +35,15 @@
         --muted-foreground instead, one notch stronger at 7.65:1.
      5. The section eyebrow has no PageSectionSummary equivalent. Kept as a
         landing-page convention, by choice.
+     6. The hero is a bordered band, so it takes a bottom padding matching its
+        pt-12. PageHeader has no bottom padding because it has no band.
 
-   Not deviations, though they may look like it: heading sizes above h1's
-   default use larger steps of the same scale, which is ordinary use of it;
-   WhatsApp green is simply absent, and the brand token is the compliant
-   choice for the CTA.
+   Not a deviation, though it may look like one: WhatsApp green is simply
+   absent, and the brand token is the compliant choice for the CTA.
+
+   Spacing follows Tailwind's 4px base, which globals.css does not override.
+   Section rhythm, summary gaps and action-group gaps come from PageSection
+   and PageHeader; type roles per element come from typography.css.
    ========================================================================== */
 
 /* --------------------------------------------------------------------------
@@ -406,7 +410,10 @@ ul { list-style: none; }
   .container { padding-inline: 40px; }
 }
 
-.section { padding-block: 60px; }
+/* PageSection root is `pt-12 last:pb-12`: top padding on every section, and
+   bottom padding only on the last one. */
+.section { padding-block: 48px 0; }
+.section:last-of-type { padding-bottom: 48px; }
 .section--alt { background: var(--secondary); border-block: 1px solid var(--border); }
 
 /* ==========================================================================
@@ -482,7 +489,7 @@ ul { list-style: none; }
 .brand {
   display: flex;
   align-items: center;
-  gap: 9px;
+  gap: 8px;
   font-weight: 500;
   font-size: var(--text-base);
 }
@@ -539,7 +546,7 @@ ul { list-style: none; }
 .hero {
   position: relative;
   overflow: hidden;
-  padding-block: 76px 60px;
+  padding-block: 48px; /* PageHeader pt-12; the band is bordered so it takes a matching bottom */
   text-align: center;
   border-bottom: 1px solid var(--border);
 }
@@ -562,7 +569,7 @@ ul { list-style: none; }
 .badge {
   display: inline-flex;
   align-items: center;
-  gap: 7px;
+  gap: 4px;
   font-size: var(--text-xs);
   line-height: var(--lh-xs);
   font-weight: var(--font-weight-normal);
@@ -580,43 +587,38 @@ ul { list-style: none; }
 
 .badge .dot { width: 5px; height: 5px; border-radius: 50%; background: var(--brand-default); }
 
-/* Steps from the scale with their paired line-heights, rather than a clamp
-   between steps — a clamp lands between two pairings and can only use an
-   invented ratio. text-3xl below md, text-4xl from md up. */
+/* PageHeaderTitle is `heading-title` = text-2xl, with tracking-tight coming
+   from typography.css. PageHeaderTitle carries no width constraint. */
 .hero h1 {
-  font-size: var(--text-3xl);
-  line-height: var(--lh-3xl);
-  margin-bottom: 20px;
-  max-width: 20ch;
-  margin-inline: auto;
+  font-size: var(--text-2xl);
+  line-height: var(--lh-2xl);
+  margin-bottom: 16px;
 }
 
-@media (min-width: 768px) {
-  .hero h1 { font-size: var(--text-4xl); line-height: var(--lh-4xl); }
-}
-
+/* PageHeaderDescription is `heading-subSection text-foreground-light`
+   = text-base on --muted-foreground. PageHeader stacks its children gap-4. */
 .hero__lead {
-  font-size: var(--text-lg);
-  line-height: var(--lh-lg);
+  font-size: var(--text-base);
+  line-height: var(--lh-base);
   color: var(--muted-foreground);
   max-width: 56ch;
-  margin: 0 auto 32px;
+  margin: 0 auto 16px;
 }
 
-.hero__cta { display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; }
+.hero__cta { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; }
 
 /* ==========================================================================
    Section heading
    ========================================================================== */
 
-.head { margin-bottom: 32px; }
+.head { margin-bottom: 24px; }
 
 /* Sentence case at text-sm. No uppercase, no tracking — uppercase does nothing
    in Arabic and would split the two languages. */
-.head__label { font-size: var(--text-sm); line-height: var(--lh-sm); color: var(--brand-text); margin-bottom: 6px; }
+.head__label { font-size: var(--text-sm); line-height: var(--lh-sm); color: var(--brand-text); margin-bottom: 4px; }
 
-.head h2 { font-size: var(--text-2xl); line-height: var(--lh-2xl); margin-bottom: 8px; }
-.head p { font-size: var(--text-base); line-height: var(--lh-base); color: var(--muted-foreground); max-width: 60ch; }
+.head h2 { font-size: var(--text-xl); line-height: var(--lh-xl); margin-bottom: 4px; }
+.head p { font-size: var(--text-sm); line-height: var(--lh-sm); color: var(--muted-foreground); max-width: 60ch; }
 
 /* ==========================================================================
    Cards — depth from surface layers and borders, never shadows
@@ -675,7 +677,7 @@ ul { list-style: none; }
   text-align: center;
 }
 
-.panel h2 { font-size: var(--text-xl); line-height: var(--lh-xl); margin-bottom: 8px; }
+.panel h2 { font-size: var(--text-xl); line-height: var(--lh-xl); margin-bottom: 4px; }
 .panel p {
   line-height: var(--lh-base);
   font-size: var(--text-base);
@@ -687,7 +689,7 @@ ul { list-style: none; }
 /* The empty state's icon, centred. Same plate construction as .card__icon. */
 .panel__icon { margin-inline: auto; }
 
-.panel__actions { display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; }
+.panel__actions { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; }
 
 /* ==========================================================================
    Footer
@@ -733,8 +735,6 @@ ul { list-style: none; }
 @media (max-width: 640px) {
   /* globals.css narrows the container to px-4 at this breakpoint */
   .container { padding-inline: 16px; }
-  .hero { padding-block: 56px 48px; }
-  .section { padding-block: 48px; }
   .panel { padding: 24px 20px; }
   .hero__cta .btn, .panel__actions .btn { width: 100%; }
   .brand span:not(.brand__mark) { display: none; }
