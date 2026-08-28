@@ -47,9 +47,11 @@ const I18N = {
     card3Title: "Custom requests",
     card3Body: "Need something specific? Describe it and we will tell you if we can build it.",
 
-    soonTitle: "The catalogue is not published yet",
+    /* Active language: the title prompts an action, the description explains
+       the value of taking it. Per the Empty State Presentational fragment. */
+    soonTitle: "Tell us what you're looking for",
     soonBody:
-      "We are preparing the first datasets for release. In the meantime, tell us what you are looking for and we will let you know when it is ready.",
+      "The first datasets are still being prepared. Describe what you need and we will tell you whether it is already in the pipeline, and let you know the moment it is ready.",
 
     footerRights: "All rights reserved.",
     footerWhatsapp: "WhatsApp",
@@ -90,9 +92,10 @@ const I18N = {
     card3Title: "طلبات مخصصة",
     card3Body: "محتاج حاجة معيّنة؟ احكيلنا وإحنا نقولك لو نقدر نجهّزها.",
 
-    soonTitle: "الكتالوج لسه متنشرش",
+    /* صيغة فعل: العنوان بيطلب إجراء والوصف بيشرح قيمته */
+    soonTitle: "قول لنا بتدوّر على إيه",
     soonBody:
-      "بنجهّز أول قواعد بيانات للإطلاق. لحد ما تخلص، قول لنا بتدوّر على إيه وإحنا نعرّفك أول ما تجهز.",
+      "أول قواعد بيانات لسه بتتجهّز. احكيلنا محتاج إيه وإحنا نقولك لو هو في الطريق فعلًا، ونعرّفك أول ما يجهز.",
 
     footerRights: "جميع الحقوق محفوظة.",
     footerWhatsapp: "واتساب",

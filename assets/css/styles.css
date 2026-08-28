@@ -642,6 +642,9 @@ ul { list-style: none; }
   margin: 0 auto 24px;
 }
 
+/* The empty state's icon, centred. Same plate construction as .card__icon. */
+.panel__icon { margin-inline: auto; }
+
 .panel__actions { display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; }
 
 /* ==========================================================================
