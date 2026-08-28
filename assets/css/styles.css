@@ -659,6 +659,30 @@ ul { list-style: none; }
    value global.css defines for exactly that. */
 .card--wide { padding: var(--card-padding-x-md); }
 
+/* Metrics — the Metric Card fragment's icon-and-figure pairing, laid out as a
+   row inside the dataset card. Icons are tinted like the text beside them, the
+   way icons.mdx describes. */
+.metrics {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 8px 16px;
+  margin-top: 16px;
+  padding-top: 16px;
+  border-top: 1px solid var(--border);
+}
+
+.metrics li {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: var(--text-sm);
+  line-height: var(--lh-sm);
+  color: var(--muted-foreground);
+}
+
+.metrics svg { width: 16px; height: 16px; flex-shrink: 0; color: var(--tertiary-foreground); }
+.metrics strong { color: var(--foreground); font-weight: 500; } /* typography.css: strong is font-medium */
+
 /* PageSectionAside spacing for actions inside a card */
 .card__actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 16px; }
 

@@ -2,10 +2,11 @@
    DataSouq — configuration, translations and page logic
    الإعدادات والترجمة ومنطق الصفحة
 
-   الصفحة بتعرض قاعدة بيانات واحدة متاحة. الأسعار وعدد السجلات والحقول
-   مش معروضة — بتتحدد في المحادثة.
-   One dataset is listed. Price, record count and field list are not stated
-   anywhere on the page; the WhatsApp message asks for them instead.
+   الصفحة بتعرض قاعدة بيانات واحدة، ومؤشراتها مقيسة من الملف نفسه.
+   السعر وقائمة الحقول الكاملة مش معروضين — بيتحددوا في المحادثة.
+   One dataset is listed. Its metrics are measured from the file itself; the
+   price and the full field list are not stated anywhere on the page, and the
+   WhatsApp message asks for them instead.
    ========================================================================== */
 
 const CONFIG = {
@@ -36,11 +37,17 @@ const I18N = {
     catalogueTitle: "Available now",
     catalogueLead: "The first dataset is ready. More are in preparation.",
     datasetTitle: "Saudi Contractors Authority registry",
-    /* Record count, fields, format and price were never supplied, so the copy
-       does not state them — it points to the conversation instead. */
     datasetBody:
-      "Contractors registered with the Saudi Contractors Authority, cleaned and structured. Message us for the record count, the fields it covers and the price.",
+      "Contractors registered with the Saudi Contractors Authority, cleaned and structured. Message us for the full field list and the price.",
     datasetCta: "Ask about this dataset",
+
+    /* Every figure is measured from the file, not estimated. Phone numbers are
+       deliberately absent from the metrics: only 31.7% are usable. */
+    m1Value: "17,304",  m1Label: "records",
+    m2Value: "302",     m2Label: "cities across 13 regions",
+    m3Value: "7",       m3Label: "classification grades",
+    m4Value: "99.5%",   m4Label: "carry an email",
+    m5Value: "AR + EN", m5Label: "in one file",
 
     heroTitle: "Structured data, ready to work with",
     heroLead:
@@ -79,8 +86,7 @@ const I18N = {
 
     waDatasetMessage: () =>
       "Hello 👋\n\nI'm interested in the *Saudi Contractors Authority registry* " +
-      "dataset.\n\nCould you tell me the record count, the fields it covers and " +
-      "the price?",
+      "dataset.\n\nCould you send the full field list and the price?",
   },
 
   ar: {
@@ -98,8 +104,14 @@ const I18N = {
     catalogueLead: "أول قاعدة بيانات جاهزة، وفيه غيرها بيتجهّز.",
     datasetTitle: "سجل الهيئة السعودية للمقاولين",
     datasetBody:
-      "المقاولون المسجّلون في الهيئة السعودية للمقاولين، منظّفين ومنظّمين. كلّمنا تعرف عدد السجلات والحقول المتاحة والسعر.",
+      "المقاولون المسجّلون في الهيئة السعودية للمقاولين، منظّفين ومنظّمين. كلّمنا تعرف قائمة الحقول كاملة والسعر.",
     datasetCta: "اسأل عن القاعدة دي",
+
+    m1Value: "17,304",   m1Label: "سجل",
+    m2Value: "302",      m2Label: "مدينة في 13 منطقة",
+    m3Value: "7",        m3Label: "درجات تصنيف",
+    m4Value: "99.5%",    m4Label: "منهم بإيميل",
+    m5Value: "عربي + إنجليزي", m5Label: "في ملف واحد",
 
     heroTitle: "بيانات منظّمة، جاهزة للشغل",
     heroLead:
@@ -137,7 +149,7 @@ const I18N = {
 
     waDatasetMessage: () =>
       "السلام عليكم 👋\n\nمهتم بـ *سجل الهيئة السعودية للمقاولين*.\n\n" +
-      "ممكن تقولوا لي عدد السجلات والحقول المتاحة والسعر؟",
+      "ممكن تبعتوا لي قائمة الحقول كاملة والسعر؟",
   },
 };
 
