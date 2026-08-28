@@ -54,6 +54,8 @@ const I18N = {
     footerRights: "All rights reserved.",
     footerWhatsapp: "WhatsApp",
     footerEmail: "Email",
+    footerFacebook: "Facebook",
+    footerInstagram: "Instagram",
     footerGithub: "GitHub",
 
     waMessage: () =>
@@ -95,6 +97,8 @@ const I18N = {
     footerRights: "جميع الحقوق محفوظة.",
     footerWhatsapp: "واتساب",
     footerEmail: "البريد",
+    footerFacebook: "فيسبوك",
+    footerInstagram: "إنستجرام",
     footerGithub: "جيت هب",
 
     waMessage: () =>

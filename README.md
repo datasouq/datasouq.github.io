@@ -28,6 +28,8 @@ The catalogue is not published yet. The first datasets are being prepared.
 
 - WhatsApp — [@mbi.group](https://wa.me/mbi.group)
 - Email — [mbi.datasouq@gmail.com](mailto:mbi.datasouq@gmail.com)
+- Facebook — [DataSouq.page](https://www.facebook.com/DataSouq.page)
+- Instagram — [@datasouq](https://www.instagram.com/datasouq)
 
 ---
 
