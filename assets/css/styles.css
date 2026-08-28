@@ -37,6 +37,11 @@
         landing-page convention, by choice.
      6. The hero is a bordered band, so it takes a bottom padding matching its
         pt-12. PageHeader has no bottom padding because it has no band.
+     7. Neither the header bar nor the footer bar mirrors in Arabic, which the
+        RTL convention would normally have them do, and the footer stays in
+        English throughout. Asked for directly: a language toggle that relocates
+        itself, along with the logo and the theme control, reads as the page
+        jumping. The page body between them mirrors as usual.
 
    Not a deviation, though it may look like one: WhatsApp green is simply
    absent, and the brand token is the compliant choice for the CTA.
@@ -483,7 +488,12 @@ ul { list-style: none; }
   -webkit-backdrop-filter: blur(12px);
 }
 
-.nav__inner { height: 100%; display: flex; align-items: center; gap: 12px; }
+/* The header chrome stays put across languages: logo and wordmark on one side,
+   language and theme controls on the other, in the same order either way.
+   Mirroring the whole bar is the usual RTL convention, but toggling the
+   language then moves every control at once, which reads as the page jumping.
+   The page body below still mirrors normally. */
+.nav__inner { height: 100%; display: flex; align-items: center; gap: 12px; direction: ltr; }
 
 /* The block moves to the right in RTL, as it should, but its contents must not
    reorder: a logo lockup is a fixed asset. Without this the mark lands after
@@ -532,6 +542,11 @@ ul { list-style: none; }
 .ctl:hover { color: var(--foreground); border-color: var(--border-stronger); }
 .ctl--icon { padding-inline: 0; justify-content: center; }
 
+/* The label swaps between "العربية" and "English", which are 82px and 95px
+   wide. Without a floor the button resizes under the cursor on every toggle,
+   so it holds the wider of the two. */
+#lang-toggle { min-width: 96px; }
+
 /* IconContainerVariants in Button.tsx: size "small" -> 18px icons.
    flex-shrink:0 is required — without it the icon collapses to 0 width when
    the label pushes the button past the space available in the nav. */
@@ -568,27 +583,6 @@ ul { list-style: none; }
 }
 
 .hero__inner { position: relative; z-index: 1; }
-
-.badge {
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
-  font-size: var(--text-xs);
-  line-height: var(--lh-xs);
-  font-weight: var(--font-weight-normal);
-  /* Badge, brand variant: bg-brand/10 text-brand-600 border border-brand-500.
-     Upstream also sets text-[9px] uppercase tracking-[0.07em]; all three are
-     skipped — 9px is below a readable size for a public page, and uppercase
-     plus tracking damage Arabic letterforms. */
-  color: var(--brand-on-plate);
-  background: color-mix(in srgb, var(--brand-default) 10%, transparent);
-  border: 1px solid var(--brand-500);
-  padding: 4px 12px;
-  border-radius: var(--radius-full);
-  margin-bottom: 24px;
-}
-
-.badge .dot { width: 5px; height: 5px; border-radius: 50%; background: var(--brand-default); }
 
 /* PageHeaderTitle is `heading-title` = text-2xl, with tracking-tight coming
    from typography.css. PageHeaderTitle carries no width constraint. */
@@ -735,7 +729,10 @@ ul { list-style: none; }
   margin-top: 24px;
 }
 
+/* Pinned and English-only, matching the header: the bar keeps its layout and
+   its wording in both languages. */
 .footer__inner {
+  direction: ltr;
   display: flex;
   flex-wrap: wrap;
   gap: 14px;
@@ -746,10 +743,12 @@ ul { list-style: none; }
   color: var(--tertiary-foreground);
 }
 
-/* The row still moves to the mirrored side in Arabic, but the icons keep one
-   fixed order. Their sequence carries no reading meaning — they are brand
-   marks, not words — so flipping it only made them feel like they had moved. */
-.footer__links { display: flex; flex-wrap: wrap; gap: 4px; direction: ltr; }
+/* GitHub sits beside the copyright — it points at the source, not at a way to
+   reach us. The right-hand row is contact channels only. */
+.footer__meta { display: flex; align-items: center; gap: 8px; }
+
+/* Order is inherited from the pinned .footer__inner above. */
+.footer__links { display: flex; flex-wrap: wrap; gap: 4px; }
 
 /* Icon-only links, sized to the "small" control (34px) with 18px icons */
 .social {

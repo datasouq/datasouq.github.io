@@ -31,11 +31,9 @@ const I18N = {
     themeAria: "Toggle theme",
     skipLink: "Skip to content",
 
-    heroBadge: "First dataset available",
-
     catalogueLabel: "Catalogue",
     catalogueTitle: "Available now",
-    catalogueLead: "The first dataset is ready. More are in preparation.",
+    catalogueLead: "More datasets are in preparation.",
     datasetTitle: "Saudi Contractors Authority registry",
     datasetBody:
       "Contractors registered with the Saudi Contractors Authority, cleaned and structured. Message us for the full field list and the price.",
@@ -73,13 +71,6 @@ const I18N = {
     soonBody:
       "More datasets are in preparation. Describe what you need and we will tell you whether it is already in the pipeline, and let you know the moment it is ready.",
 
-    footerRights: "All rights reserved.",
-    footerWhatsapp: "WhatsApp",
-    footerEmail: "Email",
-    footerFacebook: "Facebook",
-    footerInstagram: "Instagram",
-    footerGithub: "GitHub",
-
     waMessage: () =>
       "Hello 👋\n\nI came across DataSouq and I'd like to know more about " +
       "the datasets you're preparing.\n\nCould you get in touch?",
@@ -97,11 +88,9 @@ const I18N = {
     themeAria: "تبديل المظهر",
     skipLink: "تخطَّ إلى المحتوى",
 
-    heroBadge: "أول قاعدة بيانات متاحة",
-
     catalogueLabel: "الكتالوج",
     catalogueTitle: "متاح الآن",
-    catalogueLead: "أول قاعدة بيانات جاهزة، وفيه غيرها بيتجهّز.",
+    catalogueLead: "وفيه قواعد بيانات تانية بتتجهّز.",
     datasetTitle: "سجل الهيئة السعودية للمقاولين",
     datasetBody:
       "المقاولون المسجّلون في الهيئة السعودية للمقاولين، منظّفين ومنظّمين. كلّمنا تعرف قائمة الحقول كاملة والسعر.",
@@ -135,13 +124,6 @@ const I18N = {
     soonTitle: "قول لنا بتدوّر على إيه",
     soonBody:
       "فيه قواعد بيانات تانية بتتجهّز. احكيلنا محتاج إيه وإحنا نقولك لو هو في الطريق فعلًا، ونعرّفك أول ما يجهز.",
-
-    footerRights: "جميع الحقوق محفوظة.",
-    footerWhatsapp: "واتساب",
-    footerEmail: "البريد",
-    footerFacebook: "فيسبوك",
-    footerInstagram: "إنستجرام",
-    footerGithub: "جيت هب",
 
     waMessage: () =>
       "السلام عليكم 👋\n\nشفت موقع داتا سوق وحابب أعرف أكتر عن قواعد " +
