@@ -96,9 +96,20 @@
     min(var(--surface), var(--foreground-lightness)) calc(var(--chroma) * 0.45) var(--primary-hue)
   );
 
-  /* --- Radius: --radius-panel is 6px; buttons are rounded-md ------------ */
+  /* --- Radius ----------------------------------------------------------- */
+  /* --radius-panel is 6px (theme.css) and buttons are rounded-md.
+     Cards use rounded-lg; global.css sets --borderradius-lg: 8px. */
   --radius: 6px;
+  --radius-lg: 8px;
   --radius-full: 999px;
+
+  /* Card: py-4 px-(--card-padding-x). global.css sets --card-padding-x to
+     1rem and --card-padding-x-md to 1.5rem for roomier cards. */
+  --card-padding-x: 1rem;
+  --card-padding-x-md: 1.5rem;
+
+  /* The Card carries shadow-xs — Tailwind's own value, unchanged upstream. */
+  --shadow-xs: 0 1px 2px 0 rgb(0 0 0 / 0.05);
 
   /* --- Type scale: the Inter-tuned scale from globals.css --------------- */
   --text-xs: 0.75rem;      /* 12px — not overridden upstream */
@@ -132,7 +143,9 @@
     ui-sans-serif, system-ui, sans-serif;
 
   --nav-h: 60px;
-  --container: 900px;
+  /* PageContainer size "small" — max-w-[768px]. The other variants are
+     default 1200px, large 1600px, full none. */
+  --container: 768px;
   --ease: cubic-bezier(0.4, 0, 0.2, 1);
 }
 
@@ -355,6 +368,12 @@ ul { list-style: none; }
   padding-inline: 24px;
 }
 
+/* PageContainer: mx-auto w-full px-6 xl:px-10. globals.css narrows its own
+   .container to px-4 below 640px, which the media query at the end applies. */
+@media (min-width: 1280px) {
+  .container { padding-inline: 40px; }
+}
+
 .section { padding-block: 60px; }
 .section--alt { background: var(--secondary); border-block: 1px solid var(--border); }
 
@@ -514,9 +533,13 @@ ul { list-style: none; }
   gap: 7px;
   font-size: var(--text-xs);
   font-weight: var(--font-weight-normal);
+  /* Badge, brand variant: bg-brand/10 text-brand-600 border border-brand-500.
+     Upstream also sets text-[9px] uppercase tracking-[0.07em]; all three are
+     skipped — 9px is below a readable size for a public page, and uppercase
+     plus tracking damage Arabic letterforms. */
   color: var(--brand-on-plate);
-  background: var(--brand-plate);
-  border: 1px solid color-mix(in srgb, var(--brand-default) 35%, transparent);
+  background: color-mix(in srgb, var(--brand-default) 10%, transparent);
+  border: 1px solid var(--brand-500);
   padding: 4px 12px;
   border-radius: var(--radius-full);
   margin-bottom: 24px;
@@ -558,23 +581,30 @@ ul { list-style: none; }
    Cards — depth from surface layers and borders, never shadows
    ========================================================================== */
 
-.cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 16px; }
+/* 210px keeps three cards on one row inside the 768px container at its widest
+   padding: 768 - 2x40 = 688 content, and 3x210 + 2x16 gaps = 662. */
+.cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 16px; }
 
+/* Card: rounded-lg border bg-surface-100 shadow-xs, py-4 px-(--card-padding-x).
+   The header/content/footer split with internal border-b is skipped — these
+   cards hold a title and two lines, so there is nothing to divide. */
 .card {
   background: var(--card);
   border: 1px solid var(--border);
-  border-radius: var(--radius);
-  padding: 24px;
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-xs);
+  padding: var(--card-padding-x);
   transition: border-color 0.2s var(--ease);
 }
 .card:hover { border-color: var(--border-strong); }
 
+/* Same brand fill construction as the Badge, so the two read as one palette. */
 .card__icon {
   width: 32px;
   height: 32px;
   border-radius: var(--radius);
-  background: var(--brand-plate);
-  border: 1px solid color-mix(in srgb, var(--brand-default) 30%, transparent);
+  background: color-mix(in srgb, var(--brand-default) 10%, transparent);
+  border: 1px solid var(--brand-500);
   display: grid;
   place-items: center;
   color: var(--brand-on-plate);
@@ -582,6 +612,12 @@ ul { list-style: none; }
 }
 .card__icon svg { width: 18px; height: 18px; }
 
+/* CardTitle upstream is `text-xs font-mono uppercase` — a dense Studio-panel
+   idiom. Kept as a heading here: uppercase carries no meaning in Arabic, and
+   12px mono would read as a dashboard label on a public page.
+   CardDescription is `text-sm text-foreground-lighter`, but on --card in the
+   dark theme that measures 4.27:1, under the AA floor, so this keeps
+   --muted-foreground: one notch stronger, 7.65:1. */
 .card h3 { font-size: var(--text-base); margin-bottom: 6px; }
 .card p { font-size: var(--text-sm); color: var(--muted-foreground); }
 
@@ -592,8 +628,9 @@ ul { list-style: none; }
 .panel {
   background: var(--card);
   border: 1px solid var(--border);
-  border-radius: var(--radius);
-  padding: 32px;
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-xs);
+  padding: var(--card-padding-x-md);
   text-align: center;
 }
 
