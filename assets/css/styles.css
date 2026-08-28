@@ -16,12 +16,30 @@
      packages/ui/src/components/Button/Button.tsx      variants
      packages/ui/src/lib/constants.ts                  size scale
      apps/design-system/content/docs/accessibility.mdx focus ring, tabindex, skip link
+     packages/config/typography.css                    element type roles, tracking
 
-   Deliberate deviations, both documented:
-     1. IBM Plex Sans Arabic is appended to both font stacks — Inter and Manrope
-        ship latin subsets only and this site is bilingual.
-     2. WhatsApp green is not used. Its hue sits ~11deg from the brand hue and
-        the two greens together read as a muddy palette.
+   Every deviation from the above, and why. Nothing deviates without a reason
+   that changes the outcome:
+
+     1. IBM Plex Sans Arabic is appended to both font stacks. Inter and Manrope
+        ship latin subsets only, and this site is bilingual.
+     2. CardTitle is `text-xs font-mono uppercase` upstream, and CardHeader /
+        CardContent / CardFooter split with an internal border. Both are dense
+        Studio-panel idioms: uppercase carries no meaning in Arabic, and these
+        cards hold a title and two lines, so there is nothing to divide.
+     3. Badge is `text-[9px] uppercase tracking-[0.07em]` upstream. 9px is below
+        a readable size for a public page, and uppercase plus tracking damage
+        Arabic letterforms.
+     4. CardDescription is `text-foreground-lighter` upstream, which measures
+        4.27:1 on --card in the dark theme — under the AA floor. It keeps
+        --muted-foreground instead, one notch stronger at 7.65:1.
+     5. The section eyebrow has no PageSectionSummary equivalent. Kept as a
+        landing-page convention, by choice.
+
+   Not deviations, though they may look like it: heading sizes above h1's
+   default use larger steps of the same scale, which is ordinary use of it;
+   WhatsApp green is simply absent, and the brand token is the compliant
+   choice for the CTA.
    ========================================================================== */
 
 /* --------------------------------------------------------------------------
@@ -121,6 +139,19 @@
   --text-3xl: 1.75rem;     /* 28px */
   --text-4xl: 2.125rem;    /* 34px */
   --text-5xl: 2.875rem;    /* 46px */
+
+  /* Line heights are paired to each step, not derived from a global ratio.
+     globals.css overrides the font sizes but leaves Tailwind's paired
+     line-heights untouched, so these are those pairings. */
+  --lh-xs: 1rem;      /* 16px */
+  --lh-sm: 1.25rem;   /* 20px */
+  --lh-base: 1.5rem;  /* 24px */
+  --lh-lg: 1.75rem;   /* 28px */
+  --lh-xl: 1.75rem;   /* 28px */
+  --lh-2xl: 2rem;     /* 32px */
+  --lh-3xl: 2.25rem;  /* 36px */
+  --lh-4xl: 2.5rem;   /* 40px */
+  --lh-5xl: 1;        /* leading-none */
 
   /* globals.css sets font-normal to 450 for prose, 400 inside mono/code */
   --font-weight-normal: 450;
@@ -300,7 +331,7 @@ body {
   color: var(--foreground);
   font-size: var(--text-base);
   font-weight: var(--font-weight-normal);
-  line-height: 1.6;
+  line-height: var(--lh-base);
   font-synthesis-weight: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
@@ -335,8 +366,8 @@ ul { list-style: none; }
    Latin-only tracking. Arabic is cursive: negative tracking damages the joins
    and uppercase means nothing, so both stay scoped to LTR.
    -------------------------------------------------------------------------- */
-[dir="ltr"] h1,
-[dir="ltr"] h2 { letter-spacing: -0.02em; }
+/* heading-title carries tracking-tight, and only h1 does. h2 and h3 have none. */
+[dir="ltr"] h1 { letter-spacing: -0.025em; }
 
 /* ==========================================================================
    Skip link — first focusable element, per accessibility.mdx
@@ -353,6 +384,7 @@ ul { list-style: none; }
   border: 1px solid var(--border-strong);
   color: var(--foreground);
   font-size: var(--text-sm);
+  line-height: var(--lh-sm);
   transform: translateY(-250%);
 }
 .skip-link:focus-visible { transform: none; }
@@ -532,6 +564,7 @@ ul { list-style: none; }
   align-items: center;
   gap: 7px;
   font-size: var(--text-xs);
+  line-height: var(--lh-xs);
   font-weight: var(--font-weight-normal);
   /* Badge, brand variant: bg-brand/10 text-brand-600 border border-brand-500.
      Upstream also sets text-[9px] uppercase tracking-[0.07em]; all three are
@@ -547,16 +580,24 @@ ul { list-style: none; }
 
 .badge .dot { width: 5px; height: 5px; border-radius: 50%; background: var(--brand-default); }
 
+/* Steps from the scale with their paired line-heights, rather than a clamp
+   between steps — a clamp lands between two pairings and can only use an
+   invented ratio. text-3xl below md, text-4xl from md up. */
 .hero h1 {
-  font-size: clamp(var(--text-3xl), 5vw, var(--text-5xl));
-  line-height: 1.18;
+  font-size: var(--text-3xl);
+  line-height: var(--lh-3xl);
   margin-bottom: 20px;
   max-width: 20ch;
   margin-inline: auto;
 }
 
+@media (min-width: 768px) {
+  .hero h1 { font-size: var(--text-4xl); line-height: var(--lh-4xl); }
+}
+
 .hero__lead {
   font-size: var(--text-lg);
+  line-height: var(--lh-lg);
   color: var(--muted-foreground);
   max-width: 56ch;
   margin: 0 auto 32px;
@@ -572,10 +613,10 @@ ul { list-style: none; }
 
 /* Sentence case at text-sm. No uppercase, no tracking — uppercase does nothing
    in Arabic and would split the two languages. */
-.head__label { font-size: var(--text-sm); color: var(--brand-text); margin-bottom: 6px; }
+.head__label { font-size: var(--text-sm); line-height: var(--lh-sm); color: var(--brand-text); margin-bottom: 6px; }
 
-.head h2 { font-size: var(--text-2xl); margin-bottom: 8px; }
-.head p { font-size: var(--text-base); color: var(--muted-foreground); max-width: 60ch; }
+.head h2 { font-size: var(--text-2xl); line-height: var(--lh-2xl); margin-bottom: 8px; }
+.head p { font-size: var(--text-base); line-height: var(--lh-base); color: var(--muted-foreground); max-width: 60ch; }
 
 /* ==========================================================================
    Cards — depth from surface layers and borders, never shadows
@@ -618,8 +659,8 @@ ul { list-style: none; }
    CardDescription is `text-sm text-foreground-lighter`, but on --card in the
    dark theme that measures 4.27:1, under the AA floor, so this keeps
    --muted-foreground: one notch stronger, 7.65:1. */
-.card h3 { font-size: var(--text-base); margin-bottom: 6px; }
-.card p { font-size: var(--text-sm); color: var(--muted-foreground); }
+.card h3 { font-size: var(--text-base); line-height: var(--lh-base); margin-bottom: 6px; }
+.card p { font-size: var(--text-sm); line-height: var(--lh-sm); color: var(--muted-foreground); }
 
 /* ==========================================================================
    Panel
@@ -634,8 +675,9 @@ ul { list-style: none; }
   text-align: center;
 }
 
-.panel h2 { font-size: var(--text-xl); margin-bottom: 8px; }
+.panel h2 { font-size: var(--text-xl); line-height: var(--lh-xl); margin-bottom: 8px; }
 .panel p {
+  line-height: var(--lh-base);
   font-size: var(--text-base);
   color: var(--muted-foreground);
   max-width: 52ch;
@@ -664,6 +706,7 @@ ul { list-style: none; }
   align-items: center;
   justify-content: space-between;
   font-size: var(--text-sm);
+  line-height: var(--lh-sm);
   color: var(--tertiary-foreground);
 }
 
