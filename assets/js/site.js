@@ -32,8 +32,8 @@ const I18N = {
     skipLink: "Skip to content",
 
     catalogueLabel: "Catalogue",
-    catalogueTitle: "Available now",
-    catalogueLead: "More datasets are in preparation.",
+    catalogueTitle: "Datasets",
+    catalogueLead: "Structured registries, cleaned and delivered in Arabic and English.",
     datasetTitle: "Saudi Contractors Authority registry",
     datasetBody:
       "Contractors registered with the Saudi Contractors Authority, cleaned and structured. Message us for the full field list and the price.",
@@ -69,7 +69,7 @@ const I18N = {
        the value of taking it. Per the Empty State Presentational fragment. */
     soonTitle: "Tell us what you're looking for",
     soonBody:
-      "More datasets are in preparation. Describe what you need and we will tell you whether it is already in the pipeline, and let you know the moment it is ready.",
+      "Describe what you need and we will tell you whether we already hold it or can build it for you.",
 
     waMessage: () =>
       "Hello 👋\n\nI came across DataSouq and I'd like to know more about " +
@@ -89,8 +89,8 @@ const I18N = {
     skipLink: "تخطَّ إلى المحتوى",
 
     catalogueLabel: "الكتالوج",
-    catalogueTitle: "متاح الآن",
-    catalogueLead: "وفيه قواعد بيانات تانية بتتجهّز.",
+    catalogueTitle: "قواعد البيانات",
+    catalogueLead: "سجلات منظّمة، منظّفة وبتتسلّم بالعربي والإنجليزي.",
     datasetTitle: "سجل الهيئة السعودية للمقاولين",
     datasetBody:
       "المقاولون المسجّلون في الهيئة السعودية للمقاولين، منظّفين ومنظّمين. كلّمنا تعرف قائمة الحقول كاملة والسعر.",
@@ -123,7 +123,7 @@ const I18N = {
     /* صيغة فعل: العنوان بيطلب إجراء والوصف بيشرح قيمته */
     soonTitle: "قول لنا بتدوّر على إيه",
     soonBody:
-      "فيه قواعد بيانات تانية بتتجهّز. احكيلنا محتاج إيه وإحنا نقولك لو هو في الطريق فعلًا، ونعرّفك أول ما يجهز.",
+      "احكيلنا محتاج إيه وإحنا نقولك لو عندنا فعلًا ولا نقدر نجهّزه لك.",
 
     waMessage: () =>
       "السلام عليكم 👋\n\nشفت موقع داتا سوق وحابب أعرف أكتر عن قواعد " +

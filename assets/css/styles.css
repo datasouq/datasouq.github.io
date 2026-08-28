@@ -562,27 +562,10 @@ ul { list-style: none; }
    ========================================================================== */
 
 .hero {
-  position: relative;
-  overflow: hidden;
   padding-block: 48px; /* PageHeader pt-12; the band is bordered so it takes a matching bottom */
   text-align: center;
   border-bottom: 1px solid var(--border);
 }
-
-.hero::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background-image:
-    linear-gradient(to right, var(--border) 1px, transparent 1px),
-    linear-gradient(to bottom, var(--border) 1px, transparent 1px);
-  background-size: 52px 52px;
-  mask-image: radial-gradient(ellipse 65% 60% at 50% 0%, #000 12%, transparent 78%);
-  -webkit-mask-image: radial-gradient(ellipse 65% 60% at 50% 0%, #000 12%, transparent 78%);
-  pointer-events: none;
-}
-
-.hero__inner { position: relative; z-index: 1; }
 
 /* PageHeaderTitle is `heading-title` = text-2xl, with tracking-tight coming
    from typography.css. PageHeaderTitle carries no width constraint. */
