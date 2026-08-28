@@ -280,8 +280,10 @@ ul { list-style: none; }
 .ctl:hover { color: var(--fg); border-color: var(--fg-muted); }
 .ctl--icon { padding-inline: 0; justify-content: center; }
 
-/* IconContainerVariants in Button.tsx: size "small" -> 18px icons */
-.ctl svg { width: 18px; height: 18px; }
+/* IconContainerVariants in Button.tsx: size "small" -> 18px icons.
+   flex-shrink:0 is required — without it the icon collapses to 0 width when
+   the label pushes the button past the space available in the nav. */
+.ctl svg { width: 18px; height: 18px; flex-shrink: 0; }
 
 [data-theme="dark"] .icon-sun { display: block; }
 [data-theme="dark"] .icon-moon { display: none; }
