@@ -278,7 +278,10 @@ ul { list-style: none; }
   transition: color 0.2s var(--ease), border-color 0.2s var(--ease);
 }
 .ctl:hover { color: var(--fg); border-color: var(--fg-muted); }
-.ctl svg { width: 16px; height: 16px; }
+.ctl--icon { padding-inline: 0; justify-content: center; }
+
+/* IconContainerVariants in Button.tsx: size "small" -> 18px icons */
+.ctl svg { width: 18px; height: 18px; }
 
 [data-theme="dark"] .icon-sun { display: block; }
 [data-theme="dark"] .icon-moon { display: none; }
@@ -388,7 +391,7 @@ ul { list-style: none; }
   margin-bottom: 16px;
 }
 [data-theme="dark"] .card__icon { color: var(--brand); }
-.card__icon svg { width: 16px; height: 16px; }
+.card__icon svg { width: 18px; height: 18px; }
 
 .card h3 { font-size: var(--text-base); font-weight: 500; margin-bottom: 6px; }
 .card p { font-size: var(--text-sm); color: var(--fg-light); }
@@ -430,10 +433,21 @@ ul { list-style: none; }
   color: var(--fg-lighter);
 }
 
-.footer__links { display: flex; flex-wrap: wrap; gap: 18px; }
-.footer__links a { color: var(--fg-light); transition: color 0.2s var(--ease); }
-.footer__links a:hover { color: var(--brand-link); }
-[data-theme="dark"] .footer__links a:hover { color: var(--brand); }
+.footer__links { display: flex; flex-wrap: wrap; gap: 4px; }
+
+/* Icon-only links, sized to the "small" control (34px) with 18px icons */
+.social {
+  width: 34px;
+  height: 34px;
+  display: grid;
+  place-items: center;
+  border-radius: var(--radius);
+  border: 1px solid transparent;
+  color: var(--fg-light);
+  transition: color 0.2s var(--ease), border-color 0.2s var(--ease);
+}
+.social:hover { color: var(--fg); border-color: var(--border-strong); }
+.social svg { width: 18px; height: 18px; }
 
 /* ==========================================================================
    Responsive

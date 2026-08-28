@@ -137,6 +137,14 @@ const I18N = {
       if (value !== undefined) node.textContent = value;
     });
 
+    /* Icon-only links carry their label in aria-label + title instead of text */
+    document.querySelectorAll("[data-i18n-label]").forEach((node) => {
+      const value = t[node.dataset.i18nLabel];
+      if (value === undefined) return;
+      node.setAttribute("aria-label", value);
+      node.setAttribute("title", value);
+    });
+
     const btn = $("lang-toggle");
     btn.querySelector("span").textContent = t.langBtn;
     btn.setAttribute("aria-label", t.langBtnAria);
