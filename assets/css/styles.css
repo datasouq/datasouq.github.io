@@ -156,6 +156,12 @@
   --text-4xl: 2.125rem;    /* 34px */
   --text-5xl: 2.875rem;    /* 46px */
 
+  /* Page prose. Measured on supabase.com, which keeps Tailwind own sizes for
+     running text while the components stay on the Inter-tuned scale above:
+     body and lead 16/24, card body 14/20, buttons 15. */
+  --text-prose-sm: 0.875rem;   /* 14px, pairs with --lh-sm */
+  --text-prose-base: 1rem;     /* 16px, pairs with --lh-base */
+
   /* Line heights are paired to each step, not derived from a global ratio.
      globals.css overrides the font sizes but leaves Tailwind's paired
      line-heights untouched, so these are those pairings. */
@@ -195,9 +201,8 @@
     ui-sans-serif, system-ui, sans-serif;
 
   --nav-h: 60px;
-  /* PageContainer size "small" — max-w-[768px]. The other variants are
-     default 1200px, large 1600px, full none. */
-  --container: 768px;
+  /* supabase.com: max-w-[1280px] with px-6, stepping to px-24 at xl. */
+  --container: 1280px;
   /* Tailwind ease-out, which the Button base class names. cubic-bezier(.4,0,.2,1)
      is ease-in-out and made every control feel a beat behind the cursor. */
   --ease: cubic-bezier(0, 0, 0.2, 1);
@@ -366,7 +371,7 @@ body {
   font-family: var(--font);
   background: var(--background);
   color: var(--foreground);
-  font-size: var(--text-base);
+  font-size: var(--text-prose-base);
   font-weight: var(--font-weight-normal);
   line-height: var(--lh-base);
   font-synthesis-weight: none;
@@ -394,7 +399,6 @@ ul { list-style: none; }
 :focus-visible {
   outline: 2px solid var(--ring);
   outline-offset: 2px;
-  border-radius: var(--radius);
 }
 
 ::selection { background: var(--brand-plate); color: var(--foreground); }
@@ -403,8 +407,7 @@ ul { list-style: none; }
    Latin-only tracking. Arabic is cursive: negative tracking damages the joins
    and uppercase means nothing, so both stay scoped to LTR.
    -------------------------------------------------------------------------- */
-/* heading-title carries tracking-tight, and only h1 does. h2 and h3 have none. */
-[dir="ltr"] h1 { letter-spacing: -0.025em; }
+/* supabase.com sets no tracking on any heading, including the hero h1. */
 
 /* ==========================================================================
    Skip link — first focusable element, per accessibility.mdx
@@ -437,10 +440,9 @@ ul { list-style: none; }
   padding-inline: 24px;
 }
 
-/* PageContainer: mx-auto w-full px-6 xl:px-10. globals.css narrows its own
-   .container to px-4 below 640px, which the media query at the end applies. */
+/* px-6 everywhere, px-24 from xl — measured on supabase.com. */
 @media (min-width: 1280px) {
-  .container { padding-inline: 40px; }
+  .container { padding-inline: 96px; }
 }
 
 /* PageSection root is `pt-12 last:pb-12`: top padding on every section, and
@@ -592,23 +594,29 @@ ul { list-style: none; }
    ========================================================================== */
 
 .hero {
-  padding-block: 48px; /* PageHeader pt-12; the band is bordered so it takes a matching bottom */
+  padding-block: 96px; /* a landing hero, not a PageHeader: the 46px heading needs the room */
   text-align: center;
   border-bottom: 1px solid var(--border);
 }
 
-/* PageHeaderTitle is `heading-title` = text-2xl, with tracking-tight coming
-   from typography.css. PageHeaderTitle carries no width constraint. */
+/* Hero heading, measured on supabase.com: 46/46 at desktop and 34 at mobile,
+   weight 500, no tracking. `heading-title` (text-2xl, semibold, tracking-tight)
+   is the Studio page-title role and reads far too small on a landing hero. */
 .hero h1 {
-  font-size: var(--text-2xl);
-  line-height: var(--lh-2xl);
+  font-size: var(--text-4xl);
+  line-height: var(--lh-4xl);
+  font-weight: 500;
   margin-bottom: 16px;
+}
+
+@media (min-width: 768px) {
+  .hero h1 { font-size: var(--text-5xl); line-height: var(--lh-5xl); }
 }
 
 /* PageHeaderDescription is `heading-subSection text-foreground-light`
    = text-base on --muted-foreground. PageHeader stacks its children gap-4. */
 .hero__lead {
-  font-size: var(--text-base);
+  font-size: var(--text-prose-base);
   line-height: var(--lh-base);
   color: var(--muted-foreground);
   max-width: 56ch;
@@ -625,10 +633,10 @@ ul { list-style: none; }
 
 /* Sentence case at text-sm. No uppercase, no tracking — uppercase does nothing
    in Arabic and would split the two languages. */
-.head__label { font-size: var(--text-sm); line-height: var(--lh-sm); color: var(--brand-text); margin-bottom: 4px; }
+.head__label { font-size: var(--text-prose-sm); line-height: var(--lh-sm); color: var(--brand-text); margin-bottom: 4px; }
 
-.head h2 { font-size: var(--text-xl); line-height: var(--lh-xl); margin-bottom: 4px; }
-.head p { font-size: var(--text-sm); line-height: var(--lh-sm); color: var(--muted-foreground); max-width: 60ch; }
+.head h2 { font-size: var(--text-2xl); line-height: var(--lh-2xl); margin-bottom: 4px; }
+.head p { font-size: var(--text-prose-base); line-height: var(--lh-base); color: var(--muted-foreground); max-width: 60ch; }
 
 /* ==========================================================================
    Cards — depth from surface layers and borders, never shadows
@@ -683,7 +691,7 @@ ul { list-style: none; }
   display: flex;
   align-items: center;
   gap: 8px;
-  font-size: var(--text-sm);
+  font-size: var(--text-prose-sm);
   line-height: var(--lh-sm);
   color: var(--muted-foreground);
 }
@@ -700,8 +708,8 @@ ul { list-style: none; }
    CardDescription is `text-sm text-foreground-lighter`, but on --card in the
    dark theme that measures 4.27:1, under the AA floor, so this keeps
    --muted-foreground: one notch stronger, 7.65:1. */
-.card h3 { font-size: var(--text-base); line-height: var(--lh-base); margin-bottom: 6px; }
-.card p { font-size: var(--text-sm); line-height: var(--lh-sm); color: var(--muted-foreground); }
+.card h3 { font-size: var(--text-prose-base); line-height: var(--lh-base); margin-bottom: 6px; }
+.card p { font-size: var(--text-prose-sm); line-height: var(--lh-sm); color: var(--muted-foreground); }
 
 /* ==========================================================================
    Panel
@@ -719,7 +727,7 @@ ul { list-style: none; }
 .panel h2 { font-size: var(--text-xl); line-height: var(--lh-xl); margin-bottom: 4px; }
 .panel p {
   line-height: var(--lh-base);
-  font-size: var(--text-base);
+  font-size: var(--text-prose-base);
   color: var(--muted-foreground);
   max-width: 52ch;
   margin: 0 auto 24px;
@@ -749,7 +757,7 @@ ul { list-style: none; }
   gap: 14px;
   align-items: center;
   justify-content: space-between;
-  font-size: var(--text-sm);
+  font-size: var(--text-prose-sm);
   line-height: var(--lh-sm);
   color: var(--tertiary-foreground);
 }
@@ -782,8 +790,6 @@ ul { list-style: none; }
    ========================================================================== */
 
 @media (max-width: 640px) {
-  /* globals.css narrows the container to px-4 at this breakpoint */
-  .container { padding-inline: 16px; }
   .panel { padding: 24px 20px; }
   .hero__cta .btn, .panel__actions .btn { width: 100%; }
 }
