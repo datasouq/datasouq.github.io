@@ -33,10 +33,13 @@ const I18N = {
 
     catalogueLabel: "Catalogue",
     catalogueTitle: "Datasets",
-    catalogueLead: "Structured registries, cleaned and delivered in Arabic and English.",
-    datasetTitle: "Saudi Contractors Authority registry",
+    catalogueLead: "Structured datasets, cleaned and delivered in Arabic and English.",
+    /* Named generically on purpose. The dataset is ours; it is not the register
+       of any authority, and the wording must not suggest ownership or any
+       affiliation with one. */
+    datasetTitle: "Registered contractors in Saudi Arabia",
     datasetBody:
-      "Contractors registered with the Saudi Contractors Authority, cleaned and structured. Message us for the full field list and the price.",
+      "A structured dataset of licensed contractors across Saudi Arabia, cleaned and deduplicated. Message us for the full field list and the price.",
     datasetCta: "Ask about this dataset",
 
     /* Every figure is measured from the file, not estimated. Phone numbers are
@@ -76,7 +79,7 @@ const I18N = {
       "the datasets you're preparing.\n\nCould you get in touch?",
 
     waDatasetMessage: () =>
-      "Hello 👋\n\nI'm interested in the *Saudi Contractors Authority registry* " +
+      "Hello 👋\n\nI'm interested in the *Registered contractors in Saudi Arabia* " +
       "dataset.\n\nCould you send the full field list and the price?",
   },
 
@@ -90,10 +93,10 @@ const I18N = {
 
     catalogueLabel: "الكتالوج",
     catalogueTitle: "قواعد البيانات",
-    catalogueLead: "سجلات منظّمة، منظّفة وبتتسلّم بالعربي والإنجليزي.",
-    datasetTitle: "سجل الهيئة السعودية للمقاولين",
+    catalogueLead: "قواعد بيانات منظّمة، منظّفة وبتتسلّم بالعربي والإنجليزي.",
+    datasetTitle: "المقاولون المسجّلون في السعودية",
     datasetBody:
-      "المقاولون المسجّلون في الهيئة السعودية للمقاولين، منظّفين ومنظّمين. كلّمنا تعرف قائمة الحقول كاملة والسعر.",
+      "قاعدة بيانات منظّمة للمقاولين المرخّصين في المملكة، منظّفة ومن غير تكرار. كلّمنا تعرف قائمة الحقول كاملة والسعر.",
     datasetCta: "اسأل عن القاعدة دي",
 
     m1Value: "17,304",   m1Label: "سجل",
@@ -130,7 +133,7 @@ const I18N = {
       "البيانات اللي بتجهّزوها.\n\nممكن نتواصل؟",
 
     waDatasetMessage: () =>
-      "السلام عليكم 👋\n\nمهتم بـ *سجل الهيئة السعودية للمقاولين*.\n\n" +
+      "السلام عليكم 👋\n\nمهتم بـ *المقاولون المسجّلون في السعودية*.\n\n" +
       "ممكن تبعتوا لي قائمة الحقول كاملة والسعر؟",
   },
 };

@@ -18,12 +18,12 @@ We turn raw, messy records into clean, structured datasets you can actually use.
 
 ### Available now · متاح الآن
 
-**Saudi Contractors Authority registry** — contractors registered with the Saudi
-Contractors Authority, cleaned and structured. Message us for the record count,
-the fields it covers and the price.
+**Registered contractors in Saudi Arabia** — a structured dataset of licensed
+contractors across the Kingdom, cleaned and deduplicated. Message us for the
+full field list and the price.
 
-**سجل الهيئة السعودية للمقاولين** — المقاولون المسجّلون في الهيئة، منظّفين ومنظّمين.
-كلّمنا تعرف عدد السجلات والحقول المتاحة والسعر.
+**المقاولون المسجّلون في السعودية** — قاعدة بيانات منظّمة للمقاولين المرخّصين في
+المملكة، منظّفة ومن غير تكرار. كلّمنا تعرف قائمة الحقول كاملة والسعر.
 
 More datasets are in preparation. · وفيه قواعد بيانات تانية بتتجهّز.
 
