@@ -10,7 +10,10 @@
    ========================================================================== */
 
 const CONFIG = {
-  whatsappNumber: "mbi.group",
+  /* A WhatsApp username instead of a phone number, so the number is never
+     published. wa.me/@handle redirects to type=username and carries the
+     prefilled ?text= through unchanged — verified against wa.me. */
+  whatsappHandle: "mbi.group",
   email: "mbi.datasouq@gmail.com",
   github: "https://github.com/datasouq",
 
@@ -37,7 +40,7 @@ const I18N = {
     /* Named generically on purpose. The dataset is ours; it is not the register
        of any authority, and the wording must not suggest ownership or any
        affiliation with one. */
-    datasetTitle: "Registered contractors in Saudi Arabia",
+    datasetTitle: "Contractors in Saudi Arabia",
     datasetBody:
       "A structured dataset of contractors across Saudi Arabia, cleaned and deduplicated. Message us for the full field list and the price.",
     datasetCta: "Ask about this dataset",
@@ -79,7 +82,7 @@ const I18N = {
       "the datasets you're preparing.\n\nCould you get in touch?",
 
     waDatasetMessage: () =>
-      "Hello 👋\n\nI'm interested in the *Registered contractors in Saudi Arabia* " +
+      "Hello 👋\n\nI'm interested in the *Contractors in Saudi Arabia* " +
       "dataset.\n\nCould you send the full field list and the price?",
   },
 
@@ -94,7 +97,7 @@ const I18N = {
     catalogueLabel: "الكتالوج",
     catalogueTitle: "قواعد البيانات",
     catalogueLead: "قواعد بيانات منظّمة، منظّفة وبتتسلّم بالعربي والإنجليزي.",
-    datasetTitle: "المقاولون المسجّلون في السعودية",
+    datasetTitle: "المقاولون في السعودية",
     datasetBody:
       "قاعدة بيانات منظّمة للمقاولين في المملكة، منظّفة ومن غير تكرار. كلّمنا تعرف قائمة الحقول كاملة والسعر.",
     datasetCta: "اسأل عن القاعدة دي",
@@ -133,7 +136,7 @@ const I18N = {
       "البيانات اللي بتجهّزوها.\n\nممكن نتواصل؟",
 
     waDatasetMessage: () =>
-      "السلام عليكم 👋\n\nمهتم بـ *المقاولون المسجّلون في السعودية*.\n\n" +
+      "السلام عليكم 👋\n\nمهتم بـ *المقاولون في السعودية*.\n\n" +
       "ممكن تبعتوا لي قائمة الحقول كاملة والسعر؟",
   },
 };
@@ -157,9 +160,9 @@ const I18N = {
   }
 
   function whatsappUrl(key) {
-    const number = String(CONFIG.whatsappNumber).replace(/\D/g, "");
+    const handle = String(CONFIG.whatsappHandle).replace(/^@/, "");
     const build = I18N[lang][key] || I18N[lang].waMessage;
-    return `https://wa.me/${number}?text=${encodeURIComponent(build())}`;
+    return `https://wa.me/@${handle}?text=${encodeURIComponent(build())}`;
   }
 
   function applyLang(next) {
