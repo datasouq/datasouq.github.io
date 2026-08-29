@@ -16,16 +16,14 @@ We turn raw, messy records into clean, structured datasets you can actually use.
 
 ---
 
-### Available now · متاح الآن
+### Datasets · قواعد البيانات
 
-**Registered contractors in Saudi Arabia** — a structured dataset of licensed
-contractors across the Kingdom, cleaned and deduplicated. Message us for the
+**Registered contractors in Saudi Arabia** — a structured dataset of contractors
+across the Kingdom, cleaned and deduplicated. Message us for the
 full field list and the price.
 
-**المقاولون المسجّلون في السعودية** — قاعدة بيانات منظّمة للمقاولين المرخّصين في
-المملكة، منظّفة ومن غير تكرار. كلّمنا تعرف قائمة الحقول كاملة والسعر.
-
-More datasets are in preparation. · وفيه قواعد بيانات تانية بتتجهّز.
+**المقاولون المسجّلون في السعودية** — قاعدة بيانات منظّمة للمقاولين في المملكة،
+منظّفة ومن غير تكرار. كلّمنا تعرف قائمة الحقول كاملة والسعر.
 
 ---
 

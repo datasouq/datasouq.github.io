@@ -39,7 +39,7 @@ const I18N = {
        affiliation with one. */
     datasetTitle: "Registered contractors in Saudi Arabia",
     datasetBody:
-      "A structured dataset of licensed contractors across Saudi Arabia, cleaned and deduplicated. Message us for the full field list and the price.",
+      "A structured dataset of contractors across Saudi Arabia, cleaned and deduplicated. Message us for the full field list and the price.",
     datasetCta: "Ask about this dataset",
 
     /* Every figure is measured from the file, not estimated. Phone numbers are
@@ -96,7 +96,7 @@ const I18N = {
     catalogueLead: "قواعد بيانات منظّمة، منظّفة وبتتسلّم بالعربي والإنجليزي.",
     datasetTitle: "المقاولون المسجّلون في السعودية",
     datasetBody:
-      "قاعدة بيانات منظّمة للمقاولين المرخّصين في المملكة، منظّفة ومن غير تكرار. كلّمنا تعرف قائمة الحقول كاملة والسعر.",
+      "قاعدة بيانات منظّمة للمقاولين في المملكة، منظّفة ومن غير تكرار. كلّمنا تعرف قائمة الحقول كاملة والسعر.",
     datasetCta: "اسأل عن القاعدة دي",
 
     m1Value: "17,304",   m1Label: "سجل",
