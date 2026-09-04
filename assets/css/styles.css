@@ -41,6 +41,12 @@
        a p-px gradient border, 24px/16px padding, an items-center gap-2 title
        row with an 18px icon, Manrope 600 16/24, and a 14/20 body whose strong
        lifts the colour only
+     supabase.com/features  the feature-card family, measured live across all
+       81 cards: a p-px gradient border, an inner rounded-[11px] flex column at
+       gap-2 p-2, then a tinted aspect-square panel 80px tall (140px from md)
+       holding a 20px Lucide mark, and BELOW it a flex-col gap-1.5 text column
+       with the heading at text-sm md:text-base leading-5. Not one of the 81
+       puts its icon on the title's line.
      apps/www/app/(products)/…/_components               bordered card precedents
 
    Every deviation, and why. Nothing deviates without a reason that changes the
@@ -126,6 +132,51 @@
         The title weight is the one place the difference says something — 600
         against .card h3's 500, the object against the work — so that is taken.
 
+    11. The icon-beside-title row is on ALL FOUR cards, and upstream would put
+        it on one. Their product cards use it; their feature cards — the family
+        the three service cards belong to — do not, on two independent readings.
+        Measured across all 81 cards on supabase.com/features: every one centres
+        a 20px mark in a tinted panel ABOVE the heading, none shares the
+        heading's line. And read from source, the closest analogue there is to
+        these three — a bordered card at p-6 holding an icon, a title and one
+        line — is Highlights.tsx under
+        apps/www/app/(products)/edge-functions/_components:
+        `flex flex-col gap-3`, then a BARE 20px mark in
+        --foreground-lighter, then `h3 text-base font-medium`, then a text-sm
+        paragraph. It stacks. It also settles two things this file already had
+        right: the title at font-medium, which is .card h3's 500, and the plate
+        as ours alone — upstream's mark there has no plate at all (deviation 5).
+        Asked for directly, and the reason holds: this page is one scroll with
+        four cards in two sections, where upstream's two families live on
+        different pages and never appear together. What the service cards had
+        before was neither idiom anyway — a 32px plate stacked above a title,
+        which upstream has nowhere — so this moves them ONTO an upstream shape
+        rather than away from one.
+
+        Two things fall out of sharing the row. The plate is 24px with an 18px
+        mark for every card, which is icons.mdx's 18-in-24 rule stated
+        literally and puts the painted hairline back at exactly 1.5px; the 32px
+        plate was sized to be stacked, and beside a 24px line it overhung by
+        4px each side. And .card became the flex column their content column
+        is — `flex flex-col gap-2 sm:gap-4`, so 8px here and 16px on the
+        dataset card — which let `.card h3`'s margin go: inside a title row
+        that margin belongs to the title's box, not under it. Highlights.tsx
+        sets its card gap to 12px, and that is not taken: 8px and 16px are one
+        component's `gap-2` and `sm:gap-4`, and importing 12px from a third
+        component would break a pairing that comes from one.
+
+        align-items is flex-start, not their center. Their product-card titles
+        are single words that never wrap; one of ours does. Measured at 768px,
+        each service card is 227px with a 177px text box, the plate and gap take
+        32px, and "Cleaning & structuring" needs 168.88px of the 145px left — so
+        it runs to two lines below 250.88px of card width, which in this pane is
+        a viewport of 839px against 840px. items-center would
+        centre the plate against that 48px box and drop it 12px below the line
+        it labels. flex-start pins it to the first line, and since the plate is
+        24px and the line-height is 24px the two are concentric either way for
+        a single-line title — measured, plate centre 12 and line centre 12 in
+        both languages at every width.
+
    Not a deviation, though it may look like one: WhatsApp green is simply
    absent, and the brand token is the compliant choice for the CTA. The Lucide
    icons vary from 75% to 83% of their box in whichever dimension leads — that
@@ -139,7 +190,9 @@
    PAINTED hairline — 1.5 user units at a 24px box, so 1.5 device px — and a
    stroke scales with its box. Measured: 2 at 18px paints 1.5px on the card
    plates and the nav controls, 1.5 at 24px paints 1.5px on the panel, and only
-   the 16px metric icons come in under at 1.333px. Setting every attribute to
+   the 16px metric icons come in under at 1.333px. This is what pins the plate's
+   mark at 18px: it briefly went to 14px, which painted 1.167px — thinner than
+   anything else on the page, including the metric icons it sits above. Setting every attribute to
    1.5 for the look of consistency would paint 1.125px and 1.0px instead —
    thinner than upstream everywhere but the panel, and less uniform than what
    is here.
@@ -972,9 +1025,11 @@ main:focus, main:focus-visible { outline: none; }
    ========================================================================== */
 
 /* `grid-cols-1 md:grid-cols-3 gap-3` — an explicit 1-to-3 step at 768px, which
-   is what both of supabase.com's bordered three-up rows do, and 12px between
-   them. A repo-wide search finds auto-fit only in apps/docs and apps/studio,
-   never in apps/www.
+   is what supabase.com's bordered three-up rows do, and 12px between them. Read
+   from source: the four product FeaturesSections carry that exact string —
+   apps/www/app/(products)/{auth,storage,realtime,database}/_components/fs-*.tsx
+   — and so does each product HighlightsSection. A repo-wide search finds
+   auto-fit only in apps/docs and apps/studio, never in apps/www.
 
    auto-fit with a 210px floor was the problem it looks like it solves: two
    tracks need only 436px of content, so from a 484px viewport to a 709px one
@@ -1010,26 +1065,43 @@ main:focus, main:focus-visible { outline: none; }
   border: 1px solid var(--border);
   border-radius: var(--radius-lg);
   box-shadow: var(--shadow-xs);
-  /* 16px is Studio's Card — `py-4 px-(--card-padding-x)`. Every bordered card
+  /* 16px is Studio's Card - `py-4 px-(--card-padding-x)`. Every bordered card
      on supabase.com is p-6, 24px, stepping to p-8 at md on the wide ones. Same
      www-versus-Studio fork the file already resolves toward www for the type
      scale, the container, the hero, the section rhythm and the footer. */
   padding: var(--card-padding-x-md);
+  /* Their card's content column is `flex flex-col gap-2 sm:gap-4` - 8px, 16px
+     from sm. Every card here is that column now, so the gap owns the vertical
+     spacing and no child inside a card carries a margin. This replaces
+     `.card h3 { margin-bottom: 8px }`, which produced the same 8px for the
+     three service cards and had to be undone inside the title row. */
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
 }
 
 /* Deviation 5: a landing-page accent with no upstream source. Measured on
    the surface it actually paints — brand-default at 10% over --card —
    4.87:1 light and 8.66:1 dark against --brand-600. */
+/* 24px with an 18px mark, which is icons.mdx's rule for custom SVGs stated
+   literally - 18 in 24 - and it puts the painted hairline back at exactly
+   1.5px: stroke-width 2 over a 24-unit viewBox at 18px paints 2 x 0.75. The
+   32px plate this replaces was sized for an icon stacked ABOVE a title; in a
+   row beside a 24px line it would have overhung the line by 4px each side.
+   The 24px box and the 24px line-height being equal is what lets flex-start
+   on .card__head align the two without an offset. */
 .card__icon {
-  width: 32px;
-  height: 32px;
+  width: 24px;
+  height: 24px;
   border-radius: var(--radius);
   background: color-mix(in srgb, var(--brand-default) 10%, transparent);
   border: 1px solid var(--brand-500);
   display: grid;
   place-items: center;
   color: var(--brand-on-plate);
-  margin-bottom: 16px;
+  /* A flex item with a definite width still shrinks below it unless told not
+     to, and the title beside it will take every pixel it is given. */
+  flex-shrink: 0;
 }
 .card__icon svg { width: 18px; height: 18px; }
 
@@ -1059,11 +1131,7 @@ main:focus, main:focus-visible { outline: none; }
    however long the copy runs. h-[400px] is a floor here rather than a fixed
    height: the Arabic body sets longer than the English and a fixed one would
    clip it. */
-.card--dataset {
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-}
+.card--dataset { gap: 16px; }
 
 @media (min-width: 768px) {
   .card--dataset { min-height: 400px; }
@@ -1071,30 +1139,32 @@ main:focus, main:focus-visible { outline: none; }
 
 .card--dataset .card__actions { margin-top: auto; }
 
-/* `flex items-center gap-2` — the icon beside the title, not above it. The
-   heading's 8px bottom margin has to go with it: inside an items-center row
-   that margin is part of the title's box, so the 24px plate centred against a
-   32px box sat 4px below the title's own line — measured, icon top 724.78
-   against the heading's 720.78. Specificity, not source order, because
-   `.card h3` sets that margin further down the file and would win a tie. */
-/* 600 against .card h3's 500. That 500 is right for the three service cards —
-   it traces to HighlightsSection, ObservabilitySection and the design-system
-   feature cards, which all put font-medium back — but the product cards this
-   one is modelled on measure Manrope 600 at 16px/24px, and 600 is already in
-   the loaded subset. Upstream's two card families differ here; so do ours, on
-   the same split: the product card is the object, the others describe work. */
-.card__head { display: flex; align-items: center; gap: 8px; }
-.card .card__head h3 { margin-bottom: 0; font-weight: 600; }
+/* `flex items-center gap-2`, with one change: flex-start, not center.
+   Upstream's product-card titles are single words that never wrap, so center
+   costs them nothing. One of ours does wrap - measured at 768px, where each
+   service card is 227px and its text box 177px, the plate and gap take 32px
+   and leave 145px: "Cleaning & structuring" needs 168.88px and goes to two
+   lines. The durable threshold is the CARD width, not the viewport: it wraps
+   below 250.88px of card, which is 168.88 + the 32px the plate and gap take +
+   the 50px of padding and border. Measured in this pane, that is a viewport of
+   839px (card 250.67, two lines) against 840px (card 251, one line), and the
+   viewport figure moves with the scrollbar. In an items-center row a two-line title
+   is a 48px box, so the plate would centre against it and sit 12px below the
+   line it belongs to. flex-start pins it to the first line, and because the
+   plate is 24px and the line-height is 24px the two are already concentric -
+   for a single-line title flex-start and center compute identically.
+   The other five titles fit: 131.63 and 130.16 in English, 116.38, 77.11 and
+   97.64 in Arabic. */
+.card__head { display: flex; align-items: flex-start; gap: 8px; }
 
-/* The plate comes down to the title's line: 24px box, 14px mark. Theirs is a
-   bare 18px icon in --foreground; the plate is deviation 5 and stays. */
-.card--dataset .card__icon {
-  width: 24px;
-  height: 24px;
-  margin-bottom: 0;
-  flex-shrink: 0;
-}
-.card--dataset .card__icon svg { width: 14px; height: 14px; }
+/* 600 against .card h3's 500, and scoped to the dataset card only. That 500 is
+   right for the three service cards - it traces to HighlightsSection,
+   ObservabilitySection and the design-system feature cards, which all put
+   font-medium back - but the product cards the dataset card is modelled on
+   measure Manrope 600 at 16px/24px. Upstream's card families differ here; so
+   do ours, on the same split: the product card is the object, the other three
+   describe the work. */
+.card--dataset .card__head h3 { font-weight: 600; }
 
 /* The two-tone body: `[&_strong]:text-foreground!` upstream, colour only.
    Theirs dims the base to --foreground-lighter and lifts the lead clause to
@@ -1187,7 +1257,7 @@ main:focus, main:focus-visible { outline: none; }
    design-system feature cards. The blanket h1-h6 rule gives 600, so this puts
    500 back on the card selector only; the borderless feature-list items keep
    semibold upstream, so the element rule stays as it is. */
-.card h3 { font-size: var(--text-lg); font-weight: 500; margin-bottom: 8px; }
+.card h3 { font-size: var(--text-lg); font-weight: 500; }
 .card p { font-size: var(--text-sm); line-height: var(--lh-sm); color: var(--muted-foreground); }
 
 /* ==========================================================================
