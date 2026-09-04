@@ -61,6 +61,13 @@ const I18N = {
        deduplication claim: id and membership_number are unique across all
        17,304 rows, with no repeats.
 
+       The fifth metric counts membership_type = "Non-Saudi Contractor":
+       1,624 rows, 9.39%. Saudi Contractor is 15,581, and 18 rows are
+       Affiliate-Organization.
+
+       Deduplication is not shown as a metric but was checked: id and
+       membership_number are both unique across all 17,304 rows.
+
        The classification metric says 31%, not 7. The column does hold seven
        distinct values, but "Unclassified" is one of them and covers 68.80% of
        the file. "7 classification grades" was true as a count of values and
@@ -71,7 +78,7 @@ const I18N = {
     m2Value: "302",     m2Label: "cities across 13 regions",
     m3Value: "31%",     m3Label: "classified, across 6 grades",
     m4Value: "99.5%",   m4Label: "carry an email and a commercial registration",
-    m5Value: "100%",    m5Label: "unique membership number",
+    m5Value: "1,624",   m5Label: "non-Saudi contractors",
 
     heroTitle: "Structured data, ready to work with",
     heroLead:
@@ -126,7 +133,7 @@ const I18N = {
     m2Value: "302",      m2Label: "مدينة في 13 منطقة",
     m3Value: "31%",      m3Label: "مصنّفون على 6 درجات",
     m4Value: "99.5%",    m4Label: "ببريد إلكتروني وسجل تجاري",
-    m5Value: "100%",     m5Label: "برقم عضوية فريد",
+    m5Value: "1,624",    m5Label: "مقاول غير سعودي",
 
     heroTitle: "بيانات منظّمة، جاهزة للاستخدام",
     heroLead:

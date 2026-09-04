@@ -17,7 +17,13 @@
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;450;500&family=Manrope:wght@500;600&family=Space+Grotesk:wght@300;500&family=IBM+Plex+Sans+Arabic:wght@400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;450;500&family=Manrope:wght@500;600&family=IBM+Plex+Sans+Arabic:wght@400;500;600&display=swap" rel="stylesheet">
+
+<!-- The wordmark, and nothing else. `text=` returns a subset carrying only
+     these glyphs: 4.7 KB for both weights, against 44.6 KB for two full faces
+     to set eight letters. Change the wordmark and this string must change with
+     it, or the new letters drop to Inter. -->
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;500&text=DataSouq&display=swap" rel="stylesheet">
 
 <link rel="stylesheet" href="assets/css/styles.css">
 
@@ -46,6 +52,14 @@
   accessibility.mdx asks for an explicit tabIndex on every button and link
   (Safari does not tab to them by default), and a skip link as the first
   focusable element on any layout with persistent header chrome.
+-->
+
+<!--
+  Every WhatsApp link ships with a real href. site.js replaces it with the same
+  URL plus a prefilled ?text=, but the plain one has to stand on its own: these
+  four are the only way to reach us on WhatsApp, and until now all four pointed
+  at "#", so with scripting off the primary call to action opened a blank tab.
+  The handle here and CONFIG.whatsappHandle in site.js have to stay in step.
 -->
 
 <a class="skip-link" href="#main" tabindex="0" data-i18n="skipLink">Skip to content</a>
@@ -103,7 +117,7 @@
       <p class="hero__lead" data-i18n="heroLead"></p>
 
       <div class="hero__cta">
-        <a class="btn btn--primary" data-wa href="#" target="_blank"
+        <a class="btn btn--primary" data-wa href="https://wa.me/@mbi.group" target="_blank"
            rel="noopener noreferrer" tabindex="0" data-i18n="ctaContact">Message us on WhatsApp</a>
         <a class="btn btn--outline" href="mailto:mbi.datasouq@gmail.com"
            tabindex="0" data-i18n="ctaEmail">Send an email</a>
@@ -168,16 +182,16 @@
               <span><strong data-i18n="m4Value">99.5%</strong> <span data-i18n="m4Label">carry an email and a commercial registration</span></span>
             </li>
             <li>
-              <!-- Lucide: hash -->
+              <!-- Lucide: globe -->
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                <line x1="4" x2="20" y1="9" y2="9"/><line x1="4" x2="20" y1="15" y2="15"/><line x1="10" x2="8" y1="3" y2="21"/><line x1="16" x2="14" y1="3" y2="21"/>
+                <circle cx="12" cy="12" r="10"/><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"/><path d="M2 12h20"/>
               </svg>
-              <span><strong data-i18n="m5Value">100%</strong> <span data-i18n="m5Label">unique membership number</span></span>
+              <span><strong data-i18n="m5Value">1,624</strong> <span data-i18n="m5Label">non-Saudi contractors</span></span>
             </li>
           </ul>
 
           <div class="card__actions">
-            <a class="btn btn--default" data-wa-dataset href="#" target="_blank"
+            <a class="btn btn--default" data-wa-dataset href="https://wa.me/@mbi.group" target="_blank"
                rel="noopener noreferrer" tabindex="0" data-i18n="datasetCta">Ask about this dataset</a>
           </div>
         </article>
@@ -260,7 +274,7 @@
         <h2 data-i18n="soonTitle">Tell us what you're looking for</h2>
         <p data-i18n="soonBody"></p>
         <div class="panel__actions">
-          <a class="btn btn--default" data-wa href="#" target="_blank"
+          <a class="btn btn--default" data-wa href="https://wa.me/@mbi.group" target="_blank"
              rel="noopener noreferrer" tabindex="0" data-i18n="ctaContact">Message us on WhatsApp</a>
         </div>
       </div>
@@ -288,7 +302,7 @@
     </div>
 
     <div class="footer__links">
-      <a class="social" data-wa href="#" target="_blank" rel="noopener noreferrer"
+      <a class="social" data-wa href="https://wa.me/@mbi.group" target="_blank" rel="noopener noreferrer"
          tabindex="0" aria-label="WhatsApp" title="WhatsApp">
         <!-- Custom fill-only icon: WhatsApp is a brand logo, not in Lucide -->
         <svg viewBox="0 0 24 24" fill="none" stroke="none" aria-hidden="true">
