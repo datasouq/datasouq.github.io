@@ -54,12 +54,18 @@ const I18N = {
        records carry a number worth dialling, and a metric would flatter it.
        Street addresses: 8.02%.
 
-       Email and commercial registration are filled on exactly the same 17,223
-       rows — both 99.53%, and the intersection is the same set — so listing
-       them separately would have shown the same figure twice for the same
-       records. They share one metric, and the freed row states what backs the
-       deduplication claim: id and membership_number are unique across all
-       17,304 rows, with no repeats.
+       These are measured against the file the buyer actually receives, not
+       against the working copy. That distinction bit once already: the
+       deliverable withholds the columns that tie a record back to the official
+       register — commercial_registration, membership_number, id, member_since,
+       company_size and training_credit_hours — while authorisation to publish
+       them is still being sorted out. The page had been claiming
+       "99.5% carry an email and a commercial registration" for a file that no
+       longer carries one. Re-measure here whenever the deliverable changes.
+
+       What survives in it: membership_type, grade, contractor_classification,
+       company_name, region, city, organization_email,
+       organization_mobile_number, organization_address.
 
        The fifth metric counts membership_type = "Non-Saudi Contractor":
        1,624 rows, 9.39%. Saudi Contractor is 15,581, and 18 rows are
@@ -77,7 +83,7 @@ const I18N = {
     m1Value: "17,304",  m1Label: "records",
     m2Value: "302",     m2Label: "cities across 13 regions",
     m3Value: "31%",     m3Label: "classified, across 6 grades",
-    m4Value: "99.5%",   m4Label: "carry an email and a commercial registration",
+    m4Value: "99.5%",   m4Label: "carry an email",
     m5Value: "1,624",   m5Label: "non-Saudi contractors",
 
     heroTitle: "Structured data, ready to work with",
@@ -132,7 +138,7 @@ const I18N = {
     m1Value: "17,304",   m1Label: "سجل",
     m2Value: "302",      m2Label: "مدينة في 13 منطقة",
     m3Value: "31%",      m3Label: "مصنّفون على 6 درجات",
-    m4Value: "99.5%",    m4Label: "ببريد إلكتروني وسجل تجاري",
+    m4Value: "99.5%",    m4Label: "منهم ببريد إلكتروني",
     m5Value: "1,624",    m5Label: "مقاول غير سعودي",
 
     heroTitle: "بيانات منظّمة، جاهزة للاستخدام",
