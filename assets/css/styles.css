@@ -89,7 +89,6 @@
   --elevation-step: calc(var(--tone-span) * 0.04);
 
   --surface-hue: var(--hue);
-  --primary-hue: var(--hue);
   --foreground-chroma: calc(var(--chroma) * 0.55);
 
   /* --- Derived colours (no relative colour syntax needed) --------------- */
@@ -124,10 +123,24 @@
      the same upstream scale: --brand-600 measures 4.57:1 there. */
   --brand-on-plate: var(--brand-600);
 
-  /* Vivid, mode-invariant accent. Decoupled from --chroma on purpose. Only
-     --ring is built from it; upstream's --primary-foreground has no use here
-     because nothing on the page is filled with --primary. */
-  --primary: oklch(0.76 0.15 var(--primary-hue));
+  /* The focus ring. Upstream builds it as the accent at 55%:
+       --ring: oklch(from var(--primary) l c h / 55%)
+     --primary is mode-invariant at L 0.76, so in the dark theme that lands on
+     3.52:1 against the background — over the 3:1 that WCAG 1.4.11 asks of a
+     focus indicator. In the light theme the same colour composites to a pale
+     mint on a near-white page and measures 1.47:1. Not dim: invisible. And
+     light is this page's default, so that is what most people would get.
+
+     Every other brand step was measured against the light background too:
+     --primary opaque 1.99, --brand-default 1.97, --brand-500 2.60. Only
+     --brand-600 and --brand-link clear the bar, and --brand-600 clears it in
+     both themes with room — 5.16:1 light, 11.36:1 dark — because that step of
+     the scale flips light-on-dark with the theme. It stays one shared colour
+     that no variant changes, which is the rule accessibility.mdx actually sets.
+
+     Being a plain hsl() it also needs no relative colour syntax, so the ring
+     leaves the @supports blocks entirely. */
+  --ring: var(--brand-600);
 
   /* --- Radius ----------------------------------------------------------- */
   /* --radius-panel is 6px (theme.css) and buttons are rounded-md.
@@ -335,9 +348,6 @@
 
     /* text variant: hover:bg-accent */
     --accent: oklch(from var(--foreground) l c h / var(--accent-alpha));
-
-    /* One shared focus colour. Variants never change it. */
-    --ring: oklch(from var(--primary) l c h / 55%);
   }
 }
 
@@ -356,7 +366,6 @@
     --border-stronger: rgba(3, 3, 3, 0.188);
     --border-control-hover: rgba(3, 3, 3, 0.298);
     --accent: rgba(3, 3, 3, 0.04);
-    --ring: rgba(69, 205, 142, 0.55);
   }
 
   [data-theme="dark"] {
@@ -368,7 +377,6 @@
     --border-stronger: rgba(243, 246, 244, 0.174);
     --border-control-hover: rgba(243, 246, 244, 0.280);
     --accent: rgba(241, 247, 243, 0.06);
-    --ring: rgba(69, 205, 142, 0.55);
   }
 }
 
