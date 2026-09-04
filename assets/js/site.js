@@ -246,6 +246,67 @@ const I18N = {
     $("theme-toggle").addEventListener("click", toggleTheme);
 
     $("year").textContent = new Date().getFullYear();
+
+    /* Anything carrying data-copy puts that string on the clipboard and says so.
+       Used for the Discord username, which has no linkable URL. */
+    document.querySelectorAll("[data-copy]").forEach((node) => {
+      node.addEventListener("click", async () => {
+        const value = node.dataset.copy;
+        const status = $("copy-status");
+
+        /* navigator.clipboard.writeText needs the document focused and a secure
+           context, and refuses in enough situations to be worth a fallback. The
+           execCommand path is deprecated but still the one that works when the
+           modern API declines. */
+        let copied = false;
+        try {
+          await navigator.clipboard.writeText(value);
+          copied = true;
+        } catch (e) {
+          try {
+            const scratch = document.createElement("textarea");
+            scratch.value = value;
+            scratch.setAttribute("readonly", "");
+            scratch.style.cssText = "position:fixed;top:-100px;opacity:0";
+            document.body.appendChild(scratch);
+            scratch.select();
+            copied = document.execCommand("copy");
+            scratch.remove();
+          } catch (e2) { /* neither route available */ }
+        }
+
+        /* Either way the visitor learns the username: copied, or shown so it can
+           be read off and typed. Never a silent no-op. */
+        if (status) status.textContent = copied ? value + " copied" : value;
+        node.dataset.copied = copied ? "true" : "shown";
+        node.setAttribute("title", copied ? value + " copied" : "Discord — " + value);
+        setTimeout(() => {
+          delete node.dataset.copied;
+          node.setAttribute("title", "Discord — " + value);
+          if (status) status.textContent = "";
+        }, 1600);
+      });
+    });
+
+    /* The subscribe form has nowhere to POST on a static host, so rather than
+       fail silently it hands the address to the visitor's own mail client with
+       the request already written. Nothing is transmitted from this page. */
+    const form = $("subscribe");
+    if (form) {
+      form.addEventListener("submit", (event) => {
+        event.preventDefault();
+        const field = $("subscribe-email");
+        if (!field.checkValidity()) { field.reportValidity(); return; }
+        const body =
+          "Hello,\n\nPlease add this address to the DataSouq mailing list:\n" +
+          field.value + "\n";
+        window.location.href =
+          "mailto:" + CONFIG.email +
+          "?subject=" + encodeURIComponent("Subscribe to DataSouq updates") +
+          "&body=" + encodeURIComponent(body);
+        form.reset();
+      });
+    }
   }
 
   if (document.readyState === "loading") {

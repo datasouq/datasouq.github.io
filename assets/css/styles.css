@@ -155,6 +155,13 @@
   --card-padding-x: 1rem;
   --card-padding-x-md: 1.5rem;
 
+  /* Input backgrounds. semantic.css: `--field: oklch(0 0 0 / var(--field-alpha))`,
+     a soft always-sink through black. 0.015 is the base value; dark.css raises it
+     to 0.12, but this page follows classic-dark, which leaves it alone — so the
+     border carries the field and the wash only softens it. */
+  --field-alpha: 0.015;
+  --field: oklch(0 0 0 / var(--field-alpha));
+
   /* The Card carries shadow-xs — Tailwind's own value, unchanged upstream. */
   --shadow-xs: 0 1px 2px 0 rgb(0 0 0 / 0.05);
 
@@ -466,6 +473,20 @@ ul { list-style: none; }
 
 ::selection { background: var(--brand-plate); color: var(--foreground); }
 
+/* The design system's own sr-only, for text that only a screen reader needs.
+   Named in accessibility.mdx under Scaffolding. */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border-width: 0;
+}
+
 /* --------------------------------------------------------------------------
    Latin-only tracking. Arabic is cursive: negative tracking damages the joins
    and uppercase means nothing, so both stay scoped to LTR.
@@ -558,6 +579,10 @@ ul { list-style: none; }
   color: var(--foreground);
   border-color: var(--border-strong);
 }
+/* size "tiny": h-[26px] text-xs px-2.5. The heights run tiny 26 / small 34 /
+   medium 38 / large 42 / xlarge 50; only these two and medium are used here. */
+.btn--tiny { height: 26px; padding-inline: 10px; font-size: var(--text-xs); }
+
 .btn--default:hover {
   background: var(--popover); /* hover:bg-popover */
   border-color: var(--border-control-hover);
@@ -849,6 +874,45 @@ ul { list-style: none; }
 
 /* flex space-x-5 — 20px between icons */
 .footer__social { display: flex; flex-wrap: wrap; gap: 20px; }
+
+/* form is `flex flex-col gap-2`, and the label above it is a <p> at 14/20 in
+   --tertiary-foreground. */
+.footer__form {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 8px;
+  width: 100%;
+}
+
+.footer__form p {
+  font-size: var(--text-sm);
+  line-height: var(--lh-sm);
+  color: var(--tertiary-foreground);
+}
+
+/* Input at size small — h-[34px] rounded-md border-control bg-field — with the
+   `text-xs px-2` the footer instance narrows it to, and `xl:max-w-[80%]`. */
+.field {
+  width: 100%;
+  max-width: 80%;
+  height: 34px;
+  padding-inline: 8px;
+  border-radius: var(--radius);
+  border: 1px solid var(--border-strong);
+  background: var(--field);
+  color: var(--foreground);
+  font-family: inherit;
+  font-size: var(--text-xs);
+  font-weight: var(--font-weight-normal);
+  transition: border-color 0.2s var(--ease);
+}
+
+/* placeholder:text-foreground-muted, which compat.css aliases to tertiary */
+.field::placeholder { color: var(--tertiary-foreground); }
+
+/* hover:border-control-hover and focus:border-control-hover, both the same */
+.field:hover, .field:focus { border-color: var(--border-control-hover); }
 
 /* Their six columns sit in a grid because there are six of them. Two columns
    laid out on a grid would each be 378px wide for a one-line list, so these
