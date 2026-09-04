@@ -547,10 +547,27 @@ ul { list-style: none; }
   .container { padding-inline: 96px; }
 }
 
-/* PageSection root is `pt-12 last:pb-12`: top padding on every section, and
-   bottom padding only on the last one. */
-.section { padding-block: 48px 0; }
-.section:last-of-type { padding-bottom: 48px; }
+/* PageSection is `pt-12 last:pb-12` — 48px on top, nothing underneath except
+   on the last one. That is the Studio fragment, where sections are panels in an
+   app. supabase.com pads its own sections `py-16 sm:py-18 md:py-24`, symmetric,
+   and every one of the four that keeps the base measures 96/96 at desktop.
+
+   This is the same fork as --text-sm, the container padding, the hero band and
+   the footer: two apps, and a landing page follows the landing page. Measured
+   what it costs before taking it — the page goes from 2,897px to 3,281px, 3.6
+   viewports to 4.0. There was room for their rhythm.
+
+   Symmetric padding means no `last-of-type` rule: every section carries its own
+   bottom, so the space between two of them is the sum of both. */
+.section { padding-block: 64px; }
+
+@media (min-width: 640px) {
+  .section { padding-block: 72px; }
+}
+
+@media (min-width: 768px) {
+  .section { padding-block: 96px; }
+}
 
 /* ==========================================================================
    Buttons — Button.tsx + constants.ts
@@ -618,9 +635,21 @@ ul { list-style: none; }
   z-index: 40;
   height: var(--nav-h);
   border-bottom: 1px solid var(--border);
+  /* Their bar carries no background at all — just blur(4px) over whatever
+     scrolls under it. That works on a dark-first site: their light bar text
+     stays legible over blurred dark content. Measured here, a transparent bar
+     would still clear AA in both themes (light 19.18 and 8.78, dark 12.66 and
+     6.34 against the worst backdrop on the page), so contrast is not the reason
+     to keep the tint. Legibility of the backdrop is: this page defaults to
+     light, and near-black hero text smeared 4px under near-black bar text
+     mottles it in a way their palette never has to deal with.
+
+     So the tint stays and the blur is theirs. At 85% opacity the radius is
+     nearly invisible anyway, which is the point: 12px was a number of mine with
+     nothing behind it. */
   background: color-mix(in srgb, var(--background) 85%, transparent);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
 }
 
 /* The header chrome stays put across languages: logo and wordmark on one side,
@@ -762,6 +791,9 @@ ul { list-style: none; }
    The header/content/footer split with internal border-b is skipped — these
    cards hold a title and two lines, so there is nothing to divide. */
 .card {
+  /* card.tsx opens with `overflow-hidden rounded-lg border bg-surface-100
+     text-card-foreground shadow-xs`. The overflow was the one part missing. */
+  overflow: hidden;
   background: var(--card);
   border: 1px solid var(--border);
   border-radius: var(--radius-lg);
