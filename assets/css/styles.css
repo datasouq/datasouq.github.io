@@ -880,10 +880,21 @@ main:focus, main:focus-visible { outline: none; }
 .nav__actions { margin-inline-start: auto; display: flex; align-items: center; gap: 8px; }
 
 /* size "small": h-[34px] px-3 text-sm */
+/* SIZE.tiny in constants.ts — 26px with `px-2.5` — not SIZE.small's 34/px-3
+   these were built at. Measured on supabase.com at 1280: every button in the
+   right-hand group of that bar is 26px tall with 10px of side padding and a
+   12px/16px label — the GitHub star count, Sign in and Start your project all
+   of them — inside the same 65px bar this one has. Ours were a size step up.
+   The variant is unchanged and was already right: Button.tsx's outline is
+   `text-foreground bg-transparent border-strong hover:border-foreground-muted`,
+   read from source, and that is exactly what is below. Their Sign in button is
+   the `default` variant instead — `bg-background dark:bg-card` behind the same
+   border — and that is not taken: these two are settings, not a call to
+   action, and a filled control in the bar would compete with the hero's. */
 .ctl {
-  height: 34px;
-  min-width: 34px;
-  padding-inline: 12px;
+  height: 26px;
+  min-width: 26px;
+  padding-inline: 10px;
   display: inline-flex;
   align-items: center;
   gap: 6px;
@@ -892,28 +903,41 @@ main:focus, main:focus-visible { outline: none; }
   background: transparent;
   /* outline variant: text-foreground at rest and on hover; only the border moves */
   color: var(--foreground);
-  font-size: var(--text-responsive-sm);
-  line-height: 1rem; /* the `leading-4` in SIZE.text.small */
+  font-size: var(--text-xs);
+  line-height: var(--lh-xs); /* 16px, which is what their tiny buttons measure */
   font-weight: var(--font-weight-normal);
   transition: border-color 0.2s var(--ease);
 }
 .ctl:hover { border-color: var(--tertiary-foreground); }
 .ctl--icon { padding-inline: 0; justify-content: center; }
 
-/* The label swaps between "العربية" and "English", which are 82px and 95px
-   wide. Without a floor the button resizes under the cursor on every toggle,
-   so it holds the wider of the two. */
-#lang-toggle { min-width: 96px; }
+/* The label swaps between "العربية" and "English", so without a floor the
+   button resizes under the cursor on every toggle. It holds the wider of the
+   two, re-measured at the new 12px size with the floor lifted: 71.48px for the
+   Arabic label and 83.27px for the English one, against 82 and 95 at 14px.
+   84px is the wider rounded up. The 26px on .ctl is the same idea for the
+   icon-only control, which is 16px of icon and border without it. 26x26 clears
+   WCAG 2.5.8's 24x24 minimum outright, so the spacing exception the footer's
+   channel row leans on is not needed here — measured, the two centres sit 63px
+   apart anyway. */
+#lang-toggle { min-width: 84px; }
 
-/* IconContainerVariants in Button.tsx: size "small" -> 18px icons, and for the
-   outline variant `text-foreground-lighter`, which compat.css aliases to
-   --tertiary-foreground — a tone below the label, which stays --foreground.
-   These were both at full strength. It reaches the glyphs because the SVGs are
-   stroke="currentColor".
+/* IconContainerVariants in Button.tsx, read from source:
+     tiny:  '[&_svg]:h-[14px] [&_svg]:w-[14px]'
+     small: '[&_svg]:h-[18px] [&_svg]:w-[18px]'
+   so the icon steps down with the button. The tint is the outline variant's
+   `text-foreground-lighter`, which compat.css aliases to --tertiary-foreground
+   — a tone below the label, which stays --foreground. It reaches the glyphs
+   because the SVGs are stroke="currentColor".
+
+   These are the one place on the page where the painted hairline lands under
+   1.5px on purpose: stroke-width 2 over a 24-unit viewBox at 14px paints
+   1.167px. That is what upstream's tiny buttons paint too, and the alternative
+   would be an icon that does not match its own button size.
 
    flex-shrink:0 is required — without it the icon collapses to 0 width when
    the label pushes the button past the space available in the nav. */
-.ctl svg { width: 18px; height: 18px; flex-shrink: 0; color: var(--tertiary-foreground); }
+.ctl svg { width: 14px; height: 14px; flex-shrink: 0; color: var(--tertiary-foreground); }
 
 [data-theme="dark"] .icon-sun { display: block; }
 [data-theme="dark"] .icon-moon { display: none; }
