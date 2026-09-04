@@ -29,17 +29,23 @@ const I18N = {
   en: {
     dir: "ltr",
     docTitle: "DataSouq — structured data, ready to work with",
-    langBtn: "العربية",
-    /* Read after the visible label, so the whole accessible name is
-       "العربية, switch to Arabic" — the visible text first, in its own
-       language, then the clarifier in the page's language. */
+    /* Read after the two visible codes, so the whole accessible name is
+       "en ar, switch to Arabic" — what is on the control, then what pressing
+       it does. */
     langBtnHint: ", switch to Arabic",
+    /* Western digits are already Arabic numerals in the sense the page needs
+       for English; this is the identity so the two dictionaries have the same
+       shape and the caller never branches. */
+    digits: (value) => String(value),
     themeName: "Dark theme",
     skipLink: "Skip to content",
 
     catalogueLabel: "Catalogue",
     catalogueTitle: "Datasets",
-    catalogueLead: "Structured datasets, cleaned and delivered in Arabic and English.",
+    /* No language promise here. Being delivered in Arabic and English is true
+       of the one dataset listed today and is stated on its card; as a heading
+       for the whole catalogue it would commit every future dataset to it. */
+    catalogueLead: "Structured datasets, cleaned and deduplicated before delivery.",
     /* Named generically on purpose. The dataset is ours; it is not the register
        of any authority, and the wording must not suggest ownership or any
        affiliation with one. */
@@ -141,24 +147,38 @@ const I18N = {
   ar: {
     dir: "rtl",
     docTitle: "داتا سوق — بيانات منظّمة وجاهزة للاستخدام",
-    langBtn: "English",
     langBtnHint: "، التبديل إلى الإنجليزية",
+
+    /* Arabic-Indic digits, with the Arabic separators that go with them:
+       U+066C for thousands, U+066B for the decimal, U+066A for percent. Applied
+       to the one number that is computed rather than written — the year. */
+    digits: (value) =>
+      String(value)
+        .replace(/[0-9]/g, (d) => "٠١٢٣٤٥٦٧٨٩"[+d])
+        .replace(/,/g, "٬")
+        .replace(/\./g, "٫")
+        .replace(/%/g, "٪"),
     themeName: "المظهر الغامق",
     skipLink: "تخطَّ إلى المحتوى",
 
     catalogueLabel: "الكتالوج",
     catalogueTitle: "قواعد البيانات",
-    catalogueLead: "قواعد بيانات منظّمة ومنقّحة، تُسلَّم بالعربية والإنجليزية.",
+    catalogueLead: "قواعد بيانات منظّمة ومنقّحة وخالية من التكرار قبل التسليم.",
     datasetTitle: "المقاولون في السعودية",
     datasetBody:
       "<strong>قاعدة بيانات منظّمة للمقاولين في المملكة</strong>، منقّحة وخالية من التكرار، تُسلَّم بالعربية والإنجليزية. تواصل معنا للحصول على قائمة الحقول كاملة والسعر.",
     datasetCta: "استفسر عن هذه القاعدة",
 
-    m1Value: "17,304",   m1Label: "سجل",
-    m2Value: "302",      m2Label: "مدينة في 13 منطقة",
-    m3Value: "31%",      m3Label: "مصنّفون على 6 درجات",
-    m4Value: "99.5%",    m4Label: "منهم ببريد إلكتروني",
-    m5Value: "1,624",    m5Label: "مقاول غير سعودي",
+    /* Arabic-Indic digits and Arabic separators, written out rather than
+       converted at render time: these are literals, so there is nothing to
+       convert. The figures are the same ones measured from the file — 17,304 /
+       302 / 31% / 99.5% / 1,624 — and any re-measurement has to be transcribed
+       here as well as into the English block. */
+    m1Value: "١٧٬٣٠٤",   m1Label: "سجل",
+    m2Value: "٣٠٢",      m2Label: "مدينة في ١٣ منطقة",
+    m3Value: "٣١٪",      m3Label: "مصنّفون على ٦ درجات",
+    m4Value: "٩٩٫٥٪",    m4Label: "منهم ببريد إلكتروني",
+    m5Value: "١٬٦٢٤",    m5Label: "مقاول غير سعودي",
 
     heroTitle: "بيانات منظّمة، جاهزة للاستخدام",
     heroLead:
@@ -272,18 +292,22 @@ const I18N = {
       });
     });
 
-    /* The toggle always reads in the language you are not in: "العربية" on the
-       English page, "English" on the Arabic one. WCAG 3.1.2 asks that a phrase
-       in another language be markable, so the label carries the other lang —
-       without it a screen reader voices "العربية" with English phonemes, and
-       "English" with Arabic ones. The wordmark is tagged lang="en" in the
-       markup for the same reason. The footer used to carry lang="en" on its
-       whole container; it is translated now, so only the wordmark inside it
-       still declares English. */
-    const label = $("lang-label");
-    label.textContent = t.langBtn;
-    label.setAttribute("lang", lang === "en" ? "ar" : "en");
+    /* The two codes are static and CSS lights the live one from :root[lang],
+       so the only thing left to write here is the clarifier a screen reader
+       reads after them — the visible text is "en ar", which says nothing about
+       what pressing it does. Keeping the codes in the accessible name is what
+       WCAG 2.5.3 asks: the name contains the visible label.
+       The wordmark is tagged lang="en" in the markup so a screen reader does
+       not voice it with Arabic phonemes; the footer used to carry lang="en" on
+       its whole container, and now that it is translated only the wordmark
+       inside it still declares English. */
     $("lang-hint").textContent = t.langBtnHint;
+
+    /* The year is the one number on the page that is not a literal in this
+       file, so it is the one that needs converting at runtime. */
+    const year = $("year");
+    if (year) year.textContent = t.digits(new Date().getFullYear());
+
     describeTheme();
 
     const general = whatsappUrl("waMessage");
@@ -329,8 +353,6 @@ const I18N = {
 
     $("lang-toggle").addEventListener("click", () => applyLang(lang === "en" ? "ar" : "en"));
     $("theme-toggle").addEventListener("click", toggleTheme);
-
-    $("year").textContent = new Date().getFullYear();
 
     /* Anything carrying data-copy puts that string on the clipboard and says so.
        Used for the Discord username, which has no linkable URL. */

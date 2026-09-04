@@ -203,6 +203,26 @@
         a single-line title — measured, plate centre 12 and line centre 12 in
         both languages at every width.
 
+    12. Arabic sets Arabic-Indic digits, with the Arabic punctuation that goes
+        with them: U+066C for thousands, U+066B for the decimal, U+066A for
+        percent. So ١٧٬٣٠٤ and ٩٩٫٥٪ where English has 17,304 and 99.5%. Asked
+        for directly. Worth knowing that Saudi Arabia, which is the market this
+        dataset covers, uses Western digits far more widely than Egypt does; if
+        that turns out to matter, the change is transcribing five values and two
+        labels in the Arabic block back, not a setting.
+
+        All five glyphs are real in IBM Plex Sans Arabic, not fallbacks:
+        measured at 12px, ٠ sets 3.38px, ٩ 6.10, ٪ 6.79, ٫ 3.26 and ٬ 3.38,
+        each against the 6.31/3.83 the same characters get from the font stack
+        with Plex removed. Different advances mean Plex is drawing them.
+
+        The digits are written into the Arabic dictionary as literals rather
+        than converted at render time, because that is what they are. The one
+        number the page computes is the year, and that goes through a per-
+        language digits() so the two dictionaries have the same shape and the
+        caller never branches. Machine-readable numbers — the JSON-LD figures,
+        the aria-labels — stay Western on purpose.
+
    Not a deviation, though it may look like one: WhatsApp green is simply
    absent, and the brand token is the compliant choice for the CTA. The Lucide
    icons vary from 75% to 83% of their box in whichever dimension leads — that
@@ -911,16 +931,25 @@ main:focus, main:focus-visible { outline: none; }
 .ctl:hover { border-color: var(--tertiary-foreground); }
 .ctl--icon { padding-inline: 0; justify-content: center; }
 
-/* The label swaps between "العربية" and "English", so without a floor the
-   button resizes under the cursor on every toggle. It holds the wider of the
-   two, re-measured at the new 12px size with the floor lifted: 71.48px for the
-   Arabic label and 83.27px for the English one, against 82 and 95 at 14px.
-   84px is the wider rounded up. The 26px on .ctl is the same idea for the
-   icon-only control, which is 16px of icon and border without it. 26x26 clears
-   WCAG 2.5.8's 24x24 minimum outright, so the spacing exception the footer's
-   channel row leans on is not needed here — measured, the two centres sit 63px
-   apart anyway. */
-#lang-toggle { min-width: 84px; }
+/* Two codes, tone apart: the live language at --foreground and the other at
+   --tertiary-foreground, which is the same one-notch step the .ctl icons take
+   and the step this file uses everywhere for emphasis instead of weight. Both
+   are always in the DOM in a fixed order, so nothing about this control's box
+   depends on the language — the floor the swapping word label needed is gone.
+
+   The selector keys off :root[lang], which the pre-paint script sets and the
+   markup already declares, so the correct code is lit on the first frame and
+   with scripting off.
+
+   Latin glyphs at :root[lang="ar"]'s 400 are a hair narrower than at 450, so
+   the codes pin their own weight and the control measures the same in both. */
+.lang-code { color: var(--tertiary-foreground); font-weight: 450; }
+:root[lang="en"] .lang-code--en,
+:root[lang="ar"] .lang-code--ar { color: var(--foreground); }
+
+/* .ctl's 26px min-width is for the icon-only control, which is 16px of icon and
+   border without it. 26x26 clears WCAG 2.5.8's 24x24 minimum outright, so the
+   spacing exception the footer's channel row leans on is not needed here. */
 
 /* IconContainerVariants in Button.tsx, read from source:
      tiny:  '[&_svg]:h-[14px] [&_svg]:w-[14px]'
@@ -1284,9 +1313,14 @@ main:focus, main:focus-visible { outline: none; }
   color: var(--muted-foreground);
 }
 /* typography.css: strong is font-medium. tabular-nums is MetricCardValue's, and
-   it earns its place here because the grid stacks the figures into columns that
-   start at the same x — 17,304 / 31% / 1,624 aligned raggedly without it. Safe
-   in both languages: site.js keeps Western digits in the Arabic dictionary. */
+   it does its work in English only. Measured in this box: "1111" and "7777"
+   both set 36.30px, while Arabic-Indic "١١١١" sets 15.19px against "٧٧٧٧"'s
+   30.08px — Plex Arabic's Arabic-Indic digits are proportional and tnum does
+   not cover them. Kept regardless: it costs nothing where it does not apply,
+   and the row no longer leans on it. One metric per line means every figure
+   starts at the same x by layout, in both directions — measured, all five at
+   145 in English and all five ending at 1120 in Arabic — where the
+   multi-column row this was written for depended on the digits themselves. */
 .metrics strong {
   color: var(--foreground);
   font-weight: 500;

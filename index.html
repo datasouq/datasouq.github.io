@@ -158,17 +158,16 @@
            The name now composes from the visible label plus an sr-only hint,
            which is what accessibility.mdx's Scaffolding section asks for and
            what ThemeToggle.tsx does. -->
-      <button class="ctl" id="lang-toggle" tabindex="0">
-        <!-- Lucide: languages -->
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-          <path d="m5 8 6 6"/>
-          <path d="m4 14 6-6 2-3"/>
-          <path d="M2 5h12"/>
-          <path d="M7 2h1"/>
-          <path d="m22 22-5-10-5 10"/>
-          <path d="M14 18h6"/>
-        </svg>
-        <span id="lang-label" lang="ar">العربية</span><span class="sr-only" id="lang-hint">, switch to Arabic</span>
+      <!-- Two codes in a fixed order, the live one at full contrast and the
+           other a tone down. The order never changes and both are always
+           rendered, so the control is the same width in both languages and
+           needs no floor to stop it resizing under the cursor — which is what
+           the swapping "العربية"/"English" label needed. Which one is lit
+           follows :root[lang], so it is right before any script runs. -->
+      <button class="ctl ctl--lang" id="lang-toggle" tabindex="0">
+        <span class="lang-code lang-code--en">en</span>
+        <span class="lang-code lang-code--ar">ar</span>
+        <span class="sr-only" id="lang-hint">, switch to Arabic</span>
       </button>
 
       <button class="ctl ctl--icon" id="theme-toggle" tabindex="0" aria-label="Toggle theme">
