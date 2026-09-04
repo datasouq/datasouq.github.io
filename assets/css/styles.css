@@ -100,12 +100,32 @@
         with three sections one rule closes the band that the padding alone would
         leave open. Its padding IS theirs: 48/32 below md, 160/64 from it.
 
-     7. Neither the header bar nor the footer bar mirrors in Arabic, and the
-        footer stays English throughout. Asked for directly: a language toggle
-        that relocates itself, along with the wordmark and the theme control,
-        reads as the page jumping. The skip link follows the same rule with a
-        physical `left`, since it sits inside that bar's footprint. The page body
-        between them mirrors as usual.
+     7. The header bar and the WHOLE footer stay put in Arabic. Asked for
+        directly: a language toggle that relocates itself, along with the
+        wordmark and the theme control, reads as the page jumping. The skip link
+        follows the same rule with a physical `left`, since it sits inside that
+        bar's footprint. The page body between them mirrors as usual.
+
+        This said "footer" from the start and only ever covered its bottom bar.
+        .nav__inner and .footer__bar carried direction: ltr; .footer__grid did
+        not, so in Arabic the brand block crossed 778px to the right (left 96 to
+        874 at 1280), the link block came back the other way (407 to 96) and the
+        two columns swapped (439/563 to 718/593), all above a copyright strip
+        that had not moved. The grid is pinned now, and measured in both
+        languages at 375, 768 and 1280 every box in the footer sits at the same
+        x: wordmark 24/24/96, channel row and form 24-298/24-298/96-370, columns
+        @24/@24+@385/@439+@563, the copyright at 24/24/96 and GitHub at
+        329/707/1147.
+
+        The footer is also translated now, which is the other half of the same
+        request, and pinning the layout is not the same as typesetting the text
+        LTR: every text-bearing block inside it turns RTL in Arabic so
+        punctuation lands on the correct side, inside a box that has not moved.
+        The wordmark, the channel row and the copyright's Latin head do not
+        turn — a name, a lockup, and a mixed run whose Arabic clause is isolated
+        so the © and the year stay at the left. The one thing that moves inside
+        a block is the Subscribe button, which goes to the right end of the
+        274px form: 96-176 in English against 320-370 in Arabic.
 
      8. The metric row compresses MetricCard: 14px figure inline with its label,
         where upstream is an 18px tabular figure above a smaller one. Five
@@ -1336,8 +1356,17 @@ main:focus, main:focus-visible { outline: none; }
 }
 
 /* xl:grid xl:grid-cols-7 xl:gap-4, with the brand block on two of the seven
-   columns and the links on five. Below xl it stacks, gap-8. */
-.footer__grid { display: grid; gap: 32px; }
+   columns and the links on five. Below xl it stacks, gap-8.
+
+   direction: ltr pins the track order, which is deviation 7 finally applied to
+   the thing it names. That deviation said the footer does not mirror, and only
+   its two bars ever did: .nav__inner and .footer__bar carried the property, the
+   grid did not. Measured at 1280 in Arabic, the brand block crossed 778px to
+   the right (left 96 to 874), the link block came back the other way (407 to
+   96), and the two columns swapped (439/563 to 718/593) while the bar below
+   them stayed exactly where it was. Half a pinned footer reads as a bug, which
+   is what it was. */
+.footer__grid { display: grid; gap: 32px; direction: ltr; }
 
 @media (min-width: 1280px) {
   .footer__grid { grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 16px; }
@@ -1352,9 +1381,10 @@ main:focus, main:focus-visible { outline: none; }
   .footer__nav { padding-inline-start: 32px; }
 }
 
-/* flex flex-col gap-8 */
+/* flex flex-col gap-8. direction comes from .footer__grid now, which is also
+   what keeps the channel row's icon order fixed — six brand marks are a lockup
+   and a lockup does not reverse. */
 .footer__brand {
-  direction: ltr;
   display: flex;
   flex-direction: column;
   align-items: flex-start;
@@ -1465,6 +1495,29 @@ main:focus, main:focus-visible { outline: none; }
   transition: color 0.15s var(--ease-default);
 }
 .footer__col a:hover { color: var(--foreground); }
+
+/* Pinning the layout is not the same as typesetting the text LTR. Direction on
+   a leaf is what puts Arabic punctuation on the correct side of a run, and the
+   alignment that follows from it is the one an Arabic reader expects — so every
+   text-bearing block inside the pinned footer turns RTL in Arabic, inside a box
+   that has not moved. The columns read right to left; the columns themselves do
+   not swap, because .footer__cols stays LTR above them.
+
+   Three things deliberately do NOT turn: the wordmark (a name, and already
+   pinned at .brand), the channel row (a lockup), and the copyright's Latin
+   head. That last one is a mixed run — "© 2026 DataSouq · " and then an Arabic
+   clause — so only the clause becomes its own isolated RTL run. Turning the
+   whole line would have carried the © and the year to the right of it. */
+:root[lang="ar"] .footer__form,
+:root[lang="ar"] .footer__thanks,
+:root[lang="ar"] .footer__col {
+  direction: rtl;
+}
+
+:root[lang="ar"] .footer__rights {
+  direction: rtl;
+  unicode-bidi: isolate;
+}
 
 /* The bar: `border-default mt-32 flex justify-between border-t pt-8`, which in
    Tailwind's 4px units is a 1px --border rule, 128px above it and 32px below.

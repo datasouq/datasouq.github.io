@@ -109,6 +109,33 @@ const I18N = {
     waDatasetMessage: () =>
       "Hello 👋\n\nI'm interested in the *Contractors in Saudi Arabia* " +
       "dataset.\n\nCould you send the full field list and the price?",
+
+    /* Footer. The two column headings and their links reuse catalogueTitle,
+       datasetTitle and whatLabel, so only "Company" is new here — a second
+       copy of "Datasets" would be a second thing to keep in step. */
+    footerCompany: "Company",
+    rights: "All rights reserved.",
+    brandHome: "DataSouq — home",
+    emailLabel: "Email",
+
+    /* The handle itself is not translated: it is the string that gets copied
+       and it is the same in both languages. */
+    discordCopy: "Copy our Discord username, datasouq",
+    discordTitle: "Discord — datasouq",
+    copied: (value) => value + " copied",
+
+    subLead: "Get new datasets and updates from DataSouq.",
+    subPlaceholder: "Your email",
+    subEmailLabel: "Your email address",
+    subBtn: "Subscribe",
+    thanksTitle: "Check your mail app",
+    thanksBody:
+      "We opened a message with the request ready. Send it and you are on the list.",
+
+    subMailSubject: "Subscribe to DataSouq updates",
+    subMailBody: (address) =>
+      "Hello,\n\nPlease add this address to the DataSouq mailing list:\n" +
+      address + "\n",
   },
 
   ar: {
@@ -163,6 +190,27 @@ const I18N = {
     waDatasetMessage: () =>
       "السلام عليكم 👋\n\nأنا مهتم بقاعدة بيانات *المقاولون في السعودية*.\n\n" +
       "هل يمكنكم إرسال قائمة الحقول كاملة والسعر؟",
+
+    footerCompany: "الشركة",
+    rights: "جميع الحقوق محفوظة.",
+    brandHome: "داتا سوق — الصفحة الرئيسية",
+    emailLabel: "البريد الإلكتروني",
+
+    discordCopy: "انسخ اسم المستخدم على ديسكورد، datasouq",
+    discordTitle: "ديسكورد — datasouq",
+    copied: (value) => "تم نسخ " + value,
+
+    subLead: "اشترك لتصلك أحدث قواعد البيانات وأخبار داتا سوق.",
+    subPlaceholder: "بريدك الإلكتروني",
+    subEmailLabel: "عنوان بريدك الإلكتروني",
+    subBtn: "اشترك",
+    thanksTitle: "افتح تطبيق البريد",
+    thanksBody: "فتحنا لك رسالة جاهزة بالطلب. أرسلها وتكون في القائمة.",
+
+    subMailSubject: "الاشتراك في تحديثات داتا سوق",
+    subMailBody: (address) =>
+      "السلام عليكم،\n\nأرجو إضافة هذا العنوان إلى قائمة بريد داتا سوق:\n" +
+      address + "\n",
   },
 };
 
@@ -211,12 +259,27 @@ const I18N = {
       if (value !== undefined) node.innerHTML = value;
     });
 
+    /* Text nodes were the only thing translated until the footer arrived with a
+       placeholder, an email field's accessible name, a copy-this-username
+       button and a tooltip. Each entry is `attribute:key`, comma separated. */
+    document.querySelectorAll("[data-i18n-attr]").forEach((node) => {
+      node.dataset.i18nAttr.split(",").forEach((pair) => {
+        const cut = pair.indexOf(":");
+        if (cut < 1) return;
+        const attr = pair.slice(0, cut).trim();
+        const value = t[pair.slice(cut + 1).trim()];
+        if (value !== undefined) node.setAttribute(attr, value);
+      });
+    });
+
     /* The toggle always reads in the language you are not in: "العربية" on the
        English page, "English" on the Arabic one. WCAG 3.1.2 asks that a phrase
        in another language be markable, so the label carries the other lang —
        without it a screen reader voices "العربية" with English phonemes, and
        "English" with Arabic ones. The wordmark is tagged lang="en" in the
-       markup for the same reason, and the pinned footer already was. */
+       markup for the same reason. The footer used to carry lang="en" on its
+       whole container; it is translated now, so only the wordmark inside it
+       still declares English. */
     const label = $("lang-label");
     label.textContent = t.langBtn;
     label.setAttribute("lang", lang === "en" ? "ar" : "en");
@@ -299,12 +362,17 @@ const I18N = {
 
         /* Either way the visitor learns the username: copied, or shown so it can
            be read off and typed. Never a silent no-op. */
-        if (status) status.textContent = copied ? value + " copied" : value;
+        /* Read from the dictionary at click time, not at bind time: the
+           visitor can switch language after this listener is attached. */
+        const said = () => I18N[lang].copied(value);
+        const idle = () => I18N[lang].discordTitle;
+
+        if (status) status.textContent = copied ? said() : value;
         node.dataset.copied = copied ? "true" : "shown";
-        node.setAttribute("title", copied ? value + " copied" : "Discord — " + value);
+        node.setAttribute("title", copied ? said() : idle());
         setTimeout(() => {
           delete node.dataset.copied;
-          node.setAttribute("title", "Discord — " + value);
+          node.setAttribute("title", idle());
           if (status) status.textContent = "";
         }, 1600);
       });
@@ -319,13 +387,10 @@ const I18N = {
         event.preventDefault();
         const field = $("subscribe-email");
         if (!field.checkValidity()) { field.reportValidity(); return; }
-        const body =
-          "Hello,\n\nPlease add this address to the DataSouq mailing list:\n" +
-          field.value + "\n";
         window.location.href =
           "mailto:" + CONFIG.email +
-          "?subject=" + encodeURIComponent("Subscribe to DataSouq updates") +
-          "&body=" + encodeURIComponent(body);
+          "?subject=" + encodeURIComponent(I18N[lang].subMailSubject) +
+          "&body=" + encodeURIComponent(I18N[lang].subMailBody(field.value));
         form.reset();
 
         /* Swap the form for the confirmation, as theirs does. */
