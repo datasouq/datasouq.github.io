@@ -45,7 +45,7 @@ const I18N = {
        affiliation with one. */
     datasetTitle: "Contractors in Saudi Arabia",
     datasetBody:
-      "A structured dataset of contractors across Saudi Arabia, cleaned and deduplicated, delivered in Arabic and English. Message us for the full field list and the price.",
+      "<strong>A structured dataset of contractors across Saudi Arabia</strong>, cleaned and deduplicated, delivered in Arabic and English. Message us for the full field list and the price.",
     datasetCta: "Ask about this dataset",
 
     /* Every figure is measured from the file, not estimated, and re-measured
@@ -124,7 +124,7 @@ const I18N = {
     catalogueLead: "قواعد بيانات منظّمة ومنقّحة، تُسلَّم بالعربية والإنجليزية.",
     datasetTitle: "المقاولون في السعودية",
     datasetBody:
-      "قاعدة بيانات منظّمة للمقاولين في المملكة، منقّحة وخالية من التكرار، تُسلَّم بالعربية والإنجليزية. تواصل معنا للحصول على قائمة الحقول كاملة والسعر.",
+      "<strong>قاعدة بيانات منظّمة للمقاولين في المملكة</strong>، منقّحة وخالية من التكرار، تُسلَّم بالعربية والإنجليزية. تواصل معنا للحصول على قائمة الحقول كاملة والسعر.",
     datasetCta: "استفسر عن هذه القاعدة",
 
     m1Value: "17,304",   m1Label: "سجل",
@@ -201,6 +201,14 @@ const I18N = {
     document.querySelectorAll("[data-i18n]").forEach((node) => {
       const value = t[node.dataset.i18n];
       if (value !== undefined) node.textContent = value;
+    });
+
+    /* The two-tone card body needs a <strong> around its lead clause, so this
+       one string carries markup. innerHTML is safe here and only here: the
+       value is a literal in this file, never anything a visitor supplied. */
+    document.querySelectorAll("[data-i18n-html]").forEach((node) => {
+      const value = t[node.dataset.i18nHtml];
+      if (value !== undefined) node.innerHTML = value;
     });
 
     /* The toggle always reads in the language you are not in: "العربية" on the

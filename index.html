@@ -225,19 +225,30 @@
         <p data-i18n="catalogueLead">Structured datasets, cleaned and delivered in Arabic and English.</p>
       </div>
 
-      <div class="cards">
-        <article class="card card--wide">
-          <div class="card__icon">
-            <!-- Lucide: hard-hat -->
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-              <path d="M10 10V5a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v5"/>
-              <path d="M14 6a6 6 0 0 1 6 6v3"/>
-              <path d="M4 15v-3a6 6 0 0 1 6-6"/>
-              <rect x="2" y="15" width="20" height="4" rx="1"/>
-            </svg>
+      <!-- A fixed span, not a full-width card. The second dataset lands beside
+           this one instead of this one stretching to fill the row. -->
+      <div class="cards cards--catalogue">
+        <article class="card card--dataset">
+          <!-- Icon and title on one line, as their product cards have it. -->
+          <div class="card__head">
+            <div class="card__icon">
+              <!-- Lucide: hard-hat -->
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M10 10V5a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v5"/>
+                <path d="M14 6a6 6 0 0 1 6 6v3"/>
+                <path d="M4 15v-3a6 6 0 0 1 6-6"/>
+                <rect x="2" y="15" width="20" height="4" rx="1"/>
+              </svg>
+            </div>
+            <h3 data-i18n="datasetTitle">Contractors in Saudi Arabia</h3>
           </div>
-          <h3 data-i18n="datasetTitle">Contractors in Saudi Arabia</h3>
-          <p data-i18n="datasetBody">A structured dataset of contractors across Saudi Arabia, cleaned and deduplicated, delivered in Arabic and English. Message us for the full field list and the price.</p>
+
+          <!-- Their card body is one paragraph in two tones: the lead clause at
+               full contrast, the rest a step down. Theirs dims the base to
+               --foreground-lighter; ours cannot, because on --card that measures
+               4.27:1 in dark and fails AA (deviation 4), so the pair here is
+               --muted-foreground with the <strong> at --foreground. -->
+          <p class="card__body" data-i18n-html="datasetBody"><strong>A structured dataset of contractors across Saudi Arabia</strong>, cleaned and deduplicated, delivered in Arabic and English. Message us for the full field list and the price.</p>
 
           <!-- Metrics, each paired with an icon per the Metric Card fragment.
                Every figure is measured from the file itself. -->

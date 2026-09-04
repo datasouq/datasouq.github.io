@@ -36,6 +36,11 @@
      apps/www/styles/globals.css                       supabase.com's own scale
      apps/www/components/Nav, Footer, UI/SectionHeader
      apps/www/app/(home)/_components/Hero, OpenSourceSection
+     apps/www/app/(home)/_components  the product-card row, measured live:
+       grid-cols-12 gap-3, col-span-6 xl:col-span-3, sm:h-[400px], rounded-xl,
+       a p-px gradient border, 24px/16px padding, an items-center gap-2 title
+       row with an 18px icon, Manrope 600 16/24, and a 14/20 body whose strong
+       lifts the colour only
      apps/www/app/(products)/…/_components               bordered card precedents
 
    Every deviation, and why. Nothing deviates without a reason that changes the
@@ -107,6 +112,19 @@
         Everything else about it is the fragment: dashed border, no shadow,
         px-4 py-10, a bare 24px icon at stroke 1.5, a 14px description at 640px,
         12px down the stack.
+
+    10. The dataset card is their product card on a wider span. Theirs is
+        col-span-3 at xl — 259.25px, four across; ours is span 4 at 1024 —
+        354.66px at the capped container, three across — because theirs holds a
+        title, two lines and an illustration while this one holds a paragraph,
+        five metrics and an action. h-[400px] becomes a min-height for the same
+        reason it always does here: the Arabic body sets longer than the English
+        and a fixed height would clip it. The 12px radius and 24/16 padding are
+        NOT taken; every card on this page keeps the family's 8px and 24px,
+        because the dataset card and the three service cards sit one section
+        apart in the same scroll and a different corner would read as a mistake.
+        The title weight is the one place the difference says something — 600
+        against .card h3's 500, the object against the work — so that is taken.
 
    Not a deviation, though it may look like one: WhatsApp green is simply
    absent, and the brand token is the compliant choice for the CTA. The Lucide
@@ -558,6 +576,14 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 img, svg { display: block; max-width: 100%; }
+/* Preflight gives `strong` font-weight: bolder, which against a 450 body
+   resolves to 700 — a jump the page has no use for. typography.css would make
+   it font-medium, but apps/www does not import typography.css, and measuring
+   their product card settles it: the <strong> in its body computes to 450, the
+   inherited weight, with `[&_strong]:text-foreground!` lifting the colour and
+   nothing else. So the two-tone body is a tone change, not a weight change.
+   .metrics strong keeps its explicit 500 — that pairing is MetricCard's. */
+strong { font-weight: inherit; }
 button { background: none; border: none; cursor: pointer; font: inherit; color: inherit; }
 a { color: inherit; text-decoration: none; }
 ul { list-style: none; }
@@ -955,12 +981,20 @@ main:focus, main:focus-visible { outline: none; }
    the row rendered two cards and orphaned the third at half width. An explicit
    step never produces that state.
 
-   The :has() guard matters — .cards also wraps the single .card--wide in the
-   catalogue section, which would otherwise take one third of a row. */
+   The :has() guard was there because .cards also wrapped the catalogue's lone
+   card, which would otherwise have taken a third of a row. The catalogue now
+   runs on twelve tracks of its own, and the guard alone would not have been
+   enough: :has() carries the specificity of its argument, so
+   `.cards:has(> .card + .card)` scores (0,2,0) against `.cards--catalogue`'s
+   (0,1,0) and would have won on specificity, not source order. Adding the
+   second dataset would have snapped the catalogue back to three equal columns
+   — the one thing this section is now built not to do. Hence the :not(). */
 .cards { display: grid; grid-template-columns: 1fr; gap: 12px; }
 
 @media (min-width: 768px) {
-  .cards:has(> .card + .card) { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .cards:not(.cards--catalogue):has(> .card + .card) {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
 }
 
 /* Card: rounded-lg border bg-surface-100 shadow-xs, and p-6 rather than
@@ -999,14 +1033,91 @@ main:focus, main:focus-visible { outline: none; }
 }
 .card__icon svg { width: 18px; height: 18px; }
 
-/* A card that stands alone in its grid gets --card-padding-x-md, the roomier
-   value global.css defines for exactly that. */
-/* `p-6 md:p-8` on the wide ones. With .card at 24px this had been the inversion
-   waiting to happen: the roomier variant carried LESS vertical padding than a
-   plain card. */
+/* Their product row is `grid grid-cols-12 gap-3` — twelve tracks of 79.66px
+   inside the 1088px container at 1280, 12px apart — and each card is
+   `col-span-3`, so four sit across at 263px each with a fixed `sm:h-[400px]`.
+
+   Ours spans four of the twelve rather than three: 355px at 1280, three across.
+   Theirs holds a title, two lines and an illustration; this one holds a
+   paragraph, five metrics and an action, and 263px is not enough for that.
+
+   The span is the whole point. A full-width card has nowhere to put the second
+   dataset; a card on a fixed span leaves the rest of the row waiting for it. */
+.cards--catalogue { grid-template-columns: 1fr; }
+
 @media (min-width: 768px) {
-  .card--wide { padding: 2rem; }
+  .cards--catalogue { grid-template-columns: repeat(12, minmax(0, 1fr)); }
+  .card--dataset { grid-column: span 6; }
 }
+
+@media (min-width: 1024px) {
+  .card--dataset { grid-column: span 4; }
+}
+
+/* Their content column is `flex flex-col gap-2 sm:gap-4` and the block under
+   the title row is `flex-1 justify-between`, so the card's foot stays put
+   however long the copy runs. h-[400px] is a floor here rather than a fixed
+   height: the Arabic body sets longer than the English and a fixed one would
+   clip it. */
+.card--dataset {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+@media (min-width: 768px) {
+  .card--dataset { min-height: 400px; }
+}
+
+.card--dataset .card__actions { margin-top: auto; }
+
+/* `flex items-center gap-2` — the icon beside the title, not above it. The
+   heading's 8px bottom margin has to go with it: inside an items-center row
+   that margin is part of the title's box, so the 24px plate centred against a
+   32px box sat 4px below the title's own line — measured, icon top 724.78
+   against the heading's 720.78. Specificity, not source order, because
+   `.card h3` sets that margin further down the file and would win a tie. */
+/* 600 against .card h3's 500. That 500 is right for the three service cards —
+   it traces to HighlightsSection, ObservabilitySection and the design-system
+   feature cards, which all put font-medium back — but the product cards this
+   one is modelled on measure Manrope 600 at 16px/24px, and 600 is already in
+   the loaded subset. Upstream's two card families differ here; so do ours, on
+   the same split: the product card is the object, the others describe work. */
+.card__head { display: flex; align-items: center; gap: 8px; }
+.card .card__head h3 { margin-bottom: 0; font-weight: 600; }
+
+/* The plate comes down to the title's line: 24px box, 14px mark. Theirs is a
+   bare 18px icon in --foreground; the plate is deviation 5 and stays. */
+.card--dataset .card__icon {
+  width: 24px;
+  height: 24px;
+  margin-bottom: 0;
+  flex-shrink: 0;
+}
+.card--dataset .card__icon svg { width: 14px; height: 14px; }
+
+/* The two-tone body: `[&_strong]:text-foreground!` upstream, colour only.
+   Theirs dims the base to --foreground-lighter and lifts the lead clause to
+   --foreground; ours cannot dim that far (deviation 4), so the pair is
+   --muted-foreground with the clause at --foreground. Measured on --card:
+   --foreground-lighter 4.27:1 dark, against --muted-foreground's 7.64:1 dark
+   and 9.44:1 light, with the clause itself at 15.31:1 and 20.62:1. */
+.card__body strong { color: var(--foreground); }
+
+/* Two measured differences from their product card, both left alone.
+   Radius: theirs is `rounded-lg md:rounded-xl`, 12px from md; card.tsx says
+   rounded-lg and --borderradius-lg is 8px, which is what every card here uses.
+   Padding: theirs is 24px 16px, because at 259px wide it needs the horizontal
+   room; this card is 350px and does not.
+   Upstream those two card families live on different pages. Here the dataset
+   card and the three service cards sit in the same scroll, one section apart,
+   so a different corner or a different gutter would read as a mistake rather
+   than as hierarchy. The title weight is the one property where the difference
+   says something, and it is the one property taken. */
+
+/* One metric per line in a 355px card. The five-across row was for a card that
+   filled the container. */
+.card--dataset .metrics { grid-template-columns: 1fr; }
 
 /* Metrics — the Metric Card fragment's icon-and-figure pairing, laid out as a
    row inside the dataset card. Icons are tinted like the text beside them, the
@@ -1022,7 +1133,6 @@ main:focus, main:focus-visible { outline: none; }
      middle of a wrapped cell was, and align-items below fixes that. */
   grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
   gap: 8px 16px;
-  margin-top: 16px;
   padding-top: 16px;
   border-top: 1px solid var(--border);
 }
@@ -1064,7 +1174,7 @@ main:focus, main:focus-visible { outline: none; }
 }
 
 /* PageSectionAside spacing for actions inside a card */
-.card__actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 16px; }
+.card__actions { display: flex; flex-wrap: wrap; gap: 8px; }
 
 /* CardTitle upstream is `text-xs font-mono uppercase` — a dense Studio-panel
    idiom. Kept as a heading here: uppercase carries no meaning in Arabic, and
