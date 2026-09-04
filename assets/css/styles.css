@@ -7,6 +7,7 @@
 
    Traced to:
      packages/ui/build/css/source/semantic.css         derivation chain
+     packages/ui/build/css/source/compat.css           the border ladder
      packages/ui/build/css/themes/light.css            light knobs + brand scale
      packages/ui/build/css/themes/classic-dark.css     dark knobs + brand scale
        (globals.css imports classic-dark, so that is the dark theme the
@@ -98,8 +99,6 @@
       var(--surface-hue)
   );
 
-  --foreground-contrast: oklch(var(--surface) var(--foreground-chroma) var(--surface-hue));
-
   --muted-foreground-mix: calc(
     var(--muted-foreground-level) + (1 - var(--muted-foreground-level)) * var(--contrast-up) -
       var(--muted-foreground-level) * 0.5 * var(--contrast-down)
@@ -124,18 +123,16 @@
      the same upstream scale: --brand-600 measures 4.57:1 there. */
   --brand-on-plate: var(--brand-600);
 
-  /* Vivid, mode-invariant accent. Decoupled from --chroma on purpose. */
+  /* Vivid, mode-invariant accent. Decoupled from --chroma on purpose. Only
+     --ring is built from it; upstream's --primary-foreground has no use here
+     because nothing on the page is filled with --primary. */
   --primary: oklch(0.76 0.15 var(--primary-hue));
-  --primary-foreground: oklch(
-    min(var(--surface), var(--foreground-lightness)) calc(var(--chroma) * 0.45) var(--primary-hue)
-  );
 
   /* --- Radius ----------------------------------------------------------- */
   /* --radius-panel is 6px (theme.css) and buttons are rounded-md.
      Cards use rounded-lg; global.css sets --borderradius-lg: 8px. */
   --radius: 6px;
   --radius-lg: 8px;
-  --radius-full: 999px;
 
   /* Card: py-4 px-(--card-padding-x). global.css sets --card-padding-x to
      1rem and --card-padding-x-md to 1.5rem for roomier cards. */
@@ -249,18 +246,6 @@
   --brand-plate: var(--brand-200);
   --brand-text: var(--brand-link);
 
-  /* Literal fallbacks, measured from the derived values. Used only where
-     oklch(from ...) is unsupported, so the page never renders unstyled. */
-  --card: #ffffff;
-  --popover: #ffffff;
-  --secondary: #ffffff;
-  --border-muted: rgba(0, 0, 0, 0.059);
-  --border: rgba(0, 0, 0, 0.107);
-  --border-strong: rgba(0, 0, 0, 0.206);
-  --border-stronger: rgba(0, 0, 0, 0.298);
-  --accent: rgba(5, 5, 5, 0.04);
-  --ring: rgba(69, 206, 142, 0.55);
-
   color-scheme: light;
 }
 
@@ -281,7 +266,6 @@
   --brand-default: hsl(153.1 60.2% 52.7%);
   --brand-link: hsl(153.1 60.2% 52.7%);
   --brand-200: hsl(152.5 75% 6.3%);
-  --brand-300: hsl(153.8 69.6% 9%);
   --brand-400: hsl(153.3 65.2% 13.5%);
   --brand-500: hsl(153.5 61.8% 21.6%);
   --brand-600: hsl(153 59.5% 70%);
@@ -297,22 +281,19 @@
   --brand-plate: var(--brand-400);
   --brand-text: var(--brand-link);
 
-  --card: #1b1e1c;
-  --popover: #1e211f;
-  --secondary: #212422;
-  --border-muted: rgba(240, 245, 242, 0.055);
-  --border: rgba(240, 245, 242, 0.102);
-  --border-strong: rgba(240, 245, 242, 0.196);
-  --border-stronger: rgba(240, 245, 242, 0.278);
-  --accent: rgba(247, 250, 248, 0.06);
-  --ring: rgba(69, 206, 142, 0.55);
-
   color-scheme: dark;
 }
 
 /* --------------------------------------------------------------------------
    Derived colours that need relative colour syntax.
-   Guarded, so unsupporting browsers keep the literal fallbacks above.
+
+   These sit on a bare `:root`, which the theme selectors outrank: `:root:not(
+   [data-theme="dark"])` scores (0,2,0) against this block's (0,1,0), and
+   `@supports` adds nothing. A literal declared beside the knobs therefore BEAT
+   its derived counterpart — which is exactly what happened: light ran entirely
+   on hand-written literals while dark ran on the formulas, in the same browser.
+   So the fallbacks now live in the mutually exclusive block below instead, and
+   only one of the two can ever apply.
    -------------------------------------------------------------------------- */
 @supports (color: oklch(from white l c h)) {
   :root {
@@ -323,21 +304,21 @@
     --popover: oklch(from var(--background) calc(l + var(--elevation-step) * var(--elevation-2)) c h);
     --secondary: oklch(from var(--background) calc(l + var(--elevation-step) * var(--elevation-3)) c h);
 
-    /* Borders follow the documented control-border pattern: the foreground at
-       an alpha, chroma halved, ramped by --contrast-border. Upstream publishes
-       the formula for --border-control-hover only; --border-stronger reuses it
-       verbatim and the three softer alphas are ours. */
-    --border-muted: oklch(
-      from var(--foreground) l calc(c * 0.5) h / calc(4% + 6% * var(--contrast-border))
-    );
+    /* The border ladder, verbatim. Every step is the foreground at an alpha
+       ramped by --contrast-border; none of these numbers are ours.
+         --border          semantic.css
+         --border-strong   compat.css aliases it to --input, so --input's formula
+         --border-stronger compat.css, its own alpha
+       --border-muted is `var(--border)` upstream, an identical legacy alias, so
+       it is simply absent here. */
     --border: oklch(
-      from var(--foreground) l calc(c * 0.5) h / calc(7% + 12% * var(--contrast-border))
+      from var(--foreground) l calc(c * 0.54) h / calc(2% + 20% * var(--contrast-border))
     );
     --border-strong: oklch(
-      from var(--foreground) l calc(c * 0.5) h / calc(12% + 28% * var(--contrast-border))
+      from var(--foreground) l calc(c * 0.5) h / calc(3% + 38% * var(--contrast-border))
     );
     --border-stronger: oklch(
-      from var(--foreground) l calc(c * 0.5) h / calc(12% + 58% * var(--contrast-border))
+      from var(--foreground) l calc(c * 0.5) h / calc(5% + 45% * var(--contrast-border))
     );
 
     /* text variant: hover:bg-accent */
@@ -345,6 +326,35 @@
 
     /* One shared focus colour. Variants never change it. */
     --ring: oklch(from var(--primary) l c h / 55%);
+  }
+}
+
+/* --------------------------------------------------------------------------
+   The same colours for browsers without relative colour syntax, resolved to
+   sRGB from the formulas above. `not` makes this block and the one above
+   mutually exclusive, so neither can outrank the other.
+   -------------------------------------------------------------------------- */
+@supports not (color: oklch(from white l c h)) {
+  :root:not([data-theme="dark"]) {
+    --card: #ffffff;
+    --popover: #ffffff;
+    --secondary: #ffffff;
+    --border: rgba(3, 3, 3, 0.081);
+    --border-strong: rgba(3, 3, 3, 0.146);
+    --border-stronger: rgba(3, 3, 3, 0.188);
+    --accent: rgba(3, 3, 3, 0.04);
+    --ring: rgba(69, 205, 142, 0.55);
+  }
+
+  [data-theme="dark"] {
+    --card: #1c1f1d;
+    --popover: #1f2321;
+    --secondary: #232724;
+    --border: rgba(243, 246, 244, 0.075);
+    --border-strong: rgba(243, 246, 244, 0.135);
+    --border-stronger: rgba(243, 246, 244, 0.174);
+    --accent: rgba(241, 247, 243, 0.06);
+    --ring: rgba(69, 205, 142, 0.55);
   }
 }
 
