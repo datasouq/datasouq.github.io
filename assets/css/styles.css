@@ -142,9 +142,17 @@
   /* The Card carries shadow-xs — Tailwind's own value, unchanged upstream. */
   --shadow-xs: 0 1px 2px 0 rgb(0 0 0 / 0.05);
 
-  /* --- Type scale: the Inter-tuned scale from globals.css --------------- */
-  --text-xs: 0.75rem;      /* 12px — not overridden upstream */
-  --text-sm: 0.8125rem;    /* 13px */
+  /* --- Type scale ------------------------------------------------------
+     Two apps ship this scale and they differ in one place. Both override
+     --text-base upward to 15px and set --font-weight-normal: 450, but
+     apps/design-system also pulls --text-sm down to 13px for Studio density,
+     while apps/www — supabase.com — leaves --text-sm and --text-xs at
+     Tailwind's own 14px and 12px. This is a landing page, so it follows
+     supabase.com. Measured there at 1280px: body and lead 16/24, card copy
+     14/20, medium buttons 14/20, hero 46/46, section headings 34.
+     ---------------------------------------------------------------------- */
+  --text-xs: 0.75rem;      /* 12px */
+  --text-sm: 0.875rem;     /* 14px */
   --text-base: 0.9375rem;  /* 15px */
   --text-lg: 1rem;         /* 16px */
   --text-xl: 1.125rem;     /* 18px */
@@ -152,12 +160,6 @@
   --text-3xl: 1.75rem;     /* 28px */
   --text-4xl: 2.125rem;    /* 34px */
   --text-5xl: 2.875rem;    /* 46px */
-
-  /* Page prose. Measured on supabase.com, which keeps Tailwind own sizes for
-     running text while the components stay on the Inter-tuned scale above:
-     body and lead 16/24, card body 14/20, buttons 15. */
-  --text-prose-sm: 0.875rem;   /* 14px, pairs with --lh-sm */
-  --text-prose-base: 1rem;     /* 16px, pairs with --lh-base */
 
   /* Line heights are paired to each step, not derived from a global ratio.
      globals.css overrides the font sizes but leaves Tailwind's paired
@@ -359,6 +361,24 @@
 }
 
 
+/* --------------------------------------------------------------------------
+   Arabic runs one weight lighter, and has to.
+
+   Inter ships a real 450 face, which is why the system asks for it. IBM Plex
+   Sans Arabic ships whole hundreds only, and CSS font matching resolves a
+   desired weight between 400 and 500 upward first — so 450 lands on the 500
+   face. Measured at 100px: 450 and 500 both set `سجل ومدينة` at 498.00px while
+   400 sets it at 485.81px. Two things followed from that. Arabic body copy
+   rendered a full step heavier than the English beside it, and `strong`, which
+   is font-medium at 500, became literally the same face as its own paragraph —
+   emphasis with nothing to show for it.
+
+   400 is the Regular face, so body copy reads as body copy and strong reads as
+   strong. Latin text inside an Arabic page drops from Inter 450 to Inter 400,
+   a 0.7% difference in set width. That is the whole cost.
+   -------------------------------------------------------------------------- */
+:root[lang="ar"] { --font-weight-normal: 400; }
+
 /* The md half of `text-base md:text-sm`. Tailwind's md breakpoint is 768px. */
 @media (min-width: 768px) {
   :root { --text-responsive-sm: var(--text-sm); }
@@ -381,7 +401,7 @@ body {
   font-family: var(--font);
   background: var(--background);
   color: var(--foreground);
-  font-size: var(--text-prose-base);
+  font-size: var(--text-lg);
   font-weight: var(--font-weight-normal);
   line-height: var(--lh-base);
   font-synthesis-weight: none;
@@ -626,7 +646,7 @@ ul { list-style: none; }
 /* PageHeaderDescription is `heading-subSection text-foreground-light`
    = text-base on --muted-foreground. PageHeader stacks its children gap-4. */
 .hero__lead {
-  font-size: var(--text-prose-base);
+  font-size: var(--text-lg);
   line-height: var(--lh-base);
   color: var(--muted-foreground);
   max-width: 56ch;
@@ -643,10 +663,18 @@ ul { list-style: none; }
 
 /* Sentence case at text-sm. No uppercase, no tracking — uppercase does nothing
    in Arabic and would split the two languages. */
-.head__label { font-size: var(--text-prose-sm); line-height: var(--lh-sm); color: var(--brand-text); margin-bottom: 4px; }
+.head__label { font-size: var(--text-sm); line-height: var(--lh-sm); color: var(--brand-text); margin-bottom: 4px; }
 
-.head h2 { font-size: var(--text-2xl); line-height: var(--lh-2xl); margin-bottom: 4px; }
-.head p { font-size: var(--text-prose-base); line-height: var(--lh-base); color: var(--muted-foreground); max-width: 60ch; }
+/* 34px, Manrope 600, no tracking, balanced — measured on supabase.com's section
+   headings, which hold 34px at every width. text-2xl (22px) is `heading-title`,
+   the Studio page-title role, and reads as a panel label under a 46px hero. */
+.head h2 {
+  font-size: var(--text-4xl);
+  line-height: var(--lh-4xl);
+  text-wrap: balance;
+  margin-bottom: 4px;
+}
+.head p { font-size: var(--text-lg); line-height: var(--lh-base); color: var(--muted-foreground); max-width: 60ch; }
 
 /* ==========================================================================
    Cards — depth from surface layers and borders, never shadows
@@ -701,7 +729,7 @@ ul { list-style: none; }
   display: flex;
   align-items: center;
   gap: 8px;
-  font-size: var(--text-prose-sm);
+  font-size: var(--text-sm);
   line-height: var(--lh-sm);
   color: var(--muted-foreground);
 }
@@ -718,8 +746,8 @@ ul { list-style: none; }
    CardDescription is `text-sm text-foreground-lighter`, but on --card in the
    dark theme that measures 4.27:1, under the AA floor, so this keeps
    --muted-foreground: one notch stronger, 7.65:1. */
-.card h3 { font-size: var(--text-prose-base); line-height: var(--lh-base); margin-bottom: 6px; }
-.card p { font-size: var(--text-prose-sm); line-height: var(--lh-sm); color: var(--muted-foreground); }
+.card h3 { font-size: var(--text-lg); line-height: var(--lh-base); margin-bottom: 6px; }
+.card p { font-size: var(--text-sm); line-height: var(--lh-sm); color: var(--muted-foreground); }
 
 /* ==========================================================================
    Panel
@@ -737,7 +765,7 @@ ul { list-style: none; }
 .panel h2 { font-size: var(--text-xl); line-height: var(--lh-xl); margin-bottom: 4px; }
 .panel p {
   line-height: var(--lh-base);
-  font-size: var(--text-prose-base);
+  font-size: var(--text-lg);
   color: var(--muted-foreground);
   max-width: 52ch;
   margin: 0 auto 24px;
@@ -767,7 +795,7 @@ ul { list-style: none; }
   gap: 14px;
   align-items: center;
   justify-content: space-between;
-  font-size: var(--text-prose-sm);
+  font-size: var(--text-sm);
   line-height: var(--lh-sm);
   color: var(--tertiary-foreground);
 }
