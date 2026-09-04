@@ -4,14 +4,30 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>DataSouq — structured data, ready to work with</title>
-<meta name="description" content="DataSouq cleans, deduplicates and structures raw records into datasets ready to import. داتا سوق — بيانات منظّمة وجاهزة للاستخدام.">
+<meta name="description" content="DataSouq cleans, deduplicates and structures raw records into datasets ready to import. داتا سوق: نحوّل السجلات الخام إلى قواعد بيانات منظّمة وجاهزة للاستخدام، بالعربية والإنجليزية.">
 
+<!-- twitter:card promised a large image and there was none, so every share —
+     WhatsApp above all, since that is the channel this page sells through —
+     rendered as a bare link. assets/og.jpg is drawn from the page's own tokens:
+     the dark surface, the two-weight wordmark, the brand accent. -->
 <meta property="og:type" content="website">
+<meta property="og:site_name" content="DataSouq">
 <meta property="og:title" content="DataSouq — structured data, ready to work with">
 <meta property="og:description" content="We clean, deduplicate and structure raw records into datasets ready to import.">
 <meta property="og:url" content="https://datasouq.github.io/">
+<meta property="og:image" content="https://datasouq.github.io/assets/og.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="DataSouq — structured data, ready to work with">
+<meta property="og:locale" content="en_US">
+<meta property="og:locale:alternate" content="ar_SA">
 <meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://datasouq.github.io/assets/og.jpg">
 <link rel="canonical" href="https://datasouq.github.io/">
+
+<!-- Mobile browser chrome follows the theme rather than sitting on white. -->
+<meta name="theme-color" content="#fdfdfd" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#151816" media="(prefers-color-scheme: dark)">
 
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%233ecf8e'/%3E%3Ctext x='16' y='22' font-size='17' font-family='Arial' font-weight='bold' text-anchor='middle' fill='%23101010'%3ED%3C/text%3E%3C/svg%3E">
 
@@ -38,6 +54,62 @@
       document.documentElement.dir = lang === "ar" ? "rtl" : "ltr";
     } catch (e) {}
   })();
+</script>
+
+<!-- Structured data. Every figure here is one the page already shows, and the
+     field list stays deliberately short: the page asks buyers to get in touch
+     for the full one, so publishing all fifteen columns here would undo that.
+     The Dataset type is what Google Dataset Search reads. -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "Organization",
+      "@id": "https://datasouq.github.io/#organization",
+      "name": "DataSouq",
+      "alternateName": "\u062f\u0627\u062a\u0627 \u0633\u0648\u0642",
+      "url": "https://datasouq.github.io/",
+      "image": "https://datasouq.github.io/assets/og.jpg",
+      "description": "DataSouq cleans, deduplicates and structures raw records, then delivers them as datasets ready to import.",
+      "email": "mbi.datasouq@gmail.com",
+      "sameAs": [
+        "https://github.com/datasouq",
+        "https://www.facebook.com/DataSouq.page",
+        "https://www.instagram.com/datasouq"
+      ]
+    },
+    {
+      "@type": "WebSite",
+      "@id": "https://datasouq.github.io/#website",
+      "url": "https://datasouq.github.io/",
+      "name": "DataSouq",
+      "inLanguage": ["en", "ar"],
+      "publisher": { "@id": "https://datasouq.github.io/#organization" }
+    },
+    {
+      "@type": "Dataset",
+      "@id": "https://datasouq.github.io/#contractors-saudi-arabia",
+      "name": "Contractors in Saudi Arabia",
+      "alternateName": "\u0627\u0644\u0645\u0642\u0627\u0648\u0644\u0648\u0646 \u0641\u064a \u0627\u0644\u0633\u0639\u0648\u062f\u064a\u0629",
+      "description": "A structured dataset of 17,304 contractors across Saudi Arabia, cleaned and deduplicated, covering 302 cities in 13 regions. 99.5% of records carry an email and a commercial registration, 31% are classified across 6 grades, and 1,624 are non-Saudi contractors. Delivered in Arabic and English.",
+      "inLanguage": ["ar", "en"],
+      "isAccessibleForFree": false,
+      "creator": { "@id": "https://datasouq.github.io/#organization" },
+      "provider": { "@id": "https://datasouq.github.io/#organization" },
+      "spatialCoverage": { "@type": "Place", "name": "Saudi Arabia" },
+      "encodingFormat": ["application/vnd.ms-excel", "text/csv"],
+      "variableMeasured": [
+        "company name",
+        "region",
+        "city",
+        "contractor classification",
+        "membership type",
+        "commercial registration"
+      ]
+    }
+  ]
+}
 </script>
 </head>
 <body>

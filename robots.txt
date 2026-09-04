@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://datasouq.github.io/sitemap.xml
