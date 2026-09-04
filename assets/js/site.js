@@ -186,8 +186,16 @@ const I18N = {
       node.setAttribute("title", value);
     });
 
+    /* The toggle always reads in the language you are not in: "العربية" on the
+       English page, "English" on the Arabic one. WCAG 3.1.2 asks that a phrase
+       in another language be markable, so the label carries the other lang —
+       without it a screen reader voices "العربية" with English phonemes, and
+       "English" with Arabic ones. The wordmark is tagged lang="en" in the
+       markup for the same reason, and the pinned footer already was. */
     const btn = $("lang-toggle");
-    btn.querySelector("span").textContent = t.langBtn;
+    const label = btn.querySelector("span");
+    label.textContent = t.langBtn;
+    label.setAttribute("lang", lang === "en" ? "ar" : "en");
     btn.setAttribute("aria-label", t.langBtnAria);
     $("theme-toggle").setAttribute("aria-label", t.themeAria);
 
