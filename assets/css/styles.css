@@ -184,18 +184,31 @@
   --text-4xl: 2.125rem;    /* 34px */
   --text-5xl: 2.875rem;    /* 46px */
 
-  /* Line heights are paired to each step, not derived from a global ratio.
-     globals.css overrides the font sizes but leaves Tailwind's paired
-     line-heights untouched, so these are those pairings. */
-  --lh-xs: 1rem;      /* 16px */
-  --lh-sm: 1.25rem;   /* 20px */
-  --lh-base: 1.5rem;  /* 24px */
-  --lh-lg: 1.75rem;   /* 28px */
-  --lh-xl: 1.75rem;   /* 28px */
-  --lh-2xl: 2rem;     /* 32px */
-  --lh-3xl: 2.25rem;  /* 36px */
-  --lh-4xl: 2.5rem;   /* 40px */
-  --lh-5xl: 1;        /* leading-none */
+  /* Line heights pair to each step. This table used to hard-code Tailwind's
+     absolute defaults — 24px against text-base, 40px against text-4xl — on the
+     stated grounds that globals.css overrides the sizes and "leaves Tailwind's
+     paired line-heights untouched". The second half is true and the conclusion
+     did not follow: Tailwind v4 states each pairing as a unitless RATIO, so
+     overriding a size rescales its line-height with it. Six of the nine were
+     wrong by 1.5 to 4px.
+
+     Measured on supabase.com to settle it, and every ratio came back exact:
+       text-xs    12 / 16      1.3333
+       text-base  15 / 22.5    1.5        (this table said 24)
+       text-xl    18 / 25.2    1.4        (said 28)
+       text-2xl   22 / 29.333  1.3333     (said 32)
+       text-4xl   34 / 37.778  1.1111     (said 40)
+     So the ratios are written out here instead of their products, which also
+     means a size change can no longer leave its line-height behind. */
+  --lh-xs: calc(var(--text-xs) * 1 / 0.75);          /* 16px    */
+  --lh-sm: calc(var(--text-sm) * 1.25 / 0.875);      /* 20px    */
+  --lh-base: calc(var(--text-base) * 1.5);           /* 22.5px  */
+  --lh-lg: calc(var(--text-lg) * 1.75 / 1.125);      /* 24.89px */
+  --lh-xl: calc(var(--text-xl) * 1.75 / 1.25);       /* 25.2px  */
+  --lh-2xl: calc(var(--text-2xl) * 2 / 1.5);         /* 29.33px */
+  --lh-3xl: calc(var(--text-3xl) * 2.25 / 1.875);    /* 33.6px  */
+  --lh-4xl: calc(var(--text-4xl) * 2.5 / 2.25);      /* 37.78px */
+  --lh-5xl: 1;                                       /* leading-none */
 
   /* globals.css sets font-normal to 450 for prose, 400 inside mono/code */
   --font-weight-normal: 450;
@@ -447,7 +460,11 @@ body {
   color: var(--foreground);
   font-size: var(--text-lg);
   font-weight: var(--font-weight-normal);
-  line-height: var(--lh-base);
+  /* Not --lh-base. supabase.com's body measures 16/24 — ratio 1.5, which is
+     Tailwind preflight's `html { line-height: 1.5 }`, not text-base's pairing.
+     Their unclassed paragraphs, the hero lead among them, all inherit it, so
+     the 16px prose below inherits this rather than naming a token. */
+  line-height: 1.5;
   font-synthesis-weight: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
@@ -749,7 +766,7 @@ ul { list-style: none; }
    = text-base on --muted-foreground. PageHeader stacks its children gap-4. */
 .hero__lead {
   font-size: var(--text-lg);
-  line-height: var(--lh-base);
+  /* line-height inherited: 1.5, as upstream's hero lead takes it */
   color: var(--muted-foreground);
   max-width: 56ch;
   margin: 0 auto 16px;
@@ -776,7 +793,7 @@ ul { list-style: none; }
   text-wrap: balance;
   margin-bottom: 4px;
 }
-.head p { font-size: var(--text-lg); line-height: var(--lh-base); color: var(--muted-foreground); max-width: 60ch; }
+.head p { font-size: var(--text-lg); color: var(--muted-foreground); max-width: 60ch; }
 
 /* ==========================================================================
    Cards — depth from surface layers and borders, never shadows
@@ -852,7 +869,7 @@ ul { list-style: none; }
    CardDescription is `text-sm text-foreground-lighter`, but on --card in the
    dark theme that measures 4.27:1, under the AA floor, so this keeps
    --muted-foreground: one notch stronger, 7.65:1. */
-.card h3 { font-size: var(--text-lg); line-height: var(--lh-base); margin-bottom: 6px; }
+.card h3 { font-size: var(--text-lg); margin-bottom: 6px; }
 .card p { font-size: var(--text-sm); line-height: var(--lh-sm); color: var(--muted-foreground); }
 
 /* ==========================================================================
@@ -870,7 +887,6 @@ ul { list-style: none; }
 
 .panel h2 { font-size: var(--text-xl); line-height: var(--lh-xl); margin-bottom: 4px; }
 .panel p {
-  line-height: var(--lh-base);
   font-size: var(--text-lg);
   color: var(--muted-foreground);
   max-width: 52ch;
