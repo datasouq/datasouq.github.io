@@ -42,7 +42,7 @@ const I18N = {
        affiliation with one. */
     datasetTitle: "Contractors in Saudi Arabia",
     datasetBody:
-      "A structured dataset of contractors across Saudi Arabia, cleaned and deduplicated. Message us for the full field list and the price.",
+      "A structured dataset of contractors across Saudi Arabia, cleaned and deduplicated, delivered in Arabic and English. Message us for the full field list and the price.",
     datasetCta: "Ask about this dataset",
 
     /* Every figure is measured from the file, not estimated, and re-measured
@@ -54,6 +54,13 @@ const I18N = {
        records carry a number worth dialling, and a metric would flatter it.
        Street addresses: 8.02%.
 
+       Email and commercial registration are filled on exactly the same 17,223
+       rows — both 99.53%, and the intersection is the same set — so listing
+       them separately would have shown the same figure twice for the same
+       records. They share one metric, and the freed row states what backs the
+       deduplication claim: id and membership_number are unique across all
+       17,304 rows, with no repeats.
+
        The classification metric says 31%, not 7. The column does hold seven
        distinct values, but "Unclassified" is one of them and covers 68.80% of
        the file. "7 classification grades" was true as a count of values and
@@ -63,8 +70,8 @@ const I18N = {
     m1Value: "17,304",  m1Label: "records",
     m2Value: "302",     m2Label: "cities across 13 regions",
     m3Value: "31%",     m3Label: "classified, across 6 grades",
-    m4Value: "99.5%",   m4Label: "carry an email",
-    m5Value: "AR + EN", m5Label: "in one file",
+    m4Value: "99.5%",   m4Label: "carry an email and a commercial registration",
+    m5Value: "100%",    m5Label: "unique membership number",
 
     heroTitle: "Structured data, ready to work with",
     heroLead:
@@ -101,7 +108,7 @@ const I18N = {
 
   ar: {
     dir: "rtl",
-    docTitle: "داتا سوق — بيانات منظّمة، جاهزة للشغل",
+    docTitle: "داتا سوق — بيانات منظّمة وجاهزة للاستخدام",
     langBtn: "English",
     langBtnAria: "التبديل إلى الإنجليزية",
     themeAria: "تبديل المظهر",
@@ -109,48 +116,48 @@ const I18N = {
 
     catalogueLabel: "الكتالوج",
     catalogueTitle: "قواعد البيانات",
-    catalogueLead: "قواعد بيانات منظّمة، منظّفة وبتتسلّم بالعربي والإنجليزي.",
+    catalogueLead: "قواعد بيانات منظّمة ومنقّحة، تُسلَّم بالعربية والإنجليزية.",
     datasetTitle: "المقاولون في السعودية",
     datasetBody:
-      "قاعدة بيانات منظّمة للمقاولين في المملكة، منظّفة ومن غير تكرار. كلّمنا تعرف قائمة الحقول كاملة والسعر.",
-    datasetCta: "اسأل عن القاعدة دي",
+      "قاعدة بيانات منظّمة للمقاولين في المملكة، منقّحة وخالية من التكرار، تُسلَّم بالعربية والإنجليزية. تواصل معنا للحصول على قائمة الحقول كاملة والسعر.",
+    datasetCta: "استفسر عن هذه القاعدة",
 
     m1Value: "17,304",   m1Label: "سجل",
     m2Value: "302",      m2Label: "مدينة في 13 منطقة",
-    m3Value: "31%",      m3Label: "مصنّفين على 6 درجات",
-    m4Value: "99.5%",    m4Label: "منهم بإيميل",
-    m5Value: "عربي + إنجليزي", m5Label: "في ملف واحد",
+    m3Value: "31%",      m3Label: "مصنّفون على 6 درجات",
+    m4Value: "99.5%",    m4Label: "ببريد إلكتروني وسجل تجاري",
+    m5Value: "100%",     m5Label: "برقم عضوية فريد",
 
-    heroTitle: "بيانات منظّمة، جاهزة للشغل",
+    heroTitle: "بيانات منظّمة، جاهزة للاستخدام",
     heroLead:
-      "داتا سوق بينظّف السجلات الخام ويشيل التكرار وينظّمها، وبيسلّمها قواعد بيانات جاهزة للاستيراد.",
-    ctaContact: "كلّمنا على واتساب",
-    ctaEmail: "ابعت إيميل",
+      "تنقّي داتا سوق السجلات الخام وتزيل التكرار وتنظّمها، ثم تسلّمها قواعد بيانات جاهزة للاستيراد.",
+    ctaContact: "تواصل معنا على واتساب",
+    ctaEmail: "أرسل بريدًا إلكترونيًا",
 
-    whatLabel: "اللي بنعمله",
-    whatTitle: "قواعد بيانات، تنظيف، وشغل مخصص",
+    whatLabel: "ما نقدّمه",
+    whatTitle: "قواعد بيانات، وتنقية، وأعمال مخصّصة",
     whatLead:
-      "النطاق ضيق بقصد. أي حاجة بنسلّمها بتبقى منظّفة ومنظّمة وموثّقة قبل ما توصلك.",
+      "النطاق محدود عن قصد. كل ما نسلّمه يكون منقّى ومنظّمًا وموثّقًا قبل أن يصلك.",
 
     card1Title: "قواعد بيانات جاهزة",
-    card1Body: "قواعد بيانات مجهّزة، من غير تكرار وبصيغة موحّدة، بتتسلّم إكسل أو CSV.",
-    card2Title: "تنظيف وتنظيم",
-    card2Body: "ابعتلنا الملفات المبعثرة. بنوحّد الصيغ ونشيل التكرار ونكمّل الناقص.",
-    card3Title: "طلبات مخصصة",
-    card3Body: "محتاج حاجة معيّنة؟ احكيلنا وإحنا نقولك لو نقدر نجهّزها.",
+    card1Body: "قواعد بيانات مجهّزة، خالية من التكرار وبصيغة موحّدة، تُسلَّم بصيغة Excel أو CSV.",
+    card2Title: "تنقية وتنظيم",
+    card2Body: "أرسل إلينا الملفات المبعثرة، ونتولّى توحيد الصيغ وإزالة التكرار واستكمال الناقص.",
+    card3Title: "طلبات مخصّصة",
+    card3Body: "تحتاج شيئًا بعينه؟ صِف لنا ما تريد ونخبرك إن كان بإمكاننا تجهيزه.",
 
-    /* صيغة فعل: العنوان بيطلب إجراء والوصف بيشرح قيمته */
-    soonTitle: "قول لنا بتدوّر على إيه",
+    /* صيغة فعل: العنوان يطلب إجراءً والوصف يشرح قيمته */
+    soonTitle: "أخبرنا بما تبحث عنه",
     soonBody:
-      "احكيلنا محتاج إيه وإحنا نقولك لو عندنا فعلًا ولا نقدر نجهّزه لك.",
+      "صِف لنا ما تحتاجه، ونخبرك إن كان متوفّرًا لدينا أو بإمكاننا تجهيزه لك.",
 
     waMessage: () =>
-      "السلام عليكم 👋\n\nشفت موقع داتا سوق وحابب أعرف أكتر عن قواعد " +
-      "البيانات اللي بتجهّزوها.\n\nممكن نتواصل؟",
+      "السلام عليكم 👋\n\nاطّلعت على موقع داتا سوق وأودّ معرفة المزيد عن " +
+      "قواعد البيانات المتاحة لديكم.\n\nهل يمكننا التواصل؟",
 
     waDatasetMessage: () =>
-      "السلام عليكم 👋\n\nمهتم بـ *المقاولون في السعودية*.\n\n" +
-      "ممكن تبعتوا لي قائمة الحقول كاملة والسعر؟",
+      "السلام عليكم 👋\n\nأنا مهتم بقاعدة بيانات *المقاولون في السعودية*.\n\n" +
+      "هل يمكنكم إرسال قائمة الحقول كاملة والسعر؟",
   },
 };
 

@@ -2,7 +2,7 @@
 
 We turn raw, messy records into clean, structured datasets you can actually use.
 
-بنحوّل السجلات الخام والمبعثرة لقواعد بيانات نضيفة تقدر تشتغل بيها فعلًا.
+نحوّل السجلات الخام والمبعثرة إلى قواعد بيانات نظيفة وجاهزة للعمل بها.
 
 🔗 **https://datasouq.github.io**
 
@@ -23,7 +23,8 @@ across the Kingdom, cleaned and deduplicated. Message us for the
 full field list and the price.
 
 **المقاولون في السعودية** — قاعدة بيانات منظّمة للمقاولين في المملكة،
-منظّفة ومن غير تكرار. كلّمنا تعرف قائمة الحقول كاملة والسعر.
+منقّحة وخالية من التكرار، تُسلَّم بالعربية والإنجليزية. تواصل معنا
+للحصول على قائمة الحقول كاملة والسعر.
 
 ---
 
