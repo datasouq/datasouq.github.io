@@ -54,25 +54,14 @@ const I18N = {
        records carry a number worth dialling, and a metric would flatter it.
        Street addresses: 8.02%.
 
-       These are measured against the file the buyer actually receives, not
-       against the working copy. That distinction bit once already: the
-       deliverable withholds the columns that tie a record back to the official
-       register — commercial_registration, membership_number, id, member_since,
-       company_size and training_credit_hours — while authorisation to publish
-       them is still being sorted out. The page had been claiming
-       "99.5% carry an email and a commercial registration" for a file that no
-       longer carries one. Re-measure here whenever the deliverable changes.
-
-       What survives in it: membership_type, grade, contractor_classification,
-       company_name, region, city, organization_email,
-       organization_mobile_number, organization_address.
+       Measure against the file a buyer actually receives, never against a
+       working copy. The two have diverged before and a metric here went stale
+       without anything on the page looking wrong. Whenever the delivered file
+       changes, re-measure all five before publishing.
 
        The fifth metric counts membership_type = "Non-Saudi Contractor":
        1,624 rows, 9.39%. Saudi Contractor is 15,581, and 18 rows are
        Affiliate-Organization.
-
-       Deduplication is not shown as a metric but was checked: id and
-       membership_number are both unique across all 17,304 rows.
 
        The classification metric says 31%, not 7. The column does hold seven
        distinct values, but "Unclassified" is one of them and covers 68.80% of
