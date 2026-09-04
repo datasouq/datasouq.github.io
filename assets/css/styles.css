@@ -224,6 +224,18 @@
 
   /* h-16 plus the 1px bottom border, which is what supabase.com's own bar
      measures. 60px was a number with nothing behind it. */
+  /* The channel row, described rather than hard-coded, because the subscribe
+     field is sized from it: their field and their icon row come out within 3%
+     of each other, and the row reads as one block only when they agree. Change
+     the count when a channel is added or removed and the field follows. */
+  --social-icon: 22px;
+  --social-gap: 20px;
+  --social-count: 7;
+  --social-row: calc(
+    var(--social-count) * var(--social-icon) +
+    (var(--social-count) - 1) * var(--social-gap)
+  );
+
   --nav-h: 65px;
   --container: 1280px;
   /* Tailwind ease-out, which the Button base class names. cubic-bezier(.4,0,.2,1)
@@ -854,6 +866,13 @@ ul { list-style: none; }
   .footer__grid { grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 16px; }
   .footer__brand { grid-column: span 2; }
   .footer__nav { grid-column: span 5; }
+
+  /* Their columns clear the brand block by about 72px, and none of it is
+     deliberate: their icon row is 232px inside a 299px track, so 67px of slack
+     plus the grid's 16px does it for free. Seven channels make our row 274px in
+     the same track, which leaves 25px — the columns end up sitting almost
+     against the field. This puts the separation back explicitly. */
+  .footer__nav { padding-inline-start: 32px; }
 }
 
 /* flex flex-col gap-8 */
@@ -885,16 +904,18 @@ ul { list-style: none; }
 .footer__thanks-title { color: var(--brand-text); }
 
 /* flex space-x-5 — 20px between icons */
-.footer__social { display: flex; flex-wrap: wrap; gap: 20px; }
+.footer__social { display: flex; flex-wrap: wrap; gap: var(--social-gap); }
 
 /* form is `flex flex-col gap-2`, and the label above it is a <p> at 14/20 in
-   --tertiary-foreground. */
+   --tertiary-foreground. Its width is the icon row's, so the two read as one
+   block instead of two of different lengths. */
 .footer__form {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
   gap: 8px;
-  width: 100%;
+  width: var(--social-row);
+  max-width: 100%;
 }
 
 .footer__form p {
@@ -904,10 +925,11 @@ ul { list-style: none; }
 }
 
 /* Input at size small — h-[34px] rounded-md border-control bg-field — with the
-   `text-xs px-2` the footer instance narrows it to, and `xl:max-w-[80%]`. */
+   `text-xs px-2` the footer instance narrows it to. Where they cap it at
+   `xl:max-w-[80%]` of the track, this fills the form, which is already the
+   width of the icon row above it. */
 .field {
   width: 100%;
-  max-width: 80%;
   height: 34px;
   padding-inline: 8px;
   border-radius: var(--radius);
@@ -1010,7 +1032,7 @@ ul { list-style: none; }
 /* flex-shrink:0 for the same reason .ctl svg needs it: the reset gives every
    svg `max-width: 100%`, and inside a flex parent with no definite width that
    resolves against nothing and collapses the icon to zero. */
-.social svg { width: 22px; height: 22px; flex-shrink: 0; }
+.social svg { width: var(--social-icon); height: var(--social-icon); flex-shrink: 0; }
 
 /* ==========================================================================
    Responsive
