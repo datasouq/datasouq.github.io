@@ -123,9 +123,15 @@
         punctuation lands on the correct side, inside a box that has not moved.
         The wordmark, the channel row and the copyright's Latin head do not
         turn — a name, a lockup, and a mixed run whose Arabic clause is isolated
-        so the © and the year stay at the left. The one thing that moves inside
-        a block is the Subscribe button, which goes to the right end of the
-        274px form: 96-176 in English against 320-370 in Arabic.
+        so the © and the year stay at the left. Nor does the form: it is a
+        column flex at align-items: flex-start, and flex-start is
+        direction-relative, so turning the form put the Subscribe button at the
+        right edge (96-176 in English against 320-370 in Arabic). Its two text
+        children turn instead — both 274px wide, so they fill the block and
+        nothing moves when they do. The button also holds its width, 80px in
+        both languages, against an intrinsic 79.63 for "Subscribe" and 46.88
+        for "اشترك"; the longer label sets the box and the shorter centres in
+        it. Measured: 24-104 at 375 and 768, 96-176 at 1280, in both.
 
      8. The metric row compresses MetricCard: 14px figure inline with its label,
         where upstream is an 18px tabular figure above a smaller one. Five
@@ -1508,11 +1514,27 @@ main:focus, main:focus-visible { outline: none; }
    head. That last one is a mixed run — "© 2026 DataSouq · " and then an Arabic
    clause — so only the clause becomes its own isolated RTL run. Turning the
    whole line would have carried the © and the year to the right of it. */
-:root[lang="ar"] .footer__form,
+:root[lang="ar"] .footer__form p,
+:root[lang="ar"] .footer__form .field,
 :root[lang="ar"] .footer__thanks,
 :root[lang="ar"] .footer__col {
   direction: rtl;
 }
+
+/* The form itself stays LTR so its own children keep their places. It is a
+   column flex at align-items: flex-start, and flex-start is direction-relative
+   — turning the form turned that into the right edge and took the Subscribe
+   button with it, 96-176 in English against 320-370 in Arabic. The two text
+   children turn instead: both are 274px wide and fill the block, so nothing
+   moves when they do, and the paragraph and the placeholder still read right.
+
+   The button also holds its size. It is sized by its label, and the two labels
+   are not the same length: measured at 12px in the same box, "Subscribe" sets
+   57.63px of text for a 79.63px control and "اشترك" sets 24.88px for 46.88px.
+   80px is the English width rounded up, so the longer label sets the box and
+   the shorter one centres in it — .btn is already inline-flex with
+   justify-content: center. Change either label and this needs re-measuring. */
+.footer__form .btn { min-width: 80px; }
 
 :root[lang="ar"] .footer__rights {
   direction: rtl;
