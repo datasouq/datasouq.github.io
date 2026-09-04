@@ -222,6 +222,11 @@
   /* Tailwind ease-out, which the Button base class names. cubic-bezier(.4,0,.2,1)
      is ease-in-out and made every control feel a beat behind the cursor. */
   --ease: cubic-bezier(0, 0, 0.2, 1);
+  /* Anything that just says `transition` or `transition-colors` — the footer
+     links and icons do — gets Tailwind's default curve instead, which is not
+     ease-out. Measured on supabase.com's footer: cubic-bezier(0.4, 0, 0.2, 1)
+     over 150ms. Only Button asks for ease-out, and only Button gets it. */
+  --ease-default: cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 /* --------------------------------------------------------------------------
@@ -812,59 +817,105 @@ ul { list-style: none; }
    Footer
    ========================================================================== */
 
-.footer {
-  /* Measured on supabase.com's own bottom bar, which is what this whole footer
-     is: a 1px --border stroke on top, 32px from that stroke down to the text,
-     and the container's own 40px underneath it. The 28px here before was mine.
+/* The footer takes py-24 — 96px — and no border of its own. The rule belongs
+   to the bar inside it, which is how upstream builds it. */
+.footer { padding-block: 96px; }
 
-     No top margin either: the last .section carries `last:pb-12`, so 48px of
-     clear space already sits above the stroke. */
-  border-top: 1px solid var(--border);
-  padding-block: 32px 40px;
+/* xl:grid xl:grid-cols-7 xl:gap-4, with the brand block on two of the seven
+   columns and the links on five. Below xl it stacks, gap-8. */
+.footer__grid { display: grid; gap: 32px; }
+
+@media (min-width: 1280px) {
+  .footer__grid { grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 16px; }
+  .footer__brand { grid-column: span 2; }
+  .footer__nav { grid-column: span 5; }
 }
 
-/* Pinned and English-only, matching the header: the bar keeps its layout and
-   its wording in both languages. */
-.footer__inner {
+/* flex flex-col gap-8 */
+.footer__brand {
   direction: ltr;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 32px;
+}
+
+.footer__pitch {
+  font-size: var(--text-sm);
+  line-height: var(--lh-sm);
+  color: var(--tertiary-foreground);
+  max-width: 34ch;
+}
+
+/* flex space-x-5 — 20px between icons */
+.footer__social { display: flex; flex-wrap: wrap; gap: 20px; }
+
+/* Their six columns sit in a grid because there are six of them. Two columns
+   laid out on a grid would each be 378px wide for a one-line list, so these
+   flow from the start at the same 16px column gap and 48px row gap. */
+.footer__cols { display: flex; flex-wrap: wrap; gap: 48px 16px; }
+.footer__col { min-width: 150px; }
+
+/* Column headings are h6 upstream — Manrope 600 at 15/22.5 in --foreground.
+   These are h2 so the document's heading order stays unbroken; the role is
+   what matters, not the level. */
+.footer__col h2 {
+  font-size: var(--text-base);
+  line-height: 1.5;
+  font-weight: 600;
+  color: var(--foreground);
+}
+
+/* ul is `mt-4 space-y-2` */
+.footer__col ul { margin-top: 16px; display: flex; flex-direction: column; gap: 8px; }
+
+/* `text-sm transition-colors text-foreground-lighter hover:text-foreground` */
+.footer__col a {
+  font-size: var(--text-sm);
+  line-height: var(--lh-sm);
+  color: var(--tertiary-foreground);
+  transition: color 0.15s var(--ease-default);
+}
+.footer__col a:hover { color: var(--foreground); }
+
+/* The bar: `border-default mt-32 flex justify-between border-t pt-8`, which in
+   Tailwind's 4px units is a 1px --border rule, 128px above it and 32px below.
+   The 128px is calibrated to a 615px-tall footer block; ours is a third of
+   that, so this takes the page's own 48px rhythm instead and keeps their 32px.
+
+   The copyright is a <small> at 12/16 upstream — typography.css's
+   `small { text-compact }` showing through. */
+.footer__bar {
+  direction: ltr;
+  margin-top: 48px;
+  padding-top: 32px;
+  border-top: 1px solid var(--border);
   display: flex;
   flex-wrap: wrap;
   gap: 14px;
   align-items: center;
   justify-content: space-between;
-  /* `© Supabase Inc` is a <small> at 12/16 in --tertiary-foreground, which is
-     typography.css's `small { text-compact }` rule showing through. This bar
-     was running at 14/20. */
   font-size: var(--text-xs);
   line-height: var(--lh-xs);
   color: var(--tertiary-foreground);
 }
 
-/* GitHub sits beside the copyright — it points at the source, not at a way to
-   reach us. The right-hand row is contact channels only. */
-.footer__meta { display: flex; align-items: center; gap: 8px; }
-
-/* Order is inherited from the pinned .footer__inner above. 20px is the gap
-   between supabase.com's own footer icons. */
-.footer__links { display: flex; flex-wrap: wrap; gap: 20px; }
-
 /* Bare 22px icons, no box behind them. These had been built as small text-
-   variant Buttons — 34px, rounded, hover:bg-accent — but the Button variant is
-   for controls, and these are links in a footer. supabase.com writes its own as
+   variant Buttons — 34px, rounded, hover:bg-accent — but that variant is for
+   controls, and these are links in a footer. Upstream writes its own as
      text-foreground-lighter hover:text-foreground transition
-   at 22px with a 20px gap and no padding, radius or border, and that is what
-   they are now. Only the colour moves on hover, over 150ms.
+   at 22px with a 20px gap and no padding, radius or border. Only the colour
+   moves, over 150ms on Tailwind's default curve.
 
-   22px is under the 24px that WCAG 2.5.8 asks of a target, but the rule's
-   spacing exception carries it: a 24px circle centred on each icon needs 24px
-   between centres and the 20px gap puts them 42px apart, so no two circles
-   meet. */
+   22px is under the 24px WCAG 2.5.8 asks of a target, but the rule's spacing
+   exception carries it: a 24px circle centred on each icon needs 24px between
+   centres, and the 20px gap puts them 42px apart. */
 .social {
   display: inline-flex;
   align-items: center;
   justify-content: center;
   color: var(--tertiary-foreground);
-  transition: color 0.15s var(--ease);
+  transition: color 0.15s var(--ease-default);
 }
 .social:hover { color: var(--foreground); }
 /* flex-shrink:0 for the same reason .ctl svg needs it: the reset gives every
