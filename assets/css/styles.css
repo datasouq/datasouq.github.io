@@ -65,11 +65,12 @@
         are what compensate for their loss; without them nothing would mark the
         line as a label. Reasoned in full at .head__label.
 
-     4. CardDescription is `text-foreground-lighter` upstream, which measures
-        4.27:1 on --card in dark — under the AA floor. Card bodies keep
-        --muted-foreground, one notch stronger at 7.65:1. This does NOT extend
-        to text on --background, where tertiary measures 5.42:1 light and
-        4.59:1 dark and is used as upstream has it.
+     4. Every body paragraph keeps --muted-foreground where upstream uses
+        --foreground-lighter. On --card that token measures 4.27:1 in dark and
+        fails AA outright. On --background it measures 5.42:1 light and 4.59:1
+        dark — passing, but by 0.09 at 16px/450, about 2% of headroom, on a
+        colour that moves with any knob edit. --muted-foreground is 9.29:1 and
+        8.22:1. Two surfaces, one answer, for two different reasons.
 
      5. The brand icon plate (.card__icon) has no upstream source at all. Every
         upstream icon in a card sits bare, tinted with a text class — icons.mdx
@@ -114,6 +115,16 @@
    SVGs, not Lucide's drawings. Only the footer's channel marks are normalised
    to their box, because those come from six different designers and share no
    optical system.
+
+   Nor is the stroke width, though the attributes disagree: Lucide's own 2 sits
+   on the smaller icons and 1.5 on the panel's. What upstream fixes is the
+   PAINTED hairline — 1.5 user units at a 24px box, so 1.5 device px — and a
+   stroke scales with its box. Measured: 2 at 18px paints 1.5px on the card
+   plates and the nav controls, 1.5 at 24px paints 1.5px on the panel, and only
+   the 16px metric icons come in under at 1.333px. Setting every attribute to
+   1.5 for the look of consistency would paint 1.125px and 1.0px instead —
+   thinner than upstream everywhere but the panel, and less uniform than what
+   is here.
 
    Unused but kept: --secondary and --elevation-3 complete the elevation ladder
    whose other two rungs are painted; --border-stronger completes the border
@@ -379,6 +390,10 @@
    It sets no --elevation-step and no --contrast, so both fall back to the
    derived defaults above, exactly as upstream.
    -------------------------------------------------------------------------- */
+[data-theme="dark"] .nav {
+  background: color-mix(in srgb, var(--background) 95%, transparent);
+}
+
 [data-theme="dark"] {
   --hue: 159;
   --chroma: 0.014;
@@ -567,8 +582,10 @@ ul { list-style: none; }
 ::selection { background: var(--brand-plate); color: var(--foreground); }
 
 /* The skip link's target takes focus programmatically, so it must not paint the
-   shared ring round the whole page body. `outline-hidden` in upstream's own
-   contract for this element. */
+   shared ring round the whole page body. This is the one place accessibility.mdx's
+   "never use outline-none without a replacement" does not apply, and the reason
+   is that its own skip-to-content contract asks for it: the landmark is a
+   destination, not a control, and the ring belongs to the link that sent you. */
 main:focus, main:focus-visible { outline: none; }
 
 /* The design system's own sr-only, for text that only a screen reader needs.
@@ -708,14 +725,6 @@ main:focus, main:focus-visible { outline: none; }
   border-color: var(--border-control-hover);
 }
 
-/* outline: bg-transparent / border-strong / hover:border-foreground-muted */
-.btn--outline {
-  background: transparent;
-  color: var(--foreground);
-  border-color: var(--border-strong);
-}
-.btn--outline:hover { border-color: var(--tertiary-foreground); }
-
 /* ==========================================================================
    Nav
    ========================================================================== */
@@ -726,19 +735,15 @@ main:focus, main:focus-visible { outline: none; }
   z-index: 40;
   height: var(--nav-h);
   border-bottom: 1px solid var(--border);
-  /* Their bar carries no background at all — just blur(4px) over whatever
-     scrolls under it. That works on a dark-first site: their light bar text
-     stays legible over blurred dark content. Measured here, a transparent bar
-     would still clear AA in both themes (light 19.18 and 8.78, dark 12.66 and
-     6.34 against the worst backdrop on the page), so contrast is not the reason
-     to keep the tint. Legibility of the backdrop is: this page defaults to
-     light, and near-black hero text smeared 4px under near-black bar text
-     mottles it in a way their palette never has to deal with.
-
-     So the tint stays and the blur is theirs. At 85% opacity the radius is
-     nearly invisible anyway, which is the point: 12px was a number of mine with
-     nothing behind it. */
-  background: color-mix(in srgb, var(--background) 85%, transparent);
+  /* `bg-background/90 dark:bg-background/95`, on a layer behind a transparent
+     <nav> that carries only `backdrop-blur-xs`. I had written a paragraph here
+     claiming their bar has no background at all and arguing at length for
+     keeping a tint they already have — I had looked for the fill inside the nav
+     and their layer is a sibling. Both numbers come from source; the tint is
+     stronger in dark because the same opacity shows more through a dark
+     surface. Painted on the element rather than on a layer of its own: at these
+     opacities the paint order does not show. */
+  background: color-mix(in srgb, var(--background) 90%, transparent);
   backdrop-filter: blur(4px);
   -webkit-backdrop-filter: blur(4px);
 }
@@ -750,9 +755,6 @@ main:focus, main:focus-visible { outline: none; }
    The page body below still mirrors normally. */
 .nav__inner { height: 100%; display: flex; align-items: center; gap: 12px; direction: ltr; }
 
-/* The block moves to the right in RTL, as it should, but its contents must not
-   reorder: a logo lockup is a fixed asset. Without this the mark lands after
-   the Latin wordmark and reads "DataSouq D". */
 /* Wordmark. One word set in two weights of Space Grotesk: "Data" light and
    muted, "Souq" medium and full contrast. No mark, no space, no separator —
    the weight and tone shift carry the break. direction: ltr keeps it upright
@@ -798,10 +800,15 @@ main:focus, main:focus-visible { outline: none; }
    so it holds the wider of the two. */
 #lang-toggle { min-width: 96px; }
 
-/* IconContainerVariants in Button.tsx: size "small" -> 18px icons.
+/* IconContainerVariants in Button.tsx: size "small" -> 18px icons, and for the
+   outline variant `text-foreground-lighter`, which compat.css aliases to
+   --tertiary-foreground — a tone below the label, which stays --foreground.
+   These were both at full strength. It reaches the glyphs because the SVGs are
+   stroke="currentColor".
+
    flex-shrink:0 is required — without it the icon collapses to 0 width when
    the label pushes the button past the space available in the nav. */
-.ctl svg { width: 18px; height: 18px; flex-shrink: 0; }
+.ctl svg { width: 18px; height: 18px; flex-shrink: 0; color: var(--tertiary-foreground); }
 
 [data-theme="dark"] .icon-sun { display: block; }
 [data-theme="dark"] .icon-moon { display: none; }
@@ -884,14 +891,15 @@ main:focus, main:focus-visible { outline: none; }
 
 .head { margin-bottom: 24px; }
 
-/* The eyebrow. It is not an invention, which deviation 5 used to imply: apps/www
+/* The eyebrow — deviation 3. It is not an invention, which the note here used
+   to imply: apps/www
    defines it three times over — SectionHeader's subtitle span, the `.label`
    utility in its globals.css, and typography.css's `heading-meta` — and all
    three agree on 12px, mono, uppercase, tracking-wider, --foreground-lighter.
 
    Three of those five properties cannot come along. Uppercase carries no
    meaning in Arabic, IBM Plex Sans Arabic has no mono companion, and positive
-   tracking breaks Arabic joins — the same reasoning already given for Badge and
+   tracking breaks Arabic joins — the same reasoning deviation 2 gives for
    CardTitle. What is left of a label once case, family and tracking are gone is
    nothing, so two things compensate: 14px instead of 12, and the brand colour
    instead of the neutral. The colour is the arguable half — brand green is also
@@ -923,12 +931,15 @@ main:focus, main:focus-visible { outline: none; }
      subtitle glued to it. */
   margin-bottom: 16px;
 }
-/* --foreground-lighter in every apps/www reference, which compat.css aliases to
-   --tertiary-foreground. Measured on --background: 5.42:1 light, 4.59:1 dark —
-   both over the 4.5:1 floor. Deviation 4's contrast argument does not reach
-   here: that one is about --card, where tertiary lands at 4.27:1 and fails.
-   The 60ch measure is 534px in Inter, inside upstream's 512-768px range. */
-.head p { font-size: var(--text-lg); color: var(--tertiary-foreground); max-width: 512px; }
+/* Upstream is --foreground-lighter, i.e. --tertiary-foreground, in every
+   apps/www reference. I took it and then took it back: on --background that
+   computes to 5.42:1 light and 4.59:1 dark, and this is 16px at weight 450, so
+   the floor is 4.5:1 for normal text — 0.09 of headroom, about 2%, on a colour
+   that moves with any knob edit. --muted-foreground is 9.29:1 and 8.22:1. The
+   same reasoning keeps .hero__lead where it is; the honest part of the finding
+   was that the old justification cited PageHeaderDescription, a Studio
+   component the hero and the sections both explicitly do not follow. */
+.head p { font-size: var(--text-lg); color: var(--muted-foreground); max-width: 512px; }
 
 /* ==========================================================================
    Cards — depth from surface layers and borders, never shadows
@@ -952,9 +963,11 @@ main:focus, main:focus-visible { outline: none; }
   .cards:has(> .card + .card) { grid-template-columns: repeat(3, minmax(0, 1fr)); }
 }
 
-/* Card: rounded-lg border bg-surface-100 shadow-xs, py-4 px-(--card-padding-x).
-   The header/content/footer split with internal border-b is skipped — these
-   cards hold a title and two lines, so there is nothing to divide. */
+/* Card: rounded-lg border bg-surface-100 shadow-xs, and p-6 rather than
+   card.tsx's py-4 px-(--card-padding-x) — deviation 2 and the www fork.
+   CardHeader / CardContent / CardFooter are not split out: the three small
+   cards hold a title and two lines, so there is nothing to divide. The dataset
+   card does divide, once, and paints that rule on .metrics instead. */
 .card {
   /* card.tsx opens with `overflow-hidden rounded-lg border bg-surface-100
      text-card-foreground shadow-xs`. The overflow was the one part missing. */

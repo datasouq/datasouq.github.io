@@ -34,8 +34,7 @@ const I18N = {
        "العربية, switch to Arabic" — the visible text first, in its own
        language, then the clarifier in the page's language. */
     langBtnHint: ", switch to Arabic",
-    themeToDark: "Switch to dark theme",
-    themeToLight: "Switch to light theme",
+    themeName: "Dark theme",
     skipLink: "Skip to content",
 
     catalogueLabel: "Catalogue",
@@ -117,8 +116,7 @@ const I18N = {
     docTitle: "داتا سوق — بيانات منظّمة وجاهزة للاستخدام",
     langBtn: "English",
     langBtnHint: "، التبديل إلى الإنجليزية",
-    themeToDark: "التبديل إلى المظهر الغامق",
-    themeToLight: "التبديل إلى المظهر الفاتح",
+    themeName: "المظهر الغامق",
     skipLink: "تخطَّ إلى المحتوى",
 
     catalogueLabel: "الكتالوج",
@@ -229,14 +227,20 @@ const I18N = {
   }
 
   /* The sun/moon swap is CSS-only, so without this a screen reader gets no
-     confirmation of which theme is now in effect. aria-pressed carries the
-     state and the label names the action, both re-derived whenever either the
-     theme or the language changes. */
+     confirmation of which theme is now in effect.
+
+     aria-pressed with a STATE-NEUTRAL name, not with an action-worded one: the
+     two together announce "Switch to dark theme, toggle button, pressed", which
+     is the classic toggle anti-pattern — the label says one thing and the state
+     says its opposite. The name stays "Dark theme" and aria-pressed carries
+     whether it is on. Upstream exposes state through a radio group in a
+     dropdown instead, which is more chrome than two controls justify, so this
+     pairing is ours. */
   function describeTheme() {
     const dark = document.documentElement.getAttribute("data-theme") === "dark";
     const btn = $("theme-toggle");
     btn.setAttribute("aria-pressed", String(dark));
-    btn.setAttribute("aria-label", dark ? I18N[lang].themeToLight : I18N[lang].themeToDark);
+    btn.setAttribute("aria-label", I18N[lang].themeName);
   }
 
   function toggleTheme() {
@@ -244,6 +248,8 @@ const I18N = {
       document.documentElement.getAttribute("data-theme") === "dark" ? "light" : "dark";
     document.documentElement.setAttribute("data-theme", next);
     store("datasouq-theme", next);
+    const meta = $("theme-color");
+    if (meta) meta.setAttribute("content", next === "dark" ? "#151816" : "#fdfdfd");
     describeTheme();
   }
 
