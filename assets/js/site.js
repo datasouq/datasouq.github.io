@@ -305,6 +305,13 @@ const I18N = {
           "?subject=" + encodeURIComponent("Subscribe to DataSouq updates") +
           "&body=" + encodeURIComponent(body);
         form.reset();
+
+        /* Swap the form for the confirmation, as theirs does. */
+        const thanks = document.querySelector(".footer__thanks");
+        if (thanks) {
+          form.hidden = true;
+          thanks.hidden = false;
+        }
       });
     }
   }

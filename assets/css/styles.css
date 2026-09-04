@@ -865,12 +865,24 @@ ul { list-style: none; }
   gap: 32px;
 }
 
-.footer__pitch {
+/* Their footer logo is 160x30 where the header's is 124x24 — the brand is
+   deliberately larger down here. 22px against the nav's 16px is 1.375x, the
+   closest the scale gets to their 1.29x. */
+.brand--footer { font-size: var(--text-2xl); }
+
+/* The confirmation that replaces the form, at the size of the label it stands
+   in for: the first line in brand text, the second in the body tone. */
+.footer__thanks { display: flex; flex-direction: column; gap: 4px; }
+/* An author `display` beats the UA rule behind the hidden attribute, so without
+   this the confirmation shows on load. Same trap for anything given a display
+   value and toggled with [hidden]. */
+[hidden] { display: none !important; }
+.footer__thanks p {
   font-size: var(--text-sm);
   line-height: var(--lh-sm);
   color: var(--tertiary-foreground);
-  max-width: 34ch;
 }
+.footer__thanks-title { color: var(--brand-text); }
 
 /* flex space-x-5 — 20px between icons */
 .footer__social { display: flex; flex-wrap: wrap; gap: 20px; }
@@ -914,11 +926,24 @@ ul { list-style: none; }
 /* hover:border-control-hover and focus:border-control-hover, both the same */
 .field:hover, .field:focus { border-color: var(--border-control-hover); }
 
-/* Their six columns sit in a grid because there are six of them. Two columns
-   laid out on a grid would each be 378px wide for a one-line list, so these
-   flow from the start at the same 16px column gap and 48px row gap. */
-.footer__cols { display: flex; flex-wrap: wrap; gap: 48px 16px; }
-.footer__col { min-width: 150px; }
+/* Their grid, not a flex row sized to its content. Six equal tracks across the
+   five-column span works out at 115px each, which is what theirs measures, and
+   long labels wrap inside a track exactly as `Events & Webinars` does over
+   there. Laying these out by content width instead gave two columns of 182px
+   and 150px that lined up with nothing.
+
+   Two of the six tracks are filled. The rest is empty because this site has
+   four footer links and theirs has fifty; the grid is right and the content
+   will grow into it. */
+.footer__cols {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 48px 16px;
+}
+
+@media (min-width: 1280px) {
+  .footer__cols { grid-template-columns: repeat(6, minmax(0, 1fr)); }
+}
 
 /* Column headings are h6 upstream — Manrope 600 at 15/22.5 in --foreground.
    These are h2 so the document's heading order stays unbroken; the role is

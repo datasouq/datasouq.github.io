@@ -371,10 +371,11 @@
     <div class="footer__grid">
 
       <div class="footer__brand">
-        <a class="brand" href="#top" tabindex="0" lang="en" aria-label="DataSouq — home"
+        <!-- Larger than the one in the nav, because theirs is: their footer logo
+             measures 160x30 against 124x24 in the header, about 1.29x. 22px over
+             16px is 1.375, the nearest step on the scale. -->
+        <a class="brand brand--footer" href="#top" tabindex="0" lang="en" aria-label="DataSouq — home"
            ><span class="brand__data">Data</span><span class="brand__souq">Souq</span></a>
-
-        <p class="footer__pitch">Structured datasets, cleaned and delivered in Arabic and English.</p>
 
         <!-- Contact channels. GitHub is not among them: it points at the source,
              not at a way to reach us, so it sits with the copyright below. -->
@@ -465,6 +466,18 @@
                  aria-label="Your email address" tabindex="0">
           <button class="btn btn--primary btn--tiny" type="submit" tabindex="0">Subscribe</button>
         </form>
+
+        <!-- Swapped in for the form once it is submitted, the way theirs is.
+             The wording is deliberately not "Thanks for subscribing": all this
+             page can do is open a message: until the visitor sends it, nothing
+             has reached us and saying otherwise would be untrue. Styled from our
+             own tokens at the size the label it replaces uses — their success
+             state was not measured, because measuring it would have meant
+             submitting a subscription on someone else's site. -->
+        <div class="footer__thanks" role="status" aria-live="polite" hidden>
+          <p class="footer__thanks-title">Check your mail app</p>
+          <p>We opened a message with the request ready. Send it and you are on the list.</p>
+        </div>
       </div>
 
       <div class="footer__nav">
