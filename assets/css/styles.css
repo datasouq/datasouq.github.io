@@ -36,8 +36,9 @@
         --muted-foreground instead, one notch stronger at 7.65:1.
      5. The section eyebrow has no PageSectionSummary equivalent. Kept as a
         landing-page convention, by choice.
-     6. The hero is a bordered band, so it takes a bottom padding matching its
-        pt-12. PageHeader has no bottom padding because it has no band.
+     6. The hero is a landing band, not a PageHeader, so it is padded from
+        supabase.com's hero (96px top clear of the nav, 64px bottom) rather than
+        from PageHeader's pt-12 with no bottom at all.
      7. Neither the header bar nor the footer bar mirrors in Arabic, which the
         RTL convention would normally have them do, and the footer stays in
         English throughout. Asked for directly: a language toggle that relocates
@@ -201,8 +202,9 @@
   --font-brand: "Space Grotesk", "Inter", "Helvetica Neue", Helvetica,
     ui-sans-serif, system-ui, sans-serif;
 
-  --nav-h: 60px;
-  /* supabase.com: max-w-[1280px] with px-6, stepping to px-24 at xl. */
+  /* h-16 plus the 1px bottom border, which is what supabase.com's own bar
+     measures. 60px was a number with nothing behind it. */
+  --nav-h: 65px;
   --container: 1280px;
   /* Tailwind ease-out, which the Button base class names. cubic-bezier(.4,0,.2,1)
      is ease-in-out and made every control feel a beat behind the cursor. */
@@ -488,7 +490,13 @@ ul { list-style: none; }
   padding-inline: 24px;
 }
 
-/* px-6 everywhere, px-24 from xl — measured on supabase.com. */
+/* px-6 / lg:px-12 / xl:px-24 — measured on supabase.com at 768, 1024 and 1280:
+   24px, 48px, 96px. The middle step was missing, so everything between 1024 and
+   1279 sat half as far from the edge as the reference. */
+@media (min-width: 1024px) {
+  .container { padding-inline: 48px; }
+}
+
 @media (min-width: 1280px) {
   .container { padding-inline: 96px; }
 }
@@ -635,7 +643,11 @@ ul { list-style: none; }
    ========================================================================== */
 
 .hero {
-  padding-block: 96px; /* a landing hero, not a PageHeader: the 46px heading needs the room */
+  /* supabase.com's hero band measures pt-40 / pb-16. Its nav floats over the
+     band, so 160px of top padding is really 95px of clear space beneath a 65px
+     bar — which is this 96px, since our nav is sticky and takes its own room.
+     The 64px bottom is theirs unchanged. */
+  padding-block: 96px 64px;
   text-align: center;
   border-bottom: 1px solid var(--border);
 }
@@ -691,8 +703,9 @@ ul { list-style: none; }
    Cards — depth from surface layers and borders, never shadows
    ========================================================================== */
 
-/* 210px keeps three cards on one row inside the 768px container at its widest
-   padding: 768 - 2x40 = 688 content, and 3x210 + 2x16 gaps = 662. */
+/* 3x210 + 2x16 gaps = 662px of content, so three cards hold their row down to
+   a 710px viewport and drop to two below it. The old note here did this sum
+   against a 768px container, which this page has not had for a while. */
 .cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 16px; }
 
 /* Card: rounded-lg border bg-surface-100 shadow-xs, py-4 px-(--card-padding-x).
@@ -793,8 +806,10 @@ ul { list-style: none; }
 
 .footer {
   border-top: 1px solid var(--border);
+  /* No top margin: the last .section carries `last:pb-12`, so there are already
+     48px above this border. The 24px that used to sit here made it 72px, which
+     matched nothing. */
   padding-block: 28px;
-  margin-top: 24px;
 }
 
 /* Pinned and English-only, matching the header: the bar keeps its layout and
