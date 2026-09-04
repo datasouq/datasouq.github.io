@@ -45,11 +45,24 @@ const I18N = {
       "A structured dataset of contractors across Saudi Arabia, cleaned and deduplicated. Message us for the full field list and the price.",
     datasetCta: "Ask about this dataset",
 
-    /* Every figure is measured from the file, not estimated. Phone numbers are
-       deliberately absent from the metrics: only 31.7% are usable. */
+    /* Every figure is measured from the file, not estimated, and re-measured
+       against it before each change.
+
+       Two things are deliberately not stated. Phone numbers: the column is
+       filled on 33.21% of rows, but only 45% of those parse as a Saudi mobile
+       — 111111111, 123456789, 0 and friends make up the rest — so 14.95% of
+       records carry a number worth dialling, and a metric would flatter it.
+       Street addresses: 8.02%.
+
+       The classification metric says 31%, not 7. The column does hold seven
+       distinct values, but "Unclassified" is one of them and covers 68.80% of
+       the file. "7 classification grades" was true as a count of values and
+       false as a description of the data: it reads as though every record
+       carries a grade when two in three carry none. What is real is 5,398
+       classified contractors, 31.20%, spread over six grades. */
     m1Value: "17,304",  m1Label: "records",
     m2Value: "302",     m2Label: "cities across 13 regions",
-    m3Value: "7",       m3Label: "classification grades",
+    m3Value: "31%",     m3Label: "classified, across 6 grades",
     m4Value: "99.5%",   m4Label: "carry an email",
     m5Value: "AR + EN", m5Label: "in one file",
 
@@ -104,7 +117,7 @@ const I18N = {
 
     m1Value: "17,304",   m1Label: "سجل",
     m2Value: "302",      m2Label: "مدينة في 13 منطقة",
-    m3Value: "7",        m3Label: "درجات تصنيف",
+    m3Value: "31%",      m3Label: "مصنّفين على 6 درجات",
     m4Value: "99.5%",    m4Label: "منهم بإيميل",
     m5Value: "عربي + إنجليزي", m5Label: "في ملف واحد",
 
