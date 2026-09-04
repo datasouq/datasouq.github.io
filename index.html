@@ -148,67 +148,6 @@
          is carried by weight and tone, not by a space or a separator. -->
     <a class="brand" href="#top" tabindex="0" lang="en" aria-label="DataSouq — home"
        ><span class="brand__data">Data</span><span class="brand__souq">Souq</span></a>
-
-    <div class="nav__actions">
-      <!--
-        The design system's ToggleGroup, read from source rather than copied off
-        a screenshot. toggle-group.tsx's root is `flex items-center
-        justify-center gap-1`; each item is toggleVariants(), whose base is
-          inline-flex items-center justify-center rounded-md font-medium
-          transition-colors text-foreground-light hover:bg-muted
-          aria-checked:bg-accent aria-checked:text-foreground focus-ring
-        with variant `default` = `bg-transparent` and size `tiny` =
-        `h-[26px] px-2.5 text-xs`. So: the off option is --muted-foreground on
-        nothing, the on option is --accent behind --foreground, and the size is
-        the one the rest of this bar already uses.
-
-        The globe sits OUTSIDE the radiogroup, not in it: a radiogroup's
-        children are its radios, and a decorative icon among them is a thing to
-        explain rather than a thing to do.
-
-        aria-checked, not aria-pressed. The component's own class string keys off
-        `aria-checked:`, which is radio semantics, and these two options are
-        mutually exclusive — which is what a radiogroup means and what
-        aria-pressed on a pair does not say. Each name is the visible code plus
-        the language spelled out, so it reads "EN, English": WCAG 2.5.3 wants the
-        visible text inside the name, and "EN" alone does not say what it is.
-      -->
-      <div class="langctl">
-        <!-- Lucide: globe -->
-        <svg class="langctl__globe" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-          <circle cx="12" cy="12" r="10"/>
-          <path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"/>
-          <path d="M2 12h20"/>
-        </svg>
-
-        <div class="langgroup" id="lang-group" role="radiogroup"
-             aria-label="Language" data-i18n-attr="aria-label:langGroupLabel">
-          <button class="langgroup__item" type="button" role="radio" data-lang="en"
-                  aria-checked="true" tabindex="0">EN<span class="sr-only" data-i18n="langEnFull">, English</span></button>
-          <button class="langgroup__item" type="button" role="radio" data-lang="ar"
-                  aria-checked="false" tabindex="-1">AR<span class="sr-only" data-i18n="langArFull">, Arabic</span></button>
-        </div>
-      </div>
-
-      <button class="ctl ctl--icon" id="theme-toggle" tabindex="0" aria-label="Toggle theme">
-        <!-- Lucide: sun -->
-        <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-          <circle cx="12" cy="12" r="4"/>
-          <path d="M12 2v2"/>
-          <path d="M12 20v2"/>
-          <path d="m4.93 4.93 1.41 1.41"/>
-          <path d="m17.66 17.66 1.41 1.41"/>
-          <path d="M2 12h2"/>
-          <path d="M20 12h2"/>
-          <path d="m6.34 17.66-1.41 1.41"/>
-          <path d="m19.07 4.93-1.41 1.41"/>
-        </svg>
-        <!-- Lucide: moon -->
-        <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-          <path d="M20.985 12.486a9 9 0 1 1-9.473-9.472c.405-.022.617.46.402.803a6 6 0 0 0 8.268 8.268c.344-.215.825-.004.803.401"/>
-        </svg>
-      </button>
-    </div>
   </div>
 </header>
 
@@ -566,13 +505,80 @@
     <div class="footer__bar">
       <span>© <span id="year">2026</span> DataSouq ·
         <span class="footer__rights" data-i18n="rights">All rights reserved.</span></span>
-      <a class="social" href="https://github.com/datasouq" target="_blank"
-         rel="noopener noreferrer" tabindex="0" aria-label="GitHub" title="GitHub">
-        <!-- Custom fill-only icon: GitHub is a brand logo, not in Lucide -->
-        <svg viewBox="0 0 24 24" fill="none" stroke="none" aria-hidden="true">
-          <path fill="currentColor" d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"/>
-        </svg>
-      </a>
+
+      <!-- Language, theme and the source link, in that order, at the bar's
+           right edge. These two controls were in the header bar; the tab order
+           is better for it, since a keyboard user reaching the page no longer
+           passes two settings before the first sentence of content. -->
+      <div class="footer__bar-actions">
+        <!--
+          The design system's ToggleGroup, read from source rather than copied off
+          a screenshot. toggle-group.tsx's root is `flex items-center
+          justify-center gap-1`; each item is toggleVariants(), whose base is
+            inline-flex items-center justify-center rounded-md font-medium
+            transition-colors text-foreground-light hover:bg-muted
+            aria-checked:bg-accent aria-checked:text-foreground focus-ring
+          with variant `default` = `bg-transparent` and size `tiny` =
+          `h-[26px] px-2.5 text-xs`. So: the off option is --muted-foreground on
+          nothing, the on option is --accent behind --foreground, and the size
+          is tiny — which is what this bar's own 12px type asks for, and what it
+          was when both controls sat in the header.
+
+          The globe sits OUTSIDE the radiogroup, not in it: a radiogroup's
+          children are its radios, and a decorative icon among them is a thing to
+          explain rather than a thing to do.
+
+          aria-checked, not aria-pressed. The component's own class string keys off
+          `aria-checked:`, which is radio semantics, and these two options are
+          mutually exclusive — which is what a radiogroup means and what
+          aria-pressed on a pair does not say. Each name is the visible code plus
+          the language spelled out, so it reads "EN, English": WCAG 2.5.3 wants the
+          visible text inside the name, and "EN" alone does not say what it is.
+        -->
+        <div class="langctl">
+          <!-- Lucide: globe -->
+          <svg class="langctl__globe" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <circle cx="12" cy="12" r="10"/>
+            <path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"/>
+            <path d="M2 12h20"/>
+          </svg>
+
+          <div class="langgroup" id="lang-group" role="radiogroup"
+               aria-label="Language" data-i18n-attr="aria-label:langGroupLabel">
+            <button class="langgroup__item" type="button" role="radio" data-lang="en"
+                    aria-checked="true" tabindex="0">EN<span class="sr-only" data-i18n="langEnFull">, English</span></button>
+            <button class="langgroup__item" type="button" role="radio" data-lang="ar"
+                    aria-checked="false" tabindex="-1">AR<span class="sr-only" data-i18n="langArFull">, Arabic</span></button>
+          </div>
+        </div>
+
+        <button class="ctl ctl--icon" id="theme-toggle" tabindex="0" aria-label="Toggle theme">
+          <!-- Lucide: sun -->
+          <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <circle cx="12" cy="12" r="4"/>
+            <path d="M12 2v2"/>
+            <path d="M12 20v2"/>
+            <path d="m4.93 4.93 1.41 1.41"/>
+            <path d="m17.66 17.66 1.41 1.41"/>
+            <path d="M2 12h2"/>
+            <path d="M20 12h2"/>
+            <path d="m6.34 17.66-1.41 1.41"/>
+            <path d="m19.07 4.93-1.41 1.41"/>
+          </svg>
+          <!-- Lucide: moon -->
+          <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M20.985 12.486a9 9 0 1 1-9.473-9.472c.405-.022.617.46.402.803a6 6 0 0 0 8.268 8.268c.344-.215.825-.004.803.401"/>
+          </svg>
+        </button>
+
+        <a class="social" href="https://github.com/datasouq" target="_blank"
+           rel="noopener noreferrer" tabindex="0" aria-label="GitHub" title="GitHub">
+          <!-- Custom fill-only icon: GitHub is a brand logo, not in Lucide -->
+          <svg viewBox="0 0 24 24" fill="none" stroke="none" aria-hidden="true">
+            <path fill="currentColor" d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"/>
+          </svg>
+        </a>
+      </div>
     </div>
   </div>
 </footer>

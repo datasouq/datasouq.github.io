@@ -101,10 +101,14 @@
         leave open. Its padding IS theirs: 48/32 below md, 160/64 from it.
 
      7. The header bar and the WHOLE footer stay put in Arabic. Asked for
-        directly: a language toggle that relocates itself, along with the
-        wordmark and the theme control, reads as the page jumping. The skip link
-        follows the same rule with a physical `left`, since it sits inside that
-        bar's footprint. The page body between them mirrors as usual.
+        directly: a control that relocates itself, along with the wordmark,
+        reads as the page jumping. Both language and theme now sit in the footer
+        bar, which was pinned for the same reason and measures identically in
+        both languages — the group at 1008-1169 at 1280 either way — so the rule
+        followed them rather than being restated. The header bar keeps the
+        wordmark and nothing else. The skip link keeps its physical `left`
+        because it still sits inside that bar's footprint. The page body between
+        them mirrors as usual.
 
         This said "footer" from the start and only ever covered its bottom bar.
         .nav__inner and .footer__bar carried direction: ltr; .footer__grid did
@@ -254,8 +258,9 @@
    the section-header-to-content gap is PageSection's gap-6, the gaps inside the
    header are SectionHeader's space-y-4 and mt-4, and action-group gaps are
    Button's space-x-2. Button sizes in use are tiny (the footer's Subscribe,
-   both header controls and each language option) and medium (everything else);
-   small has no user left since .ctl stepped down to match their header.
+   the theme control and each language option) and medium (everything else);
+   small has no user left since the controls stepped down to match their
+   header's own right-hand group.
    ========================================================================== */
 
 /* --------------------------------------------------------------------------
@@ -901,7 +906,10 @@ main:focus, main:focus-visible { outline: none; }
    Mirroring the whole bar is the usual RTL convention, but toggling the
    language then moves every control at once, which reads as the page jumping.
    The page body below still mirrors normally. */
-.nav__inner { height: 100%; display: flex; align-items: center; gap: 12px; direction: ltr; }
+/* One child now — the wordmark. The 12px gap that used to separate it from the
+   controls went with them; flex and align-items are what still earn their
+   place, centring the wordmark in a 65px bar. */
+.nav__inner { height: 100%; display: flex; align-items: center; direction: ltr; }
 
 /* Wordmark. One word set in two weights of Space Grotesk: "Data" light and
    muted, "Souq" medium and full contrast. No mark, no space, no separator —
@@ -920,14 +928,21 @@ main:focus, main:focus-visible { outline: none; }
 .brand__data { font-weight: 300; color: var(--muted-foreground); }
 .brand__souq { font-weight: 500; color: var(--foreground); }
 
-.nav__actions { margin-inline-start: auto; display: flex; align-items: center; gap: 8px; }
+/* The bar's right-hand side: language, theme, source. 8px is Button's
+   `space-x-2`, which the header note already names as this page's action-group
+   gap, and it clears WCAG 2.5.8 without leaning on the spacing exception —
+   the 26px theme control and the 22px GitHub mark put their centres 32px
+   apart, against the 24px the rule asks for. */
+.footer__bar-actions { display: flex; align-items: center; gap: 8px; }
 
 /* size "small": h-[34px] px-3 text-sm */
 /* SIZE.tiny in constants.ts — 26px with `px-2.5` — not SIZE.small's 34/px-3
    these were built at. Measured on supabase.com at 1280: every button in the
-   right-hand group of that bar is 26px tall with 10px of side padding and a
+   right-hand group of their header is 26px tall with 10px of side padding and a
    12px/16px label — the GitHub star count, Sign in and Start your project all
-   of them — inside the same 65px bar this one has. Ours were a size step up.
+   of them. Ours were a size step up. The control this still styles has since
+   moved to the footer bar, where 26px reads as the right size for a different
+   reason: that bar's own type is 12px, the same 12px this label is.
    The variant is unchanged and was already right: Button.tsx's outline is
    `text-foreground bg-transparent border-strong hover:border-foreground-muted`,
    read from source, and that is exactly what is below. Their Sign in button is
