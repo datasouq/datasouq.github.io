@@ -502,6 +502,11 @@ ul { list-style: none; }
 
 ::selection { background: var(--brand-plate); color: var(--foreground); }
 
+/* The skip link's target takes focus programmatically, so it must not paint the
+   shared ring round the whole page body. `outline-hidden` in upstream's own
+   contract for this element. */
+main:focus, main:focus-visible { outline: none; }
+
 /* The design system's own sr-only, for text that only a screen reader needs.
    Named in accessibility.mdx under Scaffolding. */
 .sr-only {
@@ -529,7 +534,12 @@ ul { list-style: none; }
 .skip-link {
   position: fixed;
   top: 10px;
-  inset-inline-start: 10px;
+  /* Physical `left`, not inset-inline-start. This sits inside the header bar's
+     footprint at z-index 100, and that bar is pinned — it does not mirror in
+     Arabic (deviation 7). With the logical property the skip link crossed to
+     the right in RTL and landed on top of the two controls it exists to let you
+     skip past. Upstream uses `left-[10px]` for the same reason. */
+  left: 10px;
   z-index: 100;
   padding: 8px 14px;
   border-radius: var(--radius);
@@ -739,11 +749,14 @@ ul { list-style: none; }
    ========================================================================== */
 
 .hero {
-  /* supabase.com's hero band measures pt-40 / pb-16. Its nav floats over the
-     band, so 160px of top padding is really 95px of clear space beneath a 65px
-     bar — which is this 96px, since our nav is sticky and takes its own room.
-     The 64px bottom is theirs unchanged. */
-  padding-block: 96px 64px;
+  /* Hero.tsx is `pt-12 pb-8 md:pt-40! md:pb-16` — 48/32 below md, 160/64 from
+     it. The 96px that used to be here rested on the claim that their nav floats
+     over the band, so 160px was "really" 95px of clear space. That claim was
+     wrong: their bar is a sticky wrapper in normal flow and reserves its own
+     65px exactly as ours does. So 160px was already clear space and we were
+     64px short — and flat, with no mobile step at all, spending 96px of empty
+     band on a phone. */
+  padding-block: 48px 32px;
   text-align: center;
   border-bottom: 1px solid var(--border);
 }
@@ -756,10 +769,27 @@ ul { list-style: none; }
   line-height: var(--lh-4xl);
   font-weight: 500;
   margin-bottom: 16px;
+  /* Their h1 needs no balancing because it dictates its own line breaks with a
+     span per line. A bilingual heading cannot — the Arabic breaks elsewhere —
+     so balance is the equivalent control. Their lead carries `text-balance`
+     outright. */
+  text-wrap: balance;
+}
+
+/* `text-4xl sm:text-5xl sm:leading-none` — the step is Tailwind's sm, 640px.
+   It had been at 768px, so between 640 and 767 the heading held 34px where
+   theirs is already 46. This is a different breakpoint from the button text
+   step, which really is `md:text-sm` at 768px; two queries, not one. */
+@media (min-width: 640px) {
+  .hero h1 { font-size: var(--text-5xl); line-height: var(--lh-5xl); }
 }
 
 @media (min-width: 768px) {
-  .hero h1 { font-size: var(--text-5xl); line-height: var(--lh-5xl); }
+  .hero { padding-block: 160px 64px; }
+}
+
+@media (min-width: 1024px) {
+  .hero__lead { margin-bottom: 32px; }
 }
 
 /* PageHeaderDescription is `heading-subSection text-foreground-light`
@@ -769,7 +799,13 @@ ul { list-style: none; }
   /* line-height inherited: 1.5, as upstream's hero lead takes it */
   color: var(--muted-foreground);
   max-width: 56ch;
-  margin: 0 auto 16px;
+  /* Hero.tsx nests a `flex flex-col gap-6 lg:gap-8` around the copy pair and the
+     button row, so the gap down to the actions is 24px and 32px from lg. The
+     16px that was here is the inner grid's gap-4, which is the heading-to-lead
+     gap — using it for both made the three hero rows one undifferentiated
+     stack. */
+  margin: 0 auto 24px;
+  text-wrap: balance;
 }
 
 .hero__cta { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; }
@@ -1086,7 +1122,9 @@ ul { list-style: none; }
    Responsive
    ========================================================================== */
 
-@media (max-width: 640px) {
+/* Tailwind's `max-sm:` boundary. At exactly 640px this and the min-width: 640px
+   rule above both matched. */
+@media (max-width: 639.98px) {
   .hero__cta .btn, .panel__actions .btn { width: 100%; }
 }
 

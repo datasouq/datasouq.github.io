@@ -30,8 +30,12 @@ const I18N = {
     dir: "ltr",
     docTitle: "DataSouq — structured data, ready to work with",
     langBtn: "العربية",
-    langBtnAria: "Switch to Arabic",
-    themeAria: "Toggle theme",
+    /* Read after the visible label, so the whole accessible name is
+       "العربية, switch to Arabic" — the visible text first, in its own
+       language, then the clarifier in the page's language. */
+    langBtnHint: ", switch to Arabic",
+    themeToDark: "Switch to dark theme",
+    themeToLight: "Switch to light theme",
     skipLink: "Skip to content",
 
     catalogueLabel: "Catalogue",
@@ -112,8 +116,9 @@ const I18N = {
     dir: "rtl",
     docTitle: "داتا سوق — بيانات منظّمة وجاهزة للاستخدام",
     langBtn: "English",
-    langBtnAria: "التبديل إلى الإنجليزية",
-    themeAria: "تبديل المظهر",
+    langBtnHint: "، التبديل إلى الإنجليزية",
+    themeToDark: "التبديل إلى المظهر الغامق",
+    themeToLight: "التبديل إلى المظهر الفاتح",
     skipLink: "تخطَّ إلى المحتوى",
 
     catalogueLabel: "الكتالوج",
@@ -200,26 +205,17 @@ const I18N = {
       if (value !== undefined) node.textContent = value;
     });
 
-    /* Icon-only links carry their label in aria-label + title instead of text */
-    document.querySelectorAll("[data-i18n-label]").forEach((node) => {
-      const value = t[node.dataset.i18nLabel];
-      if (value === undefined) return;
-      node.setAttribute("aria-label", value);
-      node.setAttribute("title", value);
-    });
-
     /* The toggle always reads in the language you are not in: "العربية" on the
        English page, "English" on the Arabic one. WCAG 3.1.2 asks that a phrase
        in another language be markable, so the label carries the other lang —
        without it a screen reader voices "العربية" with English phonemes, and
        "English" with Arabic ones. The wordmark is tagged lang="en" in the
        markup for the same reason, and the pinned footer already was. */
-    const btn = $("lang-toggle");
-    const label = btn.querySelector("span");
+    const label = $("lang-label");
     label.textContent = t.langBtn;
     label.setAttribute("lang", lang === "en" ? "ar" : "en");
-    btn.setAttribute("aria-label", t.langBtnAria);
-    $("theme-toggle").setAttribute("aria-label", t.themeAria);
+    $("lang-hint").textContent = t.langBtnHint;
+    describeTheme();
 
     const general = whatsappUrl("waMessage");
     document.querySelectorAll("[data-wa]").forEach((n) => n.setAttribute("href", general));
@@ -232,11 +228,23 @@ const I18N = {
     store("datasouq-lang", lang);
   }
 
+  /* The sun/moon swap is CSS-only, so without this a screen reader gets no
+     confirmation of which theme is now in effect. aria-pressed carries the
+     state and the label names the action, both re-derived whenever either the
+     theme or the language changes. */
+  function describeTheme() {
+    const dark = document.documentElement.getAttribute("data-theme") === "dark";
+    const btn = $("theme-toggle");
+    btn.setAttribute("aria-pressed", String(dark));
+    btn.setAttribute("aria-label", dark ? I18N[lang].themeToLight : I18N[lang].themeToDark);
+  }
+
   function toggleTheme() {
     const next =
       document.documentElement.getAttribute("data-theme") === "dark" ? "light" : "dark";
     document.documentElement.setAttribute("data-theme", next);
     store("datasouq-theme", next);
+    describeTheme();
   }
 
   function init() {

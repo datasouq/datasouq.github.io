@@ -146,7 +146,15 @@
        ><span class="brand__data">Data</span><span class="brand__souq">Souq</span></a>
 
     <div class="nav__actions">
-      <button class="ctl" id="lang-toggle" tabindex="0" aria-label="Switch language">
+      <!-- No aria-label here. An aria-label replaces the whole accessible name,
+           so the one that used to sit on this button both failed WCAG 2.5.3
+           (Label in Name — the name contained none of the visible text) and
+           silently voided the `lang` attribute on the label span, which exists
+           precisely so a screen reader voices "العربية" with Arabic phonemes.
+           The name now composes from the visible label plus an sr-only hint,
+           which is what accessibility.mdx's Scaffolding section asks for and
+           what ThemeToggle.tsx does. -->
+      <button class="ctl" id="lang-toggle" tabindex="0">
         <!-- Lucide: languages -->
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
           <path d="m5 8 6 6"/>
@@ -156,7 +164,7 @@
           <path d="m22 22-5-10-5 10"/>
           <path d="M14 18h6"/>
         </svg>
-        <span>العربية</span>
+        <span id="lang-label" lang="ar">العربية</span><span class="sr-only" id="lang-hint">, switch to Arabic</span>
       </button>
 
       <button class="ctl ctl--icon" id="theme-toggle" tabindex="0" aria-label="Toggle theme">
@@ -181,18 +189,24 @@
   </div>
 </header>
 
-<main id="main">
+<!-- tabindex="-1" is the skip link's other half. Without it Safari and Firefox
+     scroll to the fragment and leave focus on the link, so the next Tab goes
+     back to the nav and the skip link does nothing for the only audience it
+     exists for. skip-to-content.mdx states the contract as
+     `<main id="main" tabIndex={-1} className="scroll-mt-… outline-hidden">`;
+     the scroll offset is already on html via scroll-padding-top. -->
+<main id="main" tabindex="-1">
 
   <!-- ============================ Hero ============================ -->
   <section class="hero" id="top">
-    <div class="container hero__inner">
+    <div class="container">
       <h1 data-i18n="heroTitle">Structured data, ready to work with</h1>
-      <p class="hero__lead" data-i18n="heroLead"></p>
+      <p class="hero__lead" data-i18n="heroLead">DataSouq cleans, deduplicates and structures raw records, then delivers them as datasets ready to import.</p>
 
       <div class="hero__cta">
         <a class="btn btn--primary" data-wa href="https://wa.me/@mbi.group" target="_blank"
            rel="noopener noreferrer" tabindex="0" data-i18n="ctaContact">Message us on WhatsApp</a>
-        <a class="btn btn--outline" href="mailto:mbi.datasouq@gmail.com"
+        <a class="btn btn--default" href="mailto:mbi.datasouq@gmail.com"
            tabindex="0" data-i18n="ctaEmail">Send an email</a>
       </div>
     </div>
@@ -223,7 +237,7 @@
 
           <!-- Metrics, each paired with an icon per the Metric Card fragment.
                Every figure is measured from the file itself. -->
-          <ul class="metrics">
+          <ul class="metrics" role="list">
             <li>
               <!-- Lucide: rows-3 -->
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
@@ -484,14 +498,14 @@
         <div class="footer__cols">
           <div class="footer__col">
             <h2>Datasets</h2>
-            <ul>
+            <ul role="list">
               <li><a href="#datasets" tabindex="0">Contractors in Saudi Arabia</a></li>
             </ul>
           </div>
 
           <div class="footer__col">
             <h2>Company</h2>
-            <ul>
+            <ul role="list">
               <li><a href="#what-we-do" tabindex="0">What we do</a></li>
             </ul>
           </div>
