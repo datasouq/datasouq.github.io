@@ -5,52 +5,128 @@
    handful of scalars, and every colour is DERIVED from those in OKLCH.
    Nothing below the knobs is hand-picked.
 
+   TWO APPS SHIP THIS SYSTEM AND THEY DISAGREE. apps/design-system is Studio —
+   dense panels inside an application. apps/www is supabase.com — a landing page.
+   Where they differ, this page follows apps/www, because that is what it is.
+   That fork has been taken for the type scale (--text-sm 14px, not Studio's 13),
+   the container ladder, the hero band, the section rhythm, card padding, the
+   card title weight, the section header's internal gaps and the whole footer.
+   apps/www does not import typography.css, so where an element role is in
+   question apps/www wins there too.
+
    Traced to:
      packages/ui/build/css/source/semantic.css         derivation chain
-     packages/ui/build/css/source/compat.css           the border ladder
+     packages/ui/build/css/source/compat.css           the border/foreground aliases
+     packages/ui/build/css/source/global.css           card padding tokens
      packages/ui/build/css/themes/light.css            light knobs + brand scale
      packages/ui/build/css/themes/classic-dark.css     dark knobs + brand scale
-       (globals.css imports classic-dark, so that is the dark theme the
-        design-system app actually renders)
-     apps/design-system/styles/globals.css             Inter-tuned type scale, headings
      packages/config/css/theme.css                     --radius-panel: 6px, font tokens
+     packages/config/css/utilities.css                 focus-ring, focus-inset
+     packages/config/typography.css                    element type roles
      packages/ui/src/components/Button/Button.tsx      variants
      packages/ui/src/lib/constants.ts                  size scale
-     apps/design-system/content/docs/accessibility.mdx focus ring, tabindex, skip link
-     packages/config/typography.css                    element type roles, tracking
+     packages/ui/src/components/shadcn/ui/card.tsx     Card and its sections
+     packages/ui-patterns/src/PageSection|PageHeader|PageContainer
+     packages/ui-patterns/src/MetricCard                the metric row's pairing
+     packages/ui-patterns/src/EmptyStatePresentational   the panel
+     packages/ui-patterns/src/SkipToContent              the skip link's contract
+     apps/design-system/styles/globals.css             the Inter-tuned scale
+     apps/design-system/content/docs/accessibility.mdx focus, tabindex, sr-only
+     apps/design-system/content/docs/icons.mdx         Lucide, tints, custom SVGs
+     apps/www/styles/globals.css                       supabase.com's own scale
+     apps/www/components/Nav, Footer, UI/SectionHeader
+     apps/www/app/(home)/_components/Hero, OpenSourceSection
+     apps/www/app/(products)/…/_components               bordered card precedents
 
-   Every deviation from the above, and why. Nothing deviates without a reason
-   that changes the outcome:
+   Every deviation, and why. Nothing deviates without a reason that changes the
+   outcome — and nothing here is left asserted only at the rule it governs:
 
-     1. IBM Plex Sans Arabic is appended to both font stacks. Inter and Manrope
-        ship latin subsets only, and this site is bilingual.
+     1. IBM Plex Sans Arabic is appended to both font stacks, and
+        :root[lang="ar"] drops --font-weight-normal to 400. Inter ships a real
+        450; Plex Arabic ships whole hundreds, and CSS font matching resolves
+        450 upward onto the 500 face — measured, 450 and 500 set the same string
+        at 498.00px against 400's 485.81px. Left at 450 the Arabic ran a full
+        step heavier than the English beside it and `strong`, being font-medium
+        at 500, became the same face as its own paragraph.
+
      2. CardTitle is `text-xs font-mono uppercase` upstream, and CardHeader /
         CardContent / CardFooter split with an internal border. Both are dense
-        Studio-panel idioms: uppercase carries no meaning in Arabic, and these
-        cards hold a title and two lines, so there is nothing to divide.
-     3. Badge is `text-[9px] uppercase tracking-[0.07em]` upstream. 9px is below
-        a readable size for a public page, and uppercase plus tracking damage
-        Arabic letterforms.
+        Studio idioms: uppercase carries no meaning in Arabic, Plex Arabic has
+        no mono companion, and the three small cards hold a title and two lines,
+        so there is nothing to divide. The dataset card does divide, once, above
+        its metric row.
+
+     3. The section eyebrow keeps 14px sentence-case sans in --brand-text where
+        every apps/www definition of it — SectionHeader's subtitle, the `.label`
+        utility, typography.css's heading-meta — is 12px mono uppercase
+        tracking-wider in --foreground-lighter. Three of those five properties
+        cannot come along: uppercase means nothing in Arabic, there is no Arabic
+        mono, and positive tracking breaks Arabic joins. The size and the colour
+        are what compensate for their loss; without them nothing would mark the
+        line as a label. Reasoned in full at .head__label.
+
      4. CardDescription is `text-foreground-lighter` upstream, which measures
-        4.27:1 on --card in the dark theme — under the AA floor. It keeps
-        --muted-foreground instead, one notch stronger at 7.65:1.
-     5. The section eyebrow has no PageSectionSummary equivalent. Kept as a
-        landing-page convention, by choice.
-     6. The hero is a landing band, not a PageHeader, so it is padded from
-        supabase.com's hero (96px top clear of the nav, 64px bottom) rather than
-        from PageHeader's pt-12 with no bottom at all.
-     7. Neither the header bar nor the footer bar mirrors in Arabic, which the
-        RTL convention would normally have them do, and the footer stays in
-        English throughout. Asked for directly: a language toggle that relocates
-        itself, along with the logo and the theme control, reads as the page
-        jumping. The page body between them mirrors as usual.
+        4.27:1 on --card in dark — under the AA floor. Card bodies keep
+        --muted-foreground, one notch stronger at 7.65:1. This does NOT extend
+        to text on --background, where tertiary measures 5.42:1 light and
+        4.59:1 dark and is used as upstream has it.
+
+     5. The brand icon plate (.card__icon) has no upstream source at all. Every
+        upstream icon in a card sits bare, tinted with a text class — icons.mdx
+        prescribes exactly that and nothing more. The plate is a landing-page
+        accent, kept deliberately, and measured safe on the surface it actually
+        paints: brand-default at 10% over --card gives 4.87:1 against
+        --brand-600 in light and 8.66:1 in dark, both clear of 1.4.11's 3:1.
+        The empty-state panel does NOT use it, because a plate is a Card
+        affordance and that panel is not a card.
+
+     6. The hero is centred, single-column, with full-width buttons below 640px
+        and a rule under the band. supabase.com's hero is start-aligned, splits
+        into two columns at lg, stretches nothing and carries no border. Centring
+        is language-neutral, so the band needs no RTL work at all; an asymmetric
+        two-column hero needs more copy than one dataset justifies; and on a page
+        with three sections one rule closes the band that the padding alone would
+        leave open. Its padding IS theirs: 48/32 below md, 160/64 from it.
+
+     7. Neither the header bar nor the footer bar mirrors in Arabic, and the
+        footer stays English throughout. Asked for directly: a language toggle
+        that relocates itself, along with the wordmark and the theme control,
+        reads as the page jumping. The skip link follows the same rule with a
+        physical `left`, since it sits inside that bar's footprint. The page body
+        between them mirrors as usual.
+
+     8. The metric row compresses MetricCard: 14px figure inline with its label,
+        where upstream is an 18px tabular figure above a smaller one. Five
+        metrics in one card is not a shape upstream has — it lays one metric per
+        Card — so the row is ours, built from MetricCard's parts. tabular-nums,
+        items-start and the --muted-foreground icon tint are all its.
+
+     9. The empty-state panel keeps a 16px title and a --card background where
+        EmptyStatePresentational has neither an explicit title size nor a fill.
+        Everything else about it is the fragment: dashed border, no shadow,
+        px-4 py-10, a bare 24px icon at stroke 1.5, a 14px description at 640px,
+        12px down the stack.
 
    Not a deviation, though it may look like one: WhatsApp green is simply
-   absent, and the brand token is the compliant choice for the CTA.
+   absent, and the brand token is the compliant choice for the CTA. The Lucide
+   icons vary from 75% to 83% of their box in whichever dimension leads — that
+   is Lucide's own optical grid, and icons.mdx's 18-in-24 rule governs custom
+   SVGs, not Lucide's drawings. Only the footer's channel marks are normalised
+   to their box, because those come from six different designers and share no
+   optical system.
 
-   Spacing follows Tailwind's 4px base, which globals.css does not override.
-   Section rhythm, summary gaps and action-group gaps come from PageSection
-   and PageHeader; type roles per element come from typography.css.
+   Unused but kept: --secondary and --elevation-3 complete the elevation ladder
+   whose other two rungs are painted; --border-stronger completes the border
+   ladder; --text-3xl, --lh-lg, --lh-2xl and --lh-3xl complete contiguous type
+   steps. Machinery that produced a colour nothing painted has been deleted, not
+   kept — the --accent chain went that way.
+
+   Spacing follows Tailwind's 4px base, which neither globals.css overrides.
+   Section rhythm and the container ladder come from apps/www's SectionContainer;
+   the section-header-to-content gap is PageSection's gap-6, the gaps inside the
+   header are SectionHeader's space-y-4 and mt-4, and action-group gaps are
+   Button's space-x-2. Button sizes in use are tiny (the footer's Subscribe),
+   small (.ctl) and medium (everything else).
    ========================================================================== */
 
 /* --------------------------------------------------------------------------
@@ -74,13 +150,6 @@
   --elevation-1: 1;
   --elevation-2: 1.5;
   --elevation-3: 2;
-
-  /* Foreground overlays. The alpha is tuned so each level matches the lightness
-     delta of the same elevation ratio on --background. */
-  --surface-overlay-unit: calc(
-    var(--elevation-step) / max(var(--tone-span), calc(var(--tone-span) * -1))
-  );
-  --accent-alpha: calc(var(--surface-overlay-unit) * var(--elevation-2));
 
   /* Signed span surface -> foreground: negative in light, positive in dark */
   --tone-span: calc(var(--foreground-lightness) - var(--surface));
@@ -382,9 +451,6 @@
     --border-control-hover: oklch(
       from var(--foreground) l calc(c * 0.5) h / calc(12% + 58% * var(--contrast-border))
     );
-
-    /* text variant: hover:bg-accent */
-    --accent: oklch(from var(--foreground) l c h / var(--accent-alpha));
   }
 }
 
@@ -402,7 +468,6 @@
     --border-strong: rgba(3, 3, 3, 0.146);
     --border-stronger: rgba(3, 3, 3, 0.188);
     --border-control-hover: rgba(3, 3, 3, 0.298);
-    --accent: rgba(3, 3, 3, 0.04);
   }
 
   [data-theme="dark"] {
@@ -413,7 +478,6 @@
     --border-strong: rgba(243, 246, 244, 0.135);
     --border-stronger: rgba(243, 246, 244, 0.174);
     --border-control-hover: rgba(243, 246, 244, 0.280);
-    --accent: rgba(241, 247, 243, 0.06);
   }
 }
 
@@ -798,7 +862,11 @@ main:focus, main:focus-visible { outline: none; }
   font-size: var(--text-lg);
   /* line-height inherited: 1.5, as upstream's hero lead takes it */
   color: var(--muted-foreground);
-  max-width: 56ch;
+  /* px, not ch. `ch` is the advance of the '0' glyph in the computed font, and
+     Inter is first in the stack for both languages — so an Arabic paragraph,
+     every glyph of which is actually set in IBM Plex Sans Arabic, gets its
+     measure from a font it never uses. 56ch in Inter was 448px. */
+  max-width: 448px;
   /* Hero.tsx nests a `flex flex-col gap-6 lg:gap-8` around the copy pair and the
      button row, so the gap down to the actions is 24px and 32px from lg. The
      16px that was here is the inner grid's gap-4, which is the heading-to-lead
@@ -816,9 +884,31 @@ main:focus, main:focus-visible { outline: none; }
 
 .head { margin-bottom: 24px; }
 
-/* Sentence case at text-sm. No uppercase, no tracking — uppercase does nothing
-   in Arabic and would split the two languages. */
-.head__label { font-size: var(--text-sm); line-height: var(--lh-sm); color: var(--brand-text); margin-bottom: 4px; }
+/* The eyebrow. It is not an invention, which deviation 5 used to imply: apps/www
+   defines it three times over — SectionHeader's subtitle span, the `.label`
+   utility in its globals.css, and typography.css's `heading-meta` — and all
+   three agree on 12px, mono, uppercase, tracking-wider, --foreground-lighter.
+
+   Three of those five properties cannot come along. Uppercase carries no
+   meaning in Arabic, IBM Plex Sans Arabic has no mono companion, and positive
+   tracking breaks Arabic joins — the same reasoning already given for Badge and
+   CardTitle. What is left of a label once case, family and tracking are gone is
+   nothing, so two things compensate: 14px instead of 12, and the brand colour
+   instead of the neutral. The colour is the arguable half — brand green is also
+   the call-to-action colour — but with the other four signals unavailable it is
+   what marks this line as a label rather than a dropped first line of the
+   title. The alternative, --tertiary-foreground at 5.42:1 light and 4.59:1
+   dark, is upstream's value and would pass; it would also make the eyebrow
+   indistinguishable from the lead two lines below it.
+
+   The 16px below it is SectionHeader's `space-y-4`. It was 4px, inherited from
+   PageSectionSummary's gap-1 — a slot that has no eyebrow in it. */
+.head__label {
+  font-size: var(--text-sm);
+  line-height: var(--lh-sm);
+  color: var(--brand-text);
+  margin-bottom: 16px;
+}
 
 /* 34px, Manrope 600, no tracking, balanced — measured on supabase.com's section
    headings, which hold 34px at every width. text-2xl (22px) is `heading-title`,
@@ -827,18 +917,40 @@ main:focus, main:focus-visible { outline: none; }
   font-size: var(--text-4xl);
   line-height: var(--lh-4xl);
   text-wrap: balance;
-  margin-bottom: 4px;
+  /* `mt-4` on the description in both live homepage sections, and `sm:mt-4` in
+     SectionHeader. The 4px here was PageSectionSummary's gap-1, which pairs
+     with an 18px title, not a 34px one — under this heading the lead read as a
+     subtitle glued to it. */
+  margin-bottom: 16px;
 }
-.head p { font-size: var(--text-lg); color: var(--muted-foreground); max-width: 60ch; }
+/* --foreground-lighter in every apps/www reference, which compat.css aliases to
+   --tertiary-foreground. Measured on --background: 5.42:1 light, 4.59:1 dark —
+   both over the 4.5:1 floor. Deviation 4's contrast argument does not reach
+   here: that one is about --card, where tertiary lands at 4.27:1 and fails.
+   The 60ch measure is 534px in Inter, inside upstream's 512-768px range. */
+.head p { font-size: var(--text-lg); color: var(--tertiary-foreground); max-width: 512px; }
 
 /* ==========================================================================
    Cards — depth from surface layers and borders, never shadows
    ========================================================================== */
 
-/* 3x210 + 2x16 gaps = 662px of content, so three cards hold their row down to
-   a 710px viewport and drop to two below it. The old note here did this sum
-   against a 768px container, which this page has not had for a while. */
-.cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 16px; }
+/* `grid-cols-1 md:grid-cols-3 gap-3` — an explicit 1-to-3 step at 768px, which
+   is what both of supabase.com's bordered three-up rows do, and 12px between
+   them. A repo-wide search finds auto-fit only in apps/docs and apps/studio,
+   never in apps/www.
+
+   auto-fit with a 210px floor was the problem it looks like it solves: two
+   tracks need only 436px of content, so from a 484px viewport to a 709px one
+   the row rendered two cards and orphaned the third at half width. An explicit
+   step never produces that state.
+
+   The :has() guard matters — .cards also wraps the single .card--wide in the
+   catalogue section, which would otherwise take one third of a row. */
+.cards { display: grid; grid-template-columns: 1fr; gap: 12px; }
+
+@media (min-width: 768px) {
+  .cards:has(> .card + .card) { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+}
 
 /* Card: rounded-lg border bg-surface-100 shadow-xs, py-4 px-(--card-padding-x).
    The header/content/footer split with internal border-b is skipped — these
@@ -851,10 +963,16 @@ main:focus, main:focus-visible { outline: none; }
   border: 1px solid var(--border);
   border-radius: var(--radius-lg);
   box-shadow: var(--shadow-xs);
-  padding: var(--card-padding-x);
+  /* 16px is Studio's Card — `py-4 px-(--card-padding-x)`. Every bordered card
+     on supabase.com is p-6, 24px, stepping to p-8 at md on the wide ones. Same
+     www-versus-Studio fork the file already resolves toward www for the type
+     scale, the container, the hero, the section rhythm and the footer. */
+  padding: var(--card-padding-x-md);
 }
 
-/* Same brand fill construction as the Badge, so the two read as one palette. */
+/* Deviation 5: a landing-page accent with no upstream source. Measured on
+   the surface it actually paints — brand-default at 10% over --card —
+   4.87:1 light and 8.66:1 dark against --brand-600. */
 .card__icon {
   width: 32px;
   height: 32px;
@@ -870,13 +988,25 @@ main:focus, main:focus-visible { outline: none; }
 
 /* A card that stands alone in its grid gets --card-padding-x-md, the roomier
    value global.css defines for exactly that. */
-.card--wide { padding: var(--card-padding-x) var(--card-padding-x-md); }
+/* `p-6 md:p-8` on the wide ones. With .card at 24px this had been the inversion
+   waiting to happen: the roomier variant carried LESS vertical padding than a
+   plain card. */
+@media (min-width: 768px) {
+  .card--wide { padding: 2rem; }
+}
 
 /* Metrics — the Metric Card fragment's icon-and-figure pairing, laid out as a
    row inside the dataset card. Icons are tinted like the text beside them, the
    way icons.mdx describes. */
 .metrics {
   display: grid;
+  /* 180px, measured both ways rather than reasoned. Inside the card's 1024px at
+     1440 it yields five tracks of 192px: in English every one of the five
+     labels wraps to two lines, in Arabic none of them do — uniform either way,
+     one row, 57px tall. Raising the floor to 200px or more drops to four tracks
+     and puts the fifth metric alone on a second row, which is worse in both
+     languages. The wrapping was never the defect; the icon drifting to the
+     middle of a wrapped cell was, and align-items below fixes that. */
   grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
   gap: 8px 16px;
   margin-top: 16px;
@@ -884,17 +1014,41 @@ main:focus, main:focus-visible { outline: none; }
   border-top: 1px solid var(--border);
 }
 
+/* MetricCardContent is `items-start`; items-center is only used for a single
+   line CardTitle that cannot wrap. With centre alignment and a two-line label
+   the icon drifted to the middle of the cell, so the icon row broke apart the
+   moment any label wrapped. */
 .metrics li {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   gap: 8px;
   font-size: var(--text-sm);
   line-height: var(--lh-sm);
   color: var(--muted-foreground);
 }
 
-.metrics svg { width: 16px; height: 16px; flex-shrink: 0; color: var(--tertiary-foreground); }
-.metrics strong { color: var(--foreground); font-weight: 500; } /* typography.css: strong is font-medium */
+/* MetricCardIcon is `text-foreground-light`, which compat.css aliases to
+   --muted-foreground — the same value as the label beside it. It had been
+   --tertiary-foreground, one notch lighter, which is what made the icons read
+   as a different weight from their own text and contradicted the comment above
+   claiming they are tinted like it. margin-top optically centres the 16px mark
+   on the first 20px line rather than on the whole cell. */
+.metrics svg {
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0;
+  margin-top: 2px;
+  color: var(--muted-foreground);
+}
+/* typography.css: strong is font-medium. tabular-nums is MetricCardValue's, and
+   it earns its place here because the grid stacks the figures into columns that
+   start at the same x — 17,304 / 31% / 1,624 aligned raggedly without it. Safe
+   in both languages: site.js keeps Western digits in the Arabic dictionary. */
+.metrics strong {
+  color: var(--foreground);
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+}
 
 /* PageSectionAside spacing for actions inside a card */
 .card__actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 16px; }
@@ -905,32 +1059,67 @@ main:focus, main:focus-visible { outline: none; }
    CardDescription is `text-sm text-foreground-lighter`, but on --card in the
    dark theme that measures 4.27:1, under the AA floor, so this keeps
    --muted-foreground: one notch stronger, 7.65:1. */
-.card h3 { font-size: var(--text-lg); margin-bottom: 6px; }
+/* Every card call site overrides the base layer's font-semibold back to
+   font-medium — HighlightsSection, ObservabilitySection and all six
+   design-system feature cards. The blanket h1-h6 rule gives 600, so this puts
+   500 back on the card selector only; the borderless feature-list items keep
+   semibold upstream, so the element rule stays as it is. */
+.card h3 { font-size: var(--text-lg); font-weight: 500; margin-bottom: 8px; }
 .card p { font-size: var(--text-sm); line-height: var(--lh-sm); color: var(--muted-foreground); }
 
 /* ==========================================================================
    Panel
    ========================================================================== */
 
+ /* EmptyStatePresentational is deliberately NOT a Card. It is a dashed 1px
+    outline with no shadow, `px-4 py-10`, a bare 24px icon at strokeWidth 1.5 in
+    --foreground-muted, a 14px description capped at 640px, and 12px gaps down
+    the stack. This panel had been a copy of .card with a brand plate borrowed
+    from .card__icon, which is why the page read as four cards instead of three
+    cards and an invitation — the dashed stroke is the fragment's whole point.
+
+    The two padding axes were also swapped: an empty state is mostly air around
+    one idea, so it is tall and narrow-padded, not the squat 16px band of a
+    dense card. */
 .panel {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
   background: var(--card);
-  border: 1px solid var(--border);
+  border: 1px dashed var(--border);
   border-radius: var(--radius-lg);
-  box-shadow: var(--shadow-xs);
-  padding: var(--card-padding-x) var(--card-padding-x-md);
+  padding: 40px var(--card-padding-x);
   text-align: center;
 }
 
-.panel h2 { font-size: var(--text-xl); line-height: var(--lh-xl); margin-bottom: 4px; }
-.panel p {
-  font-size: var(--text-lg);
-  color: var(--muted-foreground);
-  max-width: 52ch;
-  margin: 0 auto 24px;
+.panel h2 {
+  font-size: var(--text-xl);
+  line-height: var(--lh-xl);
+  text-wrap: balance;
 }
 
-/* The empty state's icon, centred. Same plate construction as .card__icon. */
-.panel__icon { margin-inline: auto; }
+.panel p {
+  font-size: var(--text-sm);
+  line-height: var(--lh-sm);
+  color: var(--muted-foreground);
+  max-width: 640px;
+  text-wrap: balance;
+}
+
+/* Its own icon, not .card__icon's plate: bare, 24px, stroke 1.5, muted. A plate
+   is a Card affordance and pulls the eye to the icon, which is the opposite of
+   what an empty state wants. */
+.panel__icon {
+  width: 24px;
+  height: 24px;
+  border: 0;
+  border-radius: 0;
+  background: none;
+  margin: 0;
+  color: var(--tertiary-foreground);
+}
+.panel__icon svg { width: 24px; height: 24px; stroke-width: 1.5; }
 
 .panel__actions { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; }
 
@@ -938,9 +1127,20 @@ main:focus, main:focus-visible { outline: none; }
    Footer
    ========================================================================== */
 
-/* The footer takes py-24 — 96px — and no border of its own. The rule belongs
-   to the bar inside it, which is how upstream builds it. */
-.footer { padding-block: 96px; }
+/* The footer's grid is wrapped in the same SectionContainer as every marketing
+   section, so it takes the same three stops the sections do rather than a flat
+   96px — which was 32px too much on a phone and made the footer the only block
+   on the page ignoring the rhythm .section establishes. No border of its own
+   either: the rule belongs to the bar inside it. */
+.footer { padding-block: 64px; }
+
+@media (min-width: 640px) {
+  .footer { padding-block: 72px; }
+}
+
+@media (min-width: 768px) {
+  .footer { padding-block: 96px; }
+}
 
 /* xl:grid xl:grid-cols-7 xl:gap-4, with the brand block on two of the seven
    columns and the links on five. Below xl it stacks, gap-8. */
@@ -1113,6 +1313,10 @@ main:focus, main:focus-visible { outline: none; }
   transition: color 0.15s var(--ease-default);
 }
 .social:hover { color: var(--foreground); }
+/* site.js sets data-copied when the Discord handle is copied. Without this the
+   only confirmation was the sr-only live region and a title that needs a fresh
+   hover — a sighted mouse user got nothing at all. */
+.social[data-copied] { color: var(--brand-text); }
 /* flex-shrink:0 for the same reason .ctl svg needs it: the reset gives every
    svg `max-width: 100%`, and inside a flex parent with no definite width that
    resolves against nothing and collapses the icon to zero. */
@@ -1125,7 +1329,11 @@ main:focus, main:focus-visible { outline: none; }
 /* Tailwind's `max-sm:` boundary. At exactly 640px this and the min-width: 640px
    rule above both matched. */
 @media (max-width: 639.98px) {
-  .hero__cta .btn, .panel__actions .btn { width: 100%; }
+  /* The panel holds one button inside an items-center column, so stretching it
+     to a full-bleed bar contradicted the centring the rest of the panel is
+     built on. Upstream stretches neither; the hero pair stays as a landing-page
+     convention. */
+  .hero__cta .btn { width: 100%; }
 }
 
 @media (prefers-reduced-motion: reduce) {
