@@ -29,10 +29,13 @@ const I18N = {
   en: {
     dir: "ltr",
     docTitle: "DataSouq — structured data, ready to work with",
-    /* Read after the two visible codes, so the whole accessible name is
-       "en ar, switch to Arabic" — what is on the control, then what pressing
-       it does. */
-    langBtnHint: ", switch to Arabic",
+    /* Each option's name is the visible code plus the language spelled out,
+       so it reads "EN, English". The code alone does not say what it is, and
+       replacing it with an aria-label would drop the visible text out of the
+       name, which is the WCAG 2.5.3 failure this control already had once. */
+    langGroupLabel: "Language",
+    langEnFull: ", English",
+    langArFull: ", Arabic",
     /* Western digits are already Arabic numerals in the sense the page needs
        for English; this is the identity so the two dictionaries have the same
        shape and the caller never branches. */
@@ -147,7 +150,9 @@ const I18N = {
   ar: {
     dir: "rtl",
     docTitle: "داتا سوق — بيانات منظّمة وجاهزة للاستخدام",
-    langBtnHint: "، التبديل إلى الإنجليزية",
+    langGroupLabel: "اللغة",
+    langEnFull: "، الإنجليزية",
+    langArFull: "، العربية",
 
     /* Arabic-Indic digits, with the Arabic separators that go with them:
        U+066C for thousands, U+066B for the decimal, U+066A for percent. Applied
@@ -301,7 +306,13 @@ const I18N = {
        not voice it with Arabic phonemes; the footer used to carry lang="en" on
        its whole container, and now that it is translated only the wordmark
        inside it still declares English. */
-    $("lang-hint").textContent = t.langBtnHint;
+    /* aria-checked is the state, and the roving tabindex follows it so the
+       group is one tab stop with the live option as its entry point. */
+    document.querySelectorAll(".langgroup__item").forEach((item) => {
+      const on = item.dataset.lang === lang;
+      item.setAttribute("aria-checked", on ? "true" : "false");
+      item.setAttribute("tabindex", on ? "0" : "-1");
+    });
 
     /* The year is the one number on the page that is not a literal in this
        file, so it is the one that needs converting at runtime. */
@@ -351,7 +362,24 @@ const I18N = {
   function init() {
     applyLang(store("datasouq-lang") || CONFIG.defaultLang);
 
-    $("lang-toggle").addEventListener("click", () => applyLang(lang === "en" ? "ar" : "en"));
+    /* A radiogroup is one tab stop, so the arrows move between the options and
+       select as they go, which is what radio semantics promise. With two of
+       them every arrow does the same thing: go to the other one. */
+    const items = Array.from(document.querySelectorAll(".langgroup__item"));
+    items.forEach((item, index) => {
+      item.addEventListener("click", () => applyLang(item.dataset.lang));
+      item.addEventListener("keydown", (event) => {
+        const keys = ["ArrowRight", "ArrowLeft", "ArrowUp", "ArrowDown", "Home", "End"];
+        if (!keys.includes(event.key)) return;
+        event.preventDefault();
+        const next =
+          event.key === "Home" ? items[0]
+          : event.key === "End" ? items[items.length - 1]
+          : items[(index + 1) % items.length];
+        applyLang(next.dataset.lang);
+        next.focus();
+      });
+    });
     $("theme-toggle").addEventListener("click", toggleTheme);
 
     /* Anything carrying data-copy puts that string on the clipboard and says so.

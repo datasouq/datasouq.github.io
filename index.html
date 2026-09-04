@@ -150,25 +150,45 @@
        ><span class="brand__data">Data</span><span class="brand__souq">Souq</span></a>
 
     <div class="nav__actions">
-      <!-- No aria-label here. An aria-label replaces the whole accessible name,
-           so the one that used to sit on this button both failed WCAG 2.5.3
-           (Label in Name — the name contained none of the visible text) and
-           silently voided the `lang` attribute on the label span, which exists
-           precisely so a screen reader voices "العربية" with Arabic phonemes.
-           The name now composes from the visible label plus an sr-only hint,
-           which is what accessibility.mdx's Scaffolding section asks for and
-           what ThemeToggle.tsx does. -->
-      <!-- Two codes in a fixed order, the live one at full contrast and the
-           other a tone down. The order never changes and both are always
-           rendered, so the control is the same width in both languages and
-           needs no floor to stop it resizing under the cursor — which is what
-           the swapping "العربية"/"English" label needed. Which one is lit
-           follows :root[lang], so it is right before any script runs. -->
-      <button class="ctl ctl--lang" id="lang-toggle" tabindex="0">
-        <span class="lang-code lang-code--en">en</span>
-        <span class="lang-code lang-code--ar">ar</span>
-        <span class="sr-only" id="lang-hint">, switch to Arabic</span>
-      </button>
+      <!--
+        The design system's ToggleGroup, read from source rather than copied off
+        a screenshot. toggle-group.tsx's root is `flex items-center
+        justify-center gap-1`; each item is toggleVariants(), whose base is
+          inline-flex items-center justify-center rounded-md font-medium
+          transition-colors text-foreground-light hover:bg-muted
+          aria-checked:bg-accent aria-checked:text-foreground focus-ring
+        with variant `default` = `bg-transparent` and size `tiny` =
+        `h-[26px] px-2.5 text-xs`. So: the off option is --muted-foreground on
+        nothing, the on option is --accent behind --foreground, and the size is
+        the one the rest of this bar already uses.
+
+        The globe sits OUTSIDE the radiogroup, not in it: a radiogroup's
+        children are its radios, and a decorative icon among them is a thing to
+        explain rather than a thing to do.
+
+        aria-checked, not aria-pressed. The component's own class string keys off
+        `aria-checked:`, which is radio semantics, and these two options are
+        mutually exclusive — which is what a radiogroup means and what
+        aria-pressed on a pair does not say. Each name is the visible code plus
+        the language spelled out, so it reads "EN, English": WCAG 2.5.3 wants the
+        visible text inside the name, and "EN" alone does not say what it is.
+      -->
+      <div class="langctl">
+        <!-- Lucide: globe -->
+        <svg class="langctl__globe" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <circle cx="12" cy="12" r="10"/>
+          <path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"/>
+          <path d="M2 12h20"/>
+        </svg>
+
+        <div class="langgroup" id="lang-group" role="radiogroup"
+             aria-label="Language" data-i18n-attr="aria-label:langGroupLabel">
+          <button class="langgroup__item" type="button" role="radio" data-lang="en"
+                  aria-checked="true" tabindex="0">EN<span class="sr-only" data-i18n="langEnFull">, English</span></button>
+          <button class="langgroup__item" type="button" role="radio" data-lang="ar"
+                  aria-checked="false" tabindex="-1">AR<span class="sr-only" data-i18n="langArFull">, Arabic</span></button>
+        </div>
+      </div>
 
       <button class="ctl ctl--icon" id="theme-toggle" tabindex="0" aria-label="Toggle theme">
         <!-- Lucide: sun -->
