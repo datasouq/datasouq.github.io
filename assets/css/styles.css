@@ -83,12 +83,22 @@
         colour that moves with any knob edit. --muted-foreground is 9.29:1 and
         8.22:1. Two surfaces, one answer, for two different reasons.
 
-     5. The brand icon plate (.card__icon) has no upstream source at all. Every
-        upstream icon in a card sits bare, tinted with a text class — icons.mdx
-        prescribes exactly that and nothing more. The plate is a landing-page
-        accent, kept deliberately, and measured safe on the surface it actually
-        paints: brand-default at 10% over --card gives 4.87:1 against
-        --brand-600 in light and 8.66:1 in dark, both clear of 1.4.11's 3:1.
+     5. The brand icon plate (.card__icon) has no upstream source AS A BRAND
+        FILL. A plate as such is not unprecedented, and this said so too
+        absolutely until the verification pass caught it: ui-patterns'
+        GlassPanel takes an optional `showIconBg`, and its IconBackground is
+        `bg-surface-75 border w-8 h-8 flex items-center justify-center
+        rounded-sm` around an `img className="w-5"` — read from source, a
+        NEUTRAL surface chip, 20px of mark in a 32px box at the default border.
+        None of that geometry is imported here and the fill is the part that is
+        ours: brand-default at 10% behind a --brand-500 stroke and a
+        brand-tinted glyph, where upstream's is a surface tint behind a logo.
+        Every other upstream icon in a card sits bare, tinted with a text class,
+        which is what icons.mdx prescribes and all it prescribes. The plate is a
+        landing-page accent, kept deliberately, and measured safe on the surface
+        it actually paints: brand-default at 10% over --card gives 4.87:1
+        against --brand-600 in light and 8.83:1 in dark, both clear of 1.4.11's
+        3:1.
         The empty-state panel does NOT use it, because a plate is a Card
         affordance and that panel is not a card.
 
@@ -184,10 +194,13 @@
         rather than away from one.
 
         Two things fall out of sharing the row. The plate is 24px with an 18px
-        mark for every card, which is icons.mdx's 18-in-24 rule stated
-        literally and puts the painted hairline back at exactly 1.5px; the 32px
-        plate was sized to be stacked, and beside a 24px line it overhung by
-        4px each side. And .card became the flex column their content column
+        mark for every card, and the 18px is the painted hairline, not a box
+        rule: stroke-width 2 over a 24-unit viewBox at 18px paints 1.5px, which
+        is the figure the stroke note below pins everything else to. It is NOT
+        icons.mdx's 18-in-24 — that rule governs custom SVGs, as this header
+        says two paragraphs down, and all four plate marks are Lucide drawings.
+        The 32px plate was sized to be stacked, and beside a 24px line it
+        overhung by 4px each side. And .card became the flex column their content column
         is — `flex flex-col gap-2 sm:gap-4`, so 8px here and 16px on the
         dataset card — which let `.card h3`'s margin go: inside a title row
         that margin belongs to the title's box, not under it. Highlights.tsx
@@ -239,8 +252,9 @@
    on the smaller icons and 1.5 on the panel's. What upstream fixes is the
    PAINTED hairline — 1.5 user units at a 24px box, so 1.5 device px — and a
    stroke scales with its box. Measured: 2 at 18px paints 1.5px on the card
-   plates and the nav controls, 1.5 at 24px paints 1.5px on the panel, and only
-   the 16px metric icons come in under at 1.333px. This is what pins the plate's
+   plates, 1.5 at 24px paints 1.5px on the panel, and the small ones come in
+   under — 1.333px at the metric row's 16px and 1.167px at the 14px of the
+   language and theme controls, which .ctl svg states outright. This is what pins the plate's
    mark at 18px: it briefly went to 14px, which painted 1.167px — thinner than
    anything else on the page, including the metric icons it sits above. Setting every attribute to
    1.5 for the look of consistency would paint 1.125px and 1.0px instead —
@@ -1214,12 +1228,12 @@ main:focus, main:focus-visible { outline: none; }
   border: 1px solid var(--border);
   border-radius: var(--radius-lg);
   box-shadow: var(--shadow-xs);
-  /* 16px is Studio's Card - `py-4 px-(--card-padding-x)`. Every bordered card
+  /* 16px is Studio's Card — `py-4 px-(--card-padding-x)`. Every bordered card
      on supabase.com is p-6, 24px, stepping to p-8 at md on the wide ones. Same
      www-versus-Studio fork the file already resolves toward www for the type
      scale, the container, the hero, the section rhythm and the footer. */
   padding: var(--card-padding-x-md);
-  /* Their card's content column is `flex flex-col gap-2 sm:gap-4` - 8px, 16px
+  /* Their card's content column is `flex flex-col gap-2 sm:gap-4` — 8px, 16px
      from sm. Every card here is that column now, so the gap owns the vertical
      spacing and no child inside a card carries a margin. This replaces
      `.card h3 { margin-bottom: 8px }`, which produced the same 8px for the
@@ -1229,12 +1243,15 @@ main:focus, main:focus-visible { outline: none; }
   gap: 8px;
 }
 
-/* Deviation 5: a landing-page accent with no upstream source. Measured on
-   the surface it actually paints — brand-default at 10% over --card —
-   4.87:1 light and 8.66:1 dark against --brand-600. */
-/* 24px with an 18px mark, which is icons.mdx's rule for custom SVGs stated
-   literally - 18 in 24 - and it puts the painted hairline back at exactly
-   1.5px: stroke-width 2 over a 24-unit viewBox at 18px paints 2 x 0.75. The
+/* Deviation 5: a landing-page accent whose FILL has no upstream source —
+   GlassPanel's optional IconBackground is a neutral `bg-surface-75 border`
+   chip, not a brand one. Measured on the surface it actually paints:
+   brand-default at 10% over --card, 4.87:1 light and 8.83:1 dark against
+   --brand-600. */
+/* 24px with an 18px mark. The mark's size is the painted hairline and nothing
+   else: stroke-width 2 over a 24-unit viewBox at 18px paints 2 × 0.75 = 1.5px,
+   the figure the stroke note pins the rest of the page to. Not icons.mdx's
+   18-in-24, which governs custom SVGs — these four marks are Lucide. The
    32px plate this replaces was sized for an icon stacked ABOVE a title; in a
    row beside a 24px line it would have overhung the line by 4px each side.
    The 24px box and the 24px line-height being equal is what lets flex-start
@@ -1290,7 +1307,7 @@ main:focus, main:focus-visible { outline: none; }
 
 /* `flex items-center gap-2`, with one change: flex-start, not center.
    Upstream's product-card titles are single words that never wrap, so center
-   costs them nothing. One of ours does wrap - measured at 768px, where each
+   costs them nothing. One of ours does wrap — measured at 768px, where each
    service card is 227px and its text box 177px, the plate and gap take 32px
    and leave 145px: "Cleaning & structuring" needs 168.88px and goes to two
    lines. The durable threshold is the CARD width, not the viewport: it wraps
@@ -1300,16 +1317,16 @@ main:focus, main:focus-visible { outline: none; }
    viewport figure moves with the scrollbar. In an items-center row a two-line title
    is a 48px box, so the plate would centre against it and sit 12px below the
    line it belongs to. flex-start pins it to the first line, and because the
-   plate is 24px and the line-height is 24px the two are already concentric -
+   plate is 24px and the line-height is 24px the two are already concentric —
    for a single-line title flex-start and center compute identically.
    The other five titles fit: 131.63 and 130.16 in English, 116.38, 77.11 and
    97.64 in Arabic. */
 .card__head { display: flex; align-items: flex-start; gap: 8px; }
 
 /* 600 against .card h3's 500, and scoped to the dataset card only. That 500 is
-   right for the three service cards - it traces to HighlightsSection,
+   right for the three service cards — it traces to HighlightsSection,
    ObservabilitySection and the design-system feature cards, which all put
-   font-medium back - but the product cards the dataset card is modelled on
+   font-medium back — but the product cards the dataset card is modelled on
    measure Manrope 600 at 16px/24px. Upstream's card families differ here; so
    do ours, on the same split: the product card is the object, the other three
    describe the work. */
@@ -1456,14 +1473,16 @@ main:focus, main:focus-visible { outline: none; }
 
 /* Its own icon, not .card__icon's plate: bare, 24px, stroke 1.5, muted. A plate
    is a Card affordance and pulls the eye to the icon, which is the opposite of
-   what an empty state wants. */
+   what an empty state wants.
+
+   It used to carry `border: 0; border-radius: 0; background: none; margin: 0`
+   as well, from when this panel was a copy of .card and borrowed the plate.
+   Nothing gives .panel__icon a border, a radius or a fill to undo, and the
+   reset zeroes every margin already, so all four reset their own initial
+   values. */
 .panel__icon {
   width: 24px;
   height: 24px;
-  border: 0;
-  border-radius: 0;
-  background: none;
-  margin: 0;
   color: var(--tertiary-foreground);
 }
 .panel__icon svg { width: 24px; height: 24px; stroke-width: 1.5; }
