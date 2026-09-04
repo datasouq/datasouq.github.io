@@ -813,11 +813,14 @@ ul { list-style: none; }
    ========================================================================== */
 
 .footer {
+  /* Measured on supabase.com's own bottom bar, which is what this whole footer
+     is: a 1px --border stroke on top, 32px from that stroke down to the text,
+     and the container's own 40px underneath it. The 28px here before was mine.
+
+     No top margin either: the last .section carries `last:pb-12`, so 48px of
+     clear space already sits above the stroke. */
   border-top: 1px solid var(--border);
-  /* No top margin: the last .section carries `last:pb-12`, so there are already
-     48px above this border. The 24px that used to sit here made it 72px, which
-     matched nothing. */
-  padding-block: 28px;
+  padding-block: 32px 40px;
 }
 
 /* Pinned and English-only, matching the header: the bar keeps its layout and
@@ -829,8 +832,11 @@ ul { list-style: none; }
   gap: 14px;
   align-items: center;
   justify-content: space-between;
-  font-size: var(--text-sm);
-  line-height: var(--lh-sm);
+  /* `© Supabase Inc` is a <small> at 12/16 in --tertiary-foreground, which is
+     typography.css's `small { text-compact }` rule showing through. This bar
+     was running at 14/20. */
+  font-size: var(--text-xs);
+  line-height: var(--lh-xs);
   color: var(--tertiary-foreground);
 }
 
@@ -838,27 +844,33 @@ ul { list-style: none; }
    reach us. The right-hand row is contact channels only. */
 .footer__meta { display: flex; align-items: center; gap: 8px; }
 
-/* Order is inherited from the pinned .footer__inner above. */
-.footer__links { display: flex; flex-wrap: wrap; gap: 4px; }
+/* Order is inherited from the pinned .footer__inner above. 20px is the gap
+   between supabase.com's own footer icons. */
+.footer__links { display: flex; flex-wrap: wrap; gap: 20px; }
 
-/* Icon-only links, sized to the "small" control (34px) with 18px icons */
+/* Bare 22px icons, no box behind them. These had been built as small text-
+   variant Buttons — 34px, rounded, hover:bg-accent — but the Button variant is
+   for controls, and these are links in a footer. supabase.com writes its own as
+     text-foreground-lighter hover:text-foreground transition
+   at 22px with a 20px gap and no padding, radius or border, and that is what
+   they are now. Only the colour moves on hover, over 150ms.
+
+   22px is under the 24px that WCAG 2.5.8 asks of a target, but the rule's
+   spacing exception carries it: a 24px circle centred on each icon needs 24px
+   between centres and the 20px gap puts them 42px apart, so no two circles
+   meet. */
 .social {
-  width: 34px;
-  height: 34px;
-  display: grid;
-  place-items: center;
-  border-radius: var(--radius);
-  border: 1px solid transparent;
-  /* IconContainerVariants gives the text variant `text-foreground-lighter`,
-     which compat.css aliases to --tertiary-foreground. supabase.com's own
-     footer icons measure exactly that. */
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   color: var(--tertiary-foreground);
-  transition: background-color 0.2s var(--ease);
+  transition: color 0.15s var(--ease);
 }
-/* text variant: border stays transparent, hover brings a background, and the
-   colour does not move. */
-.social:hover { background: var(--accent); }
-.social svg { width: 18px; height: 18px; }
+.social:hover { color: var(--foreground); }
+/* flex-shrink:0 for the same reason .ctl svg needs it: the reset gives every
+   svg `max-width: 100%`, and inside a flex parent with no definite width that
+   resolves against nothing and collapses the icon to zero. */
+.social svg { width: 22px; height: 22px; flex-shrink: 0; }
 
 /* ==========================================================================
    Responsive
