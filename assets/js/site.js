@@ -3,15 +3,15 @@
    الإعدادات والترجمة ومنطق الصفحة
 
    الصفحة بتعرض قواعد بيانات، ومؤشرات كل واحدة مقيسة من ملفها نفسه.
-   السعر وقائمة الحقول الكاملة مش معروضين — بيتحددوا في المحادثة.
+   السعر هو الوحيد اللي مش معروض — بيتحدد في المحادثة.
    The datasets themselves — titles, copy, metrics, icons, SEO fields — live
    in assets/js/datasets.js, not in this file. This file only renders them:
    the catalogue cards, the footer's dataset links, the JSON-LD Dataset
    entries and each card's WhatsApp link are all built from that array, so
    adding a dataset never touches the code below. Each one's metrics are
-   measured from its own file; the price and the full field list are not
-   stated anywhere on the page, and the WhatsApp message asks for them
-   instead.
+   measured from its own file. The full field list is published, on each
+   dataset's own page; the price is the one thing still settled in the
+   conversation, and the WhatsApp message asks for it.
    ========================================================================== */
 
 const CONFIG = {
@@ -60,6 +60,22 @@ const I18N = {
        WhatsApp message template) stays here. */
     datasetCta: "Ask about this dataset",
 
+    /* dataset.html — one page per dataset, all of it shared chrome, so it
+       belongs here rather than in any dataset's own entry. */
+    backToCatalogue: "All datasets",
+    chartsLabel: "Inside the data",
+    chartsTitle: "What the file actually holds",
+    chartsLead: "Every figure below is counted from the delivered file, not estimated.",
+    dictLabel: "Data dictionary",
+    dictTitle: "Every field, described",
+    dictLead:
+      "The full column list as it ships in the file, with what each one holds and the values it takes.",
+    fieldCount: (count) => count + " fields",
+    detailCtaTitle: "Want this file?",
+    detailCtaBody: "Message us and we'll send a sample of the real records and the price.",
+    notFoundTitle: "That dataset isn't here",
+    notFoundBody: "The link may be out of date. Everything we publish is in the catalogue.",
+
     heroTitle: "Structured data, ready to work with",
     heroLead:
       "DataSouq cleans, deduplicates and structures raw records, then delivers them as datasets ready to import.",
@@ -93,7 +109,7 @@ const I18N = {
        thing passed in. Adding dataset #4 needs no new entry here. */
     waDatasetMessage: (title) =>
       `Hello 👋\n\nI'm interested in the *${title}* ` +
-      "dataset.\n\nCould you send the full field list and the price?",
+      "dataset.\n\nCould you send a sample and the price?",
 
     /* Footer. The two column headings and their links reuse catalogueTitle
        and whatLabel, so only "Company" is new here — a second copy of
@@ -151,6 +167,22 @@ const I18N = {
        البطاقات فقط (زر الاستفسار وقالب رسالة واتساب). */
     datasetCta: "استفسر عن هذه القاعدة",
 
+    /* dataset.html — صفحة واحدة لكل قاعدة، وكل نصوصها مشتركة، فمكانها هنا
+       وليس في بيانات أي قاعدة بعينها. */
+    backToCatalogue: "كل قواعد البيانات",
+    chartsLabel: "داخل البيانات",
+    chartsTitle: "ما الذي يحتويه الملف فعلاً",
+    chartsLead: "كل رقم بالأسفل محسوب من الملف المُسلَّم نفسه، وليس تقديراً.",
+    dictLabel: "قاموس البيانات",
+    dictTitle: "كل حقل، موصوفاً",
+    dictLead:
+      "قائمة الأعمدة كاملة كما تُسلَّم في الملف، مع ما يحتويه كل عمود والقيم التي يأخذها.",
+    fieldCount: (count) => count + " حقلاً",
+    detailCtaTitle: "تريد هذا الملف؟",
+    detailCtaBody: "تواصل معنا ونرسل لك عيّنة من السجلات الحقيقية والسعر.",
+    notFoundTitle: "قاعدة البيانات هذه غير موجودة",
+    notFoundBody: "قد يكون الرابط قديماً. كل ما ننشره موجود في الكتالوج.",
+
     heroTitle: "بيانات منظّمة، جاهزة للاستخدام",
     heroLead:
       "تنقّي داتا سوق السجلات الخام وتزيل التكرار وتنظّمها، ثم تسلّمها قواعد بيانات جاهزة للاستيراد.",
@@ -183,7 +215,7 @@ const I18N = {
        رابعة مش محتاجة أي تعديل في هذا القالب. */
     waDatasetMessage: (title) =>
       `السلام عليكم 👋\n\nأنا مهتم بقاعدة بيانات *${title}*.\n\n` +
-      "هل يمكنكم إرسال قائمة الحقول كاملة والسعر؟",
+      "هل يمكنكم إرسال عيّنة والسعر؟",
 
     footerCompany: "الشركة",
     rights: "جميع الحقوق محفوظة.",
@@ -249,13 +281,18 @@ const I18N = {
       )
       .join("");
 
+    /* The title is a link and the whole card is its target: CSS stretches
+       this one anchor's ::after over the card. One link in the
+       accessibility tree, a card-sized target for a mouse — and the
+       WhatsApp button below sits above the overlay so it still takes its
+       own clicks. */
     return `
       <article class="card card--dataset">
         <div class="card__head">
           <div class="card__icon">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${dataset.icon}</svg>
           </div>
-          <h3>${title}</h3>
+          <h3><a href="dataset.html?id=${dataset.id}" tabindex="0">${title}</a></h3>
         </div>
         <p class="card__body">${body}</p>
         <ul class="metrics" role="list">${metrics}</ul>
@@ -275,11 +312,17 @@ const I18N = {
     const grid = document.querySelector(".cards--catalogue");
     if (grid) grid.innerHTML = DATASETS.map((d) => renderDatasetCard(d, t)).join("");
 
+    /* The footer links point at each dataset's own page rather than at the
+       catalogue anchor: from the dataset page, a link back to #datasets on
+       another document would be a worse answer to "show me that one" than
+       the page itself. */
     const footerLinks = $("footer-dataset-links");
     if (footerLinks) {
       footerLinks.innerHTML = DATASETS.map(
         (d) =>
-          `<li><a href="#datasets" tabindex="0">${lang === "ar" ? d.titleAr : d.titleEn}</a></li>`
+          `<li><a href="dataset.html?id=${d.id}" tabindex="0">${
+            lang === "ar" ? d.titleAr : d.titleEn
+          }</a></li>`
       ).join("");
     }
   }
@@ -383,24 +426,42 @@ const I18N = {
     if (year) year.textContent = t.digits(new Date().getFullYear());
 
     describeTheme();
+    wireWhatsapp();
+
+    store("datasouq-lang", lang);
+
+    /* The dataset page renders itself from the same DATASETS array and has
+       to follow a language switch the way the catalogue does. It registers
+       a renderer here; the landing page defines none and this is a no-op.
+       DATASOUQ_LANG is what lets that page render on its own schedule too —
+       it loads its payload asynchronously and can land after this ran. */
+    window.DATASOUQ_LANG = { lang: lang, t: t };
+    if (typeof window.DATASOUQ_RENDER === "function") window.DATASOUQ_RENDER(lang, t);
+  }
+
+  /* Every WhatsApp link on the page, general and per-dataset.
+
+     Exposed because the dataset page rebuilds its own CTA after this has
+     already run, and an un-wired link would open WhatsApp with no message
+     at all. */
+  function wireWhatsapp() {
+    const t = I18N[lang];
 
     const general = whatsappUrl(t.waMessage());
     document.querySelectorAll("[data-wa]").forEach((n) => n.setAttribute("href", general));
 
     /* Each catalogue card opens WhatsApp naming its own dataset and asking
-       for the three details the page deliberately does not state.
-       data-wa-dataset carries the dataset's id from assets/js/datasets.js,
-       so a new dataset gets a correct link the moment it is added — nothing
-       here has to change. */
+       for the price. data-wa-dataset carries the dataset's id from
+       assets/js/datasets.js, so a new dataset gets a correct link the moment
+       it is added — nothing here has to change. */
     document.querySelectorAll("[data-wa-dataset]").forEach((n) => {
       const dataset = DATASETS.find((d) => d.id === n.dataset.waDataset);
       if (!dataset) return;
       const title = lang === "ar" ? dataset.titleAr : dataset.titleEn;
       n.setAttribute("href", whatsappUrl(t.waDatasetMessage(title)));
     });
-
-    store("datasouq-lang", lang);
   }
+  window.DATASOUQ_WIRE_WA = wireWhatsapp;
 
   /* The sun/moon swap is CSS-only, so without this a screen reader gets no
      confirmation of which theme is now in effect.
