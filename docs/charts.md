@@ -15,13 +15,16 @@ the keyboard: if a case is not covered here, it gets added here first.
 |---|---|---|
 | [Supabase design system](https://supabase.com/design-system/docs/ui-patterns/charts) | The look: components, tokens, spacing — the rest of this site follows it | Which chart to use. Its only line on selection is "Always try to use the default provided charts first" |
 | [IBM Carbon — chart types](https://carbondesignsystem.com/data-visualization/chart-types/) | The taxonomy: purpose → chart family. "Start by identifying the purpose of the visualization and then choose the appropriate chart type" | Numeric thresholds; its per-chart pages are demos, not rules |
+| [IBM Carbon — dashboards](https://carbondesignsystem.com/data-visualization/dashboards/) | The arrangement: hierarchy, reading order, white space, consistency — what goes where once the forms are chosen | Any number. It gives no sizes, no column count, no gap values |
 | FT **Visual Vocabulary** | The same taxonomy at finer grain — nine data relationships, the charts under each | Marks, colour, layout |
 | Anthropic **dataviz skill** (`references/`, `scripts/validate_palette.js`) | The numbers: mark sizes, colour checks, anti-patterns — and a runnable validator | The taxonomy (it defers to the same job→form idea) |
 | Cleveland & McGill (1984) | Why the ranking is what it is: position > length > angle > area > colour | Anything specific to a design system |
 
-Carbon and Supabase both stop short of a decision procedure. That is why this
-file exists, and why the numeric rules below come from the dataviz skill: it
-is the only source of the five that states thresholds and ships a validator.
+Carbon and Supabase both stop short of a decision procedure for *which* chart
+to use. That is why this file exists, and why the numeric rules below come
+from the dataviz skill: it is the only source here that states thresholds and
+ships a validator. Carbon's dashboard page does settle *arrangement* — §7 now
+rests on it rather than on house judgement.
 
 ---
 
@@ -75,7 +78,10 @@ catalogue, which tags every chart with data shape, occasion and reader time
 [PolyForm Noncommercial](https://polyformproject.org/licenses/noncommercial/1.0.0),
 so none of its code, templates or catalogue text can be used here: DataSouq
 sells data, which is commercial use and needs the author's separate
-permission. The thresholds and the exception are **House**.*
+permission. The thresholds and the exception are **House**. Carbon's
+dashboard page argues the same direction — "Limit the number of metrics …
+strip away anything that could distract a user from interpreting the
+information" — without naming a number.*
 
 **Rule 1.7 — A map answers "where", never "how much exactly".** It ships
 paired with the region bar chart, never instead of it. A shaded area cannot
@@ -246,6 +252,25 @@ skill)*
 it takes the width the longest label needs and stops there. *(dataviz skill:
 "A label that won't fit doesn't get clipped — measure first")*
 
+**6.5 — In Arabic, quantities take Arabic-Indic digits; codes do not.**
+A count, a share or a band edge is a quantity and converts — U+0660–U+0669
+with U+066C for thousands, U+066B for the decimal, U+066A for percent. An
+identifier does not: `E.164`, a grade range of `1-6`, a tier key of `A`
+stay as the delivered file writes them, because they are the value stored in
+the column and not a measurement of anything. The data dictionary is
+therefore left alone; the charts are converted. **House.**
+
+The conversion happens at render time, never in the payload: `digits()` in
+`assets/js/site.js` for values, `numbersIn()` in `dataset-page.js` for a
+note. A note cannot go through `digits()` whole — it maps every `.` to the
+Arabic decimal separator, and a note ends in a full stop.
+
+**6.6 — An Arabic string is never built from an English one.** The map's
+"not on the map" tail was assembled from `label_en` for both languages and
+put "Not recorded" inside an Arabic sentence. Any generated sentence carries
+both labels through from `counted()`, which already returns the pair.
+**House**, and a defect that shipped.
+
 ---
 
 ## 7 · Layout
@@ -259,13 +284,54 @@ different x. **House**, and the defect a reader spotted before we did.
 **Rule 7.2 — Cards flow in columns, not grid rows.** A grid stretches every
 card to the tallest in its row: a four-row chart beside an eighteen-row one
 was padded to 670px, 400 of them blank. Multi-column packs each card at its
-own height. **House** — no source settles dashboard layout.
+own height. **House** on the mechanism; the reason it matters is Carbon's:
+400px of padding inside a card is not white space doing work, it is a card
+claiming importance it does not have.
 
 **Rule 7.3 — Two columns on desktop, one under 900px.** The trade is track
 width: two columns give a bar ~310px to run in rather than ~700. Acceptable
 **only because** rule 6.1 prints the value — precision does not rest on the
 bar's length. **House.** If a chart ever needs the width more than the page
 needs the density, this is the rule to revisit.
+
+**Rule 7.4 — Charts are grouped by the question they answer, and the groups
+run most important first.** Seven cards in one flow is a list, not a
+dashboard: nothing tells the reader where to start or what belongs with what.
+Three groups, in this order:
+
+| Group | The question it answers | Why it is where it is |
+|---|---|---|
+| **Coverage** · التغطية | Where are these records, and does the file reach my area? | The first thing a buyer checks. If the coverage is wrong, nothing below matters |
+| **Usability** · جاهزية الاستخدام | Can I act on a record — is there a way to reach it, and how complete is it? | Second: the file covers my area, but can I use it? |
+| **What's in it** · المكوّنات | How is the file composed — what classes, what types? | Detail. Read once the first two have passed |
+
+*(Carbon: "Prioritize data by importance, then create a clear visual
+hierarchy … Place the most important at the top of the page and follow the
+F-pattern for the remaining elements, finishing with the least important
+information")*
+
+The group of a chart is set in `CHART_GROUPS` in
+`tools/build_dataset_details.py`, next to the data, not in the CSS — it is a
+judgement about what the chart says.
+
+**Rule 7.5 — The lead chart of the lead group gets the largest area.** The
+map spans both columns; every other card takes one. *(Carbon: "The most
+important data should have the highest contrast and occupy the largest
+area")* The span is a cap, not a stretch: a drawing left to fill the row came
+out 880px tall, which is a map eating the page rather than a hierarchy.
+
+**Rule 7.6 — White space does the grouping: 40px between groups, 12px
+between cards inside one.** No rules, no boxes around groups — the gap is
+the separator. *(Carbon: "White space either sets elements apart or brings
+them together to distinguish a point's priority … Space acts as a visual
+separator and guides a user's eye through a page")*
+
+**Rule 7.7 — One layout, one spacing, one legend position for every chart.**
+*(Carbon: "All charts should use the same layout and spacing, and have
+legends in the same position relative to the charting area")* A **key** is
+not a legend under rule 6.3 — the `split`'s key carries label, share and
+count, so it is a readout of the bar it sits under, and the map's band legend
+is the page's only legend. It sits beside the drawing.
 
 ---
 
@@ -286,8 +352,10 @@ which is worth re-checking after any change to the builders.
    the row — with its source — before writing any code.
 2. Add it in `tools/build_dataset_details.py` using `bar()`, `ordinal()`,
    `split()` or `coverage()`.
-3. Run `python tools/build_dataset_details.py "<folder with the .xlsx files>"`.
-4. If it needs a colour that is not already a token, validate it (rule 4.5)
+3. Give it a group and a rank in `CHART_GROUPS` in the same file (rule 7.4).
+   Anything not listed there falls to **What's in it**, last.
+4. Run `python tools/build_dataset_details.py "<folder with the .xlsx files>"`.
+5. If it needs a colour that is not already a token, validate it (rule 4.5)
    in both themes before adding it.
 
 Nothing in `dataset.html`, `assets/js/dataset-page.js` or the CSS changes for

@@ -199,87 +199,6 @@ DATASET_DETAILS["engineering"] = {
   ],
   "charts": [
     {
-      "id": "regions",
-      "type": "bar",
-      "unit": "count",
-      "titleEn": "Offices by region",
-      "titleAr": "المكاتب حسب المنطقة",
-      "noteEn": "All 13 administrative regions are represented; 467 offices carry no region.",
-      "noteAr": "كل المناطق الإدارية الـ13 ممثَّلة، و467 مكتباً بلا منطقة مسجَّلة.",
-      "items": [
-        {
-          "labelEn": "Riyadh",
-          "labelAr": "الرياض",
-          "value": 2158
-        },
-        {
-          "labelEn": "Makkah",
-          "labelAr": "مكة المكرمة",
-          "value": 1653
-        },
-        {
-          "labelEn": "Eastern Province",
-          "labelAr": "الشرقية",
-          "value": 1016
-        },
-        {
-          "labelEn": "Not recorded",
-          "labelAr": "غير مسجَّل",
-          "value": 467
-        },
-        {
-          "labelEn": "Asir",
-          "labelAr": "عسير",
-          "value": 327
-        },
-        {
-          "labelEn": "Madinah",
-          "labelAr": "المدينة المنورة",
-          "value": 287
-        },
-        {
-          "labelEn": "Qassim",
-          "labelAr": "القصيم",
-          "value": 242
-        },
-        {
-          "labelEn": "Jazan",
-          "labelAr": "جازان",
-          "value": 168
-        },
-        {
-          "labelEn": "Hail",
-          "labelAr": "حائل",
-          "value": 129
-        },
-        {
-          "labelEn": "Al-Jouf",
-          "labelAr": "الجوف",
-          "value": 91
-        },
-        {
-          "labelEn": "Najran",
-          "labelAr": "نجران",
-          "value": 86
-        },
-        {
-          "labelEn": "Tabuk",
-          "labelAr": "تبوك",
-          "value": 82
-        },
-        {
-          "labelEn": "Al-Bahah",
-          "labelAr": "الباحة",
-          "value": 55
-        },
-        {
-          "labelEn": "Northern Borders",
-          "labelAr": "الحدود الشمالية",
-          "value": 47
-        }
-      ]
-    },
-    {
       "id": "map",
       "type": "map",
       "unit": "count",
@@ -287,7 +206,7 @@ DATASET_DETAILS["engineering"] = {
       "titleEn": "Where the offices are",
       "titleAr": "أين تتركّز المكاتب",
       "noteEn": "The same counts as the chart beside it, on the map. Shading is by quantile, so each band holds a similar number of regions rather than an equal slice of the range. Not on the map: Not recorded (467).",
-      "noteAr": "نفس أرقام الرسم المجاور، على الخريطة. التظليل بالشرائح المتساوية العدد لا المتساوية المدى. خارج الخريطة: Not recorded (467).",
+      "noteAr": "نفس أرقام الرسم المجاور، على الخريطة. التظليل بالشرائح المتساوية العدد لا المتساوية المدى. خارج الخريطة: غير مسجَّل (467).",
       "items": [
         {
           "iso": "SA-01",
@@ -367,105 +286,90 @@ DATASET_DETAILS["engineering"] = {
           "labelAr": "الحدود الشمالية",
           "value": 47
         }
-      ]
+      ],
+      "group": "coverage"
     },
     {
-      "id": "classification",
-      "type": "ordinal",
-      "unit": "count",
-      "titleEn": "Classification grades",
-      "titleAr": "درجات التصنيف",
-      "noteEn": "Unclassified is a value in the source register, not a gap in the data. Charted here are the 4,259 records on the scale, 63% of the file; 2,549 unclassified sit outside it.",
-      "noteAr": "«غير مصنّف» قيمة في السجل المصدر، وليست نقصاً في البيانات. المرسوم هنا هو 4,259 سجل على السلّم، أي 63% من الملف؛ وخارجه 2,549 غير مصنف.",
-      "items": [
-        {
-          "labelEn": "First Classified",
-          "labelAr": "مصنف درجة أولى",
-          "value": 315,
-          "step": 0
-        },
-        {
-          "labelEn": "Second Classified",
-          "labelAr": "مصنف درجة ثانية",
-          "value": 256,
-          "step": 1
-        },
-        {
-          "labelEn": "Third Classified",
-          "labelAr": "مصنف درجة ثالثة",
-          "value": 190,
-          "step": 2
-        },
-        {
-          "labelEn": "Fourth Classified",
-          "labelAr": "مصنف درجة رابعة",
-          "value": 189,
-          "step": 3
-        },
-        {
-          "labelEn": "Fifth Classified",
-          "labelAr": "مصنف درجة خامسة",
-          "value": 353,
-          "step": 4
-        },
-        {
-          "labelEn": "Sixth Classified",
-          "labelAr": "مصنف درجة سادسة",
-          "value": 2956,
-          "step": 5
-        }
-      ]
-    },
-    {
-      "id": "types",
+      "id": "regions",
       "type": "bar",
       "unit": "count",
-      "titleEn": "Office type",
-      "titleAr": "نوع المكتب",
-      "noteEn": "Office type comes from the regional engineering directory, so records sourced elsewhere carry none.",
-      "noteAr": "نوع المكتب يأتي من دليل المكاتب بالمناطق، فالسجلات من مصادر أخرى بلا نوع.",
+      "titleEn": "Offices by region",
+      "titleAr": "المكاتب حسب المنطقة",
+      "noteEn": "All 13 administrative regions are represented; 467 offices carry no region.",
+      "noteAr": "كل المناطق الإدارية الـ13 ممثَّلة، و467 مكتباً بلا منطقة مسجَّلة.",
       "items": [
+        {
+          "labelEn": "Riyadh",
+          "labelAr": "الرياض",
+          "value": 2158
+        },
+        {
+          "labelEn": "Makkah",
+          "labelAr": "مكة المكرمة",
+          "value": 1653
+        },
+        {
+          "labelEn": "Eastern Province",
+          "labelAr": "الشرقية",
+          "value": 1016
+        },
         {
           "labelEn": "Not recorded",
           "labelAr": "غير مسجَّل",
-          "value": 4150
+          "value": 467
         },
         {
-          "labelEn": "Engineering consultancy offices",
-          "labelAr": "مكاتب استشارات هندسية",
-          "value": 851
+          "labelEn": "Asir",
+          "labelAr": "عسير",
+          "value": 327
         },
         {
-          "labelEn": "Mixed professional companies",
-          "labelAr": "شركات مهنية مختلطة",
-          "value": 629
+          "labelEn": "Madinah",
+          "labelAr": "المدينة المنورة",
+          "value": 287
         },
         {
-          "labelEn": "Consulting engineer offices",
-          "labelAr": "مكاتب مهندسين استشاريين",
-          "value": 522
+          "labelEn": "Qassim",
+          "labelAr": "القصيم",
+          "value": 242
         },
         {
-          "labelEn": "Engineer offices",
-          "labelAr": "مكاتب مهندسين",
-          "value": 352
-        },
-        {
-          "labelEn": "Saudi professional companies",
-          "labelAr": "شركات مهنية سعودية",
+          "labelEn": "Jazan",
+          "labelAr": "جازان",
           "value": 168
         },
         {
-          "labelEn": "Soil, foundation, concrete and survey testing",
-          "labelAr": "مكاتب فحص التربة والأساسات والخرسانة والمساحة",
-          "value": 134
+          "labelEn": "Hail",
+          "labelAr": "حائل",
+          "value": 129
         },
         {
-          "labelEn": "Land survey offices",
-          "labelAr": "مكاتب مساحة أرضية",
-          "value": 2
+          "labelEn": "Al-Jouf",
+          "labelAr": "الجوف",
+          "value": 91
+        },
+        {
+          "labelEn": "Najran",
+          "labelAr": "نجران",
+          "value": 86
+        },
+        {
+          "labelEn": "Tabuk",
+          "labelAr": "تبوك",
+          "value": 82
+        },
+        {
+          "labelEn": "Al-Bahah",
+          "labelAr": "الباحة",
+          "value": 55
+        },
+        {
+          "labelEn": "Northern Borders",
+          "labelAr": "الحدود الشمالية",
+          "value": 47
         }
-      ]
+      ],
+      "group": "coverage"
     },
     {
       "id": "cities",
@@ -526,42 +430,8 @@ DATASET_DETAILS["engineering"] = {
           "labelAr": "حائل",
           "value": 126
         }
-      ]
-    },
-    {
-      "id": "quality",
-      "type": "ordinal",
-      "unit": "count",
-      "titleEn": "Completeness tier",
-      "titleAr": "تصنيف الاكتمال",
-      "noteEn": "A is 80-100 complete, D is under 40.",
-      "noteAr": "A من ٨٠ إلى ١٠٠، وD أقل من ٤٠.",
-      "items": [
-        {
-          "labelEn": "A",
-          "labelAr": "A",
-          "value": 2974,
-          "step": 0
-        },
-        {
-          "labelEn": "B",
-          "labelAr": "B",
-          "value": 1524,
-          "step": 1
-        },
-        {
-          "labelEn": "C",
-          "labelAr": "C",
-          "value": 910,
-          "step": 2
-        },
-        {
-          "labelEn": "D",
-          "labelAr": "D",
-          "value": 1400,
-          "step": 3
-        }
-      ]
+      ],
+      "group": "coverage"
     },
     {
       "id": "coverage",
@@ -596,7 +466,144 @@ DATASET_DETAILS["engineering"] = {
           "value": 37.9,
           "count": 2581
         }
-      ]
+      ],
+      "group": "usability"
+    },
+    {
+      "id": "quality",
+      "type": "ordinal",
+      "unit": "count",
+      "titleEn": "Completeness tier",
+      "titleAr": "تصنيف الاكتمال",
+      "noteEn": "A is 80-100 complete, D is under 40.",
+      "noteAr": "A من ٨٠ إلى ١٠٠، وD أقل من ٤٠.",
+      "items": [
+        {
+          "labelEn": "A",
+          "labelAr": "A",
+          "value": 2974,
+          "step": 0
+        },
+        {
+          "labelEn": "B",
+          "labelAr": "B",
+          "value": 1524,
+          "step": 1
+        },
+        {
+          "labelEn": "C",
+          "labelAr": "C",
+          "value": 910,
+          "step": 2
+        },
+        {
+          "labelEn": "D",
+          "labelAr": "D",
+          "value": 1400,
+          "step": 3
+        }
+      ],
+      "group": "usability"
+    },
+    {
+      "id": "classification",
+      "type": "ordinal",
+      "unit": "count",
+      "titleEn": "Classification grades",
+      "titleAr": "درجات التصنيف",
+      "noteEn": "Unclassified is a value in the source register, not a gap in the data. Charted here are the 4,259 records on the scale, 63% of the file; 2,549 unclassified sit outside it.",
+      "noteAr": "«غير مصنّف» قيمة في السجل المصدر، وليست نقصاً في البيانات. المرسوم هنا هو 4,259 سجل على السلّم، أي 63% من الملف؛ وخارجه 2,549 غير مصنف.",
+      "items": [
+        {
+          "labelEn": "First Classified",
+          "labelAr": "مصنف درجة أولى",
+          "value": 315,
+          "step": 0
+        },
+        {
+          "labelEn": "Second Classified",
+          "labelAr": "مصنف درجة ثانية",
+          "value": 256,
+          "step": 1
+        },
+        {
+          "labelEn": "Third Classified",
+          "labelAr": "مصنف درجة ثالثة",
+          "value": 190,
+          "step": 2
+        },
+        {
+          "labelEn": "Fourth Classified",
+          "labelAr": "مصنف درجة رابعة",
+          "value": 189,
+          "step": 3
+        },
+        {
+          "labelEn": "Fifth Classified",
+          "labelAr": "مصنف درجة خامسة",
+          "value": 353,
+          "step": 4
+        },
+        {
+          "labelEn": "Sixth Classified",
+          "labelAr": "مصنف درجة سادسة",
+          "value": 2956,
+          "step": 5
+        }
+      ],
+      "group": "composition"
+    },
+    {
+      "id": "types",
+      "type": "bar",
+      "unit": "count",
+      "titleEn": "Office type",
+      "titleAr": "نوع المكتب",
+      "noteEn": "Office type comes from the regional engineering directory, so records sourced elsewhere carry none.",
+      "noteAr": "نوع المكتب يأتي من دليل المكاتب بالمناطق، فالسجلات من مصادر أخرى بلا نوع.",
+      "items": [
+        {
+          "labelEn": "Not recorded",
+          "labelAr": "غير مسجَّل",
+          "value": 4150
+        },
+        {
+          "labelEn": "Engineering consultancy offices",
+          "labelAr": "مكاتب استشارات هندسية",
+          "value": 851
+        },
+        {
+          "labelEn": "Mixed professional companies",
+          "labelAr": "شركات مهنية مختلطة",
+          "value": 629
+        },
+        {
+          "labelEn": "Consulting engineer offices",
+          "labelAr": "مكاتب مهندسين استشاريين",
+          "value": 522
+        },
+        {
+          "labelEn": "Engineer offices",
+          "labelAr": "مكاتب مهندسين",
+          "value": 352
+        },
+        {
+          "labelEn": "Saudi professional companies",
+          "labelAr": "شركات مهنية سعودية",
+          "value": 168
+        },
+        {
+          "labelEn": "Soil, foundation, concrete and survey testing",
+          "labelAr": "مكاتب فحص التربة والأساسات والخرسانة والمساحة",
+          "value": 134
+        },
+        {
+          "labelEn": "Land survey offices",
+          "labelAr": "مكاتب مساحة أرضية",
+          "value": 2
+        }
+      ],
+      "group": "composition"
     }
   ]
 };
