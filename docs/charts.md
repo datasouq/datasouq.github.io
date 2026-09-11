@@ -53,6 +53,29 @@ are two charts. *(dataviz skill, listed first among anti-patterns)*
 separate bars, 15,581 against 18 is one full bar and three hairlines, which
 answers nothing. **House**, following the part-to-whole family.
 
+**Rule 1.6 — Every chart must be decodable in about 30 seconds, without
+interacting with it.** These sit on a page someone is deciding whether to buy
+from, not in a dashboard they will sit with. Concretely a chart must be:
+sorted (§3), direct-labelled (6.1), single-series or keyed (6.3), and no
+deeper than ~12 rows.
+
+The one allowed exception is a chart where the **count itself is the
+product**. Three charts take it today, and all three are geography: the two
+"by region" charts at 14 rows (13 administrative regions plus the
+not-recorded bar) and "Facilities by health directorate" at 20. Full
+geographic coverage is exactly what a buyer is evaluating, so folding the
+tail there would hide the thing being sold. An exception has to be argued in
+the note, not taken silently — and a chart that claims it must still satisfy
+everything else in this rule.
+
+*Source: the reader-time axis is an idea taken from the `lieflat-charts`
+catalogue, which tags every chart with data shape, occasion and reader time
+(<10s / ~30s). **The idea only** — that project is
+[PolyForm Noncommercial](https://polyformproject.org/licenses/noncommercial/1.0.0),
+so none of its code, templates or catalogue text can be used here: DataSouq
+sells data, which is commercial use and needs the author's separate
+permission. The thresholds and the exception are **House**.*
+
 ---
 
 ## 2 · Scale and what goes in the frame
