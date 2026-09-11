@@ -70,10 +70,19 @@ def rings_of(geometry):
             yield ring
 
 
-def build():
+def projector():
+    """The projection and the viewBox, for anything that has to land ON the map.
+
+    Exposed rather than kept inside build() because the healthcare dots are
+    projected by tools/build_dataset_details.py and have to use exactly this
+    function: a second implementation would drift from the outline the moment
+    either changed, and the drift would be invisible until someone noticed a
+    hospital in the sea.
+
+    Returns (project, width, height). `project(lon, lat)` gives viewBox units.
+    """
     with io.open(SOURCE, encoding="utf-8") as handle:
         data = json.load(handle)
-
     features = data["features"]
 
     # Bounds first: the projection needs the mean latitude before it can run.
@@ -91,6 +100,13 @@ def build():
         # SVG y grows downward; latitude grows upward.
         y = (max_lat - lat) / span_y * height
         return round(x, 1), round(y, 1)
+
+    return project, WIDTH, height, data
+
+
+def build():
+    project, _, height, data = projector()
+    features = data["features"]
 
     regions, points_before, points_after = [], 0, 0
     for feature in features:

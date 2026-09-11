@@ -205,8 +205,8 @@ DATASET_DETAILS["engineering"] = {
       "geo": "sa-regions",
       "titleEn": "Where the offices are",
       "titleAr": "أين تتركّز المكاتب",
-      "noteEn": "The same counts as the chart beside it, on the map. Shading is by quantile, so each band holds a similar number of regions rather than an equal slice of the range. Not on the map: Not recorded (467).",
-      "noteAr": "نفس أرقام الرسم المجاور، على الخريطة. التظليل بالشرائح المتساوية العدد لا المتساوية المدى. خارج الخريطة: غير مسجَّل (467).",
+      "noteEn": "Shading is by quantile: each band holds a similar number of regions rather than an equal slice of the range. The key names the regions in each band and what each one holds. Not on the map: Not recorded (467).",
+      "noteAr": "التظليل بالشرائح المئينية: كل شريحة تضمّ عدداً متقارباً من المناطق بدل أن تقتسم المدى بالتساوي. والمفتاح يسمّي مناطق كل شريحة وما في كل منها. خارج الخريطة: غير مسجَّل (467).",
       "items": [
         {
           "iso": "SA-01",
@@ -490,49 +490,6 @@ DATASET_DETAILS["engineering"] = {
       ],
       "headlineEn": "Mobile number on 70.5% of the offices, website on only 37.9%.",
       "headlineAr": "رقم جوال في 70.5% من المكاتب، وموقع إلكتروني في 37.9% فقط.",
-      "metric": {
-        "value": 100.0,
-        "labelEn": "of 6,808 offices",
-        "labelAr": "من 6,808 مكتب"
-      },
-      "group": "usability"
-    },
-    {
-      "id": "quality",
-      "type": "ordinal",
-      "unit": "count",
-      "titleEn": "Completeness tier",
-      "titleAr": "تصنيف الاكتمال",
-      "noteEn": "A is 80-100 complete, D is under 40.",
-      "noteAr": "A من ٨٠ إلى ١٠٠، وD أقل من ٤٠.",
-      "items": [
-        {
-          "labelEn": "A",
-          "labelAr": "A",
-          "value": 2974,
-          "step": 0
-        },
-        {
-          "labelEn": "B",
-          "labelAr": "B",
-          "value": 1524,
-          "step": 1
-        },
-        {
-          "labelEn": "C",
-          "labelAr": "C",
-          "value": 910,
-          "step": 2
-        },
-        {
-          "labelEn": "D",
-          "labelAr": "D",
-          "value": 1400,
-          "step": 3
-        }
-      ],
-      "headlineEn": "A: 43.7% of the offices.",
-      "headlineAr": "A: 43.7% من المكاتب.",
       "metric": {
         "value": 100.0,
         "labelEn": "of 6,808 offices",
