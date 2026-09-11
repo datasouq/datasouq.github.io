@@ -1738,6 +1738,336 @@ main:focus, main:focus-visible { outline: none; }
 .social svg { width: var(--social-icon); height: var(--social-icon); flex-shrink: 0; }
 
 /* ==========================================================================
+   Dataset page — the catalogue card's destination
+   ========================================================================== */
+
+/* The whole card opens the dataset page, but only ONE link is in the
+   accessibility tree for it: the title. The overlay is the title link's own
+   ::after stretched over the card, which is the pattern that gives a mouse a
+   card-sized target without giving a screen reader a second, duplicate link
+   (a wrapping <a> would also be invalid here — the card already contains the
+   WhatsApp link, and <a> inside <a> is not allowed).
+
+   The WhatsApp button then has to be lifted above that overlay or the card
+   link would swallow its clicks; position + z-index is the whole fix. */
+.card--dataset { position: relative; }
+
+.card--dataset .card__head h3 a {
+  color: inherit;
+  text-decoration: none;
+}
+.card--dataset .card__head h3 a::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+}
+.card--dataset:hover .card__head h3 a { color: var(--brand-text); }
+/* The focus ring belongs on the card, not on the two words of the title:
+   the whole card is what the link activates. :focus-visible keeps it off
+   mouse clicks, the way every other control here behaves. */
+.card--dataset:has(.card__head h3 a:focus-visible) {
+  outline: 2px solid var(--ring);
+  outline-offset: 2px;
+}
+.card--dataset .card__actions { position: relative; z-index: 1; }
+
+/* Back to the catalogue. The arrow is Lucide's arrow-left, so it has to be
+   mirrored in RTL — the glyph points at the reading origin, not at "left". */
+.backlink {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 20px;
+  font-size: var(--text-sm);
+  line-height: var(--lh-sm);
+  color: var(--muted-foreground);
+  text-decoration: none;
+  transition: color 0.15s var(--ease-default);
+}
+.backlink:hover { color: var(--foreground); }
+.backlink__icon { width: 16px; height: 16px; flex-shrink: 0; }
+:root[dir="rtl"] .backlink__icon { transform: scaleX(-1); }
+
+/* The dataset's own header: icon plate, title, the same two-tone body the
+   card carries, then its five measured metrics. The metrics reuse .metrics
+   wholesale — same component, same row, one definition. */
+.detail__head { padding-bottom: 0; }
+
+.detail__title {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+.detail__title h1 {
+  font-size: var(--text-3xl);
+  line-height: var(--lh-3xl);
+  font-weight: 600;
+  margin: 0;
+}
+.detail__lead {
+  max-width: 68ch;
+  color: var(--muted-foreground);
+  margin-bottom: 24px;
+}
+.detail__lead strong { color: var(--foreground); }
+
+/* A closing rule under the metrics, and only that: .metrics already paints
+   its own rule above itself — that divider is the component's, carried over
+   from the card, so adding a border-top here drew the same line twice. */
+.detail__metrics {
+  border-bottom: 1px solid var(--border);
+  padding-bottom: 20px;
+}
+
+/* The "not found" state — a bad or missing ?id=. Presentational empty state,
+   same shape as the catalogue's, so a mistyped URL lands somewhere designed
+   rather than on a blank page. */
+.detail__missing { text-align: center; padding: 32px 0; }
+.detail__missing h1 {
+  font-size: var(--text-2xl);
+  line-height: var(--lh-2xl);
+  margin-bottom: 8px;
+}
+.detail__missing p { color: var(--muted-foreground); margin-bottom: 20px; }
+
+/* ==========================================================================
+   Charts — horizontal bars, built from HTML rather than SVG
+   ==========================================================================
+
+   Every chart on this page plots ONE series: a count (or a share) per
+   category. That decides almost everything about them:
+
+   - One series means one colour. Colouring each bar by its own value would
+     double-encode the length as hue and spend the only free channel on
+     information the bar already carries, so every bar is the same brand
+     step. It also means no legend: with a single colour there is nothing to
+     key, and the chart's own title says what is plotted.
+   - Every bar is directly labelled with its value, so there are no
+     gridlines and no y-axis to read against — the number is simply there.
+     That is also what keeps the values out of a tooltip, where a keyboard
+     or screen-reader user would never reach them.
+   - HTML, not SVG: the labels and values are then real text — selectable,
+     searchable, translated by the same render pass as the rest of the page,
+     and laid out RTL by the same engine. An SVG would need manual
+     text-anchor flipping for Arabic and would hide every value from
+     find-in-page.
+
+   The two bar colours are the site's own brand steps, checked against the
+   card surface they sit on in each theme: #097C4F is --brand-600 in light,
+   #2BA770 sits between --brand-500 and --brand-default in dark. Both clear
+   3:1 against their surface and sit inside the lightness band their mode
+   asks for; the lighter --brand-default (#3ECF8E) does not in dark, which
+   is why the bar is not simply the accent. */
+/* docs/charts.md is the written-down version of everything below: which form
+   answers which question, where that rule comes from (the Supabase design
+   system documents chart components but not which chart to pick, so the
+   choice comes from the FT Visual Vocabulary), and what each palette was
+   checked against. Change a rule there and here together.
+
+   Three treatments, because the charts answer three different questions —
+   not for variety's own sake:
+
+   1. NOMINAL bar (--chart-bar). Categories with no inherent order: regions,
+      cities, facility types. One colour for every bar; colouring them by
+      their own value would encode the length twice and spend the only free
+      channel on what the bar already says.
+   2. ORDINAL ramp (--chart-ramp-1..6). Categories that ARE a scale:
+      classification grades 1-6, completeness tiers A-D. The ramp carries
+      the rung, so the reader sees the shape of the ladder even where the
+      bars are sorted by it rather than by size. Off-scale values —
+      Unclassified, Not recorded — take --chart-null, a neutral grey,
+      because they are the absence of a grade, not a further grade.
+   3. COVERAGE meter (--chart-bar on --chart-track). A share of a fixed
+      100%, where the unfilled remainder is itself the finding.
+
+   The ramp is one hue, light to dark, monotone in OKLCH lightness with a
+   visible step between neighbours and a lightest step that still clears its
+   surface — checked in both themes rather than eyeballed. The dark ramp is
+   its own set of steps against the dark card, not the light one inverted. */
+:root {
+  --chart-bar: #097C4F;
+  --chart-track: rgba(3, 3, 3, 0.055);
+  --chart-null: rgba(3, 3, 3, 0.26);
+  --chart-ramp-1: #2dcc87;
+  --chart-ramp-2: #27b175;
+  --chart-ramp-3: #219764;
+  --chart-ramp-4: #1c7e53;
+  --chart-ramp-5: #166543;
+  --chart-ramp-6: #114c33;
+}
+[data-theme="dark"] {
+  --chart-bar: #2BA770;
+  --chart-track: rgba(243, 246, 244, 0.06);
+  --chart-null: rgba(243, 246, 244, 0.24);
+  --chart-ramp-1: #afe6ce;
+  --chart-ramp-2: #76d4ab;
+  --chart-ramp-3: #3cbf87;
+  --chart-ramp-4: #33a272;
+  --chart-ramp-5: #2b885f;
+  --chart-ramp-6: #236d4d;
+}
+
+.charts {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 12px;
+}
+@media (min-width: 900px) {
+  .charts { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+
+.chart {
+  margin: 0;
+  padding: 20px;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+}
+.chart__head { margin-bottom: 16px; }
+.chart__title {
+  font-size: var(--text-base);
+  line-height: var(--lh-base);
+  font-weight: 600;
+  margin: 0 0 4px;
+}
+.chart__note {
+  font-size: var(--text-xs);
+  line-height: var(--lh-xs);
+  color: var(--muted-foreground);
+  margin: 0;
+}
+
+.chart__rows { display: grid; gap: 10px; }
+
+/* label / bar / value. The label column caps at 40% so a long Arabic
+   category cannot squeeze the bars down to stubs, and the value column sizes
+   to its content so the numbers line up under each other. */
+.chart__row {
+  display: grid;
+  grid-template-columns: minmax(0, 0.4fr) minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 10px;
+}
+.chart__label {
+  font-size: var(--text-xs);
+  line-height: var(--lh-xs);
+  color: var(--muted-foreground);
+  overflow-wrap: anywhere;
+}
+.chart__value {
+  font-size: var(--text-xs);
+  line-height: var(--lh-xs);
+  font-weight: 500;
+  color: var(--foreground);
+  /* Tabular figures here and only here: these are a column of numbers that
+     have to align vertically. */
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+/* The track is only drawn where the scale is a fixed 0-100%: on a coverage
+   chart the empty remainder is meaningful (it is the share of records
+   missing that channel). On a counted chart the bars are scaled to the
+   largest value, where a track would imply a maximum that does not exist. */
+.chart__track { min-height: 10px; }
+.chart--coverage .chart__track {
+  background: var(--chart-track);
+  border-radius: 999px;
+}
+
+/* 10px of bar, well under the 24px cap, because these run 13-20 rows deep and
+   the row gap has to stay bigger than the bar for the list to read as a list.
+   Square where it leaves the baseline, 4px round at the data end — written
+   with logical corners so RTL mirrors it without a second rule. */
+.chart__bar {
+  display: block;
+  block-size: 10px;
+  min-inline-size: 2px;
+  background: var(--chart-bar);
+  border-start-start-radius: 0;
+  border-end-start-radius: 0;
+  border-start-end-radius: 4px;
+  border-end-end-radius: 4px;
+}
+
+/* ==========================================================================
+   Data dictionary
+   ========================================================================== */
+
+.dict {
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  background: var(--card);
+}
+.dict__row {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 4px;
+  padding: 14px 16px;
+  border-bottom: 1px solid var(--border);
+}
+.dict__row:last-child { border-bottom: 0; }
+
+@media (min-width: 768px) {
+  .dict__row {
+    grid-template-columns: minmax(0, 0.28fr) minmax(0, 1fr);
+    gap: 16px;
+    align-items: baseline;
+  }
+}
+
+/* The field name is the literal column header a buyer will see in the file,
+   so it is never translated — including on the Arabic side, where the
+   columns still ship with these English names.
+
+   Set in the sans, not a mono face: this page follows the same call the card
+   titles already made upstream-versus-here — supabase's own CardTitle is
+   `text-xs font-mono`, and this build ships no mono companion, so weight and
+   the brand tone carry the "this is an identifier" signal instead of a
+   second family loaded for one column. */
+.dict__field {
+  font-size: var(--text-xs);
+  line-height: var(--lh-sm);
+  font-weight: 500;
+  color: var(--brand-text);
+  overflow-wrap: anywhere;
+  /* Column names are ASCII identifiers even in the Arabic view, so they are
+     pinned LTR — otherwise a name ending in a digit or underscore reorders. */
+  direction: ltr;
+  unicode-bidi: isolate;
+  text-align: start;
+}
+.dict__desc {
+  font-size: var(--text-sm);
+  line-height: var(--lh-sm);
+  margin: 0;
+}
+.dict__notes {
+  font-size: var(--text-xs);
+  line-height: var(--lh-xs);
+  color: var(--muted-foreground);
+  margin: 4px 0 0;
+}
+
+/* A count beside the section heading, so the reader knows the list's size
+   before scrolling it. */
+.dict__count {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 16px;
+  padding: 4px 10px;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  font-size: var(--text-xs);
+  line-height: var(--lh-xs);
+  color: var(--muted-foreground);
+}
+
+/* ==========================================================================
    Responsive
    ========================================================================== */
 

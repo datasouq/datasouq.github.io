@@ -3,32 +3,24 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>DataSouq — structured data, ready to work with</title>
-<meta name="description" content="DataSouq cleans, deduplicates and structures raw records into datasets ready to import. داتا سوق: نحوّل السجلات الخام إلى قواعد بيانات منظّمة وجاهزة للاستخدام، بالعربية والإنجليزية.">
+<title>Dataset — DataSouq</title>
+<meta name="description" content="Field list, coverage and distribution charts for a DataSouq dataset. قائمة الحقول وتغطية البيانات ورسوم التوزيع لقاعدة بيانات داتا سوق.">
 
-<!-- twitter:card promised a large image and there was none, so every share —
-     WhatsApp above all, since that is the channel this page sells through —
-     rendered as a bare link. assets/og.jpg is drawn from the page's own tokens:
-     the dark surface, the two-weight wordmark, the brand accent. -->
-<meta property="og:type" content="website">
+<!-- One page serves every dataset: ?id= picks which. There is no per-dataset
+     HTML file to keep in step as assets/js/datasets.js grows, and no server
+     to rewrite paths on a static host. The canonical below is rewritten per
+     dataset by dataset-page.js, alongside the title and og: tags. -->
+<meta property="og:type" content="article">
 <meta property="og:site_name" content="DataSouq">
-<meta property="og:title" content="DataSouq — structured data, ready to work with">
-<meta property="og:description" content="We clean, deduplicate and structure raw records into datasets ready to import.">
-<meta property="og:url" content="https://datasouq.github.io/">
+<meta property="og:title" content="Dataset — DataSouq">
+<meta property="og:description" content="Field list, coverage and distribution charts for a DataSouq dataset.">
 <meta property="og:image" content="https://datasouq.github.io/assets/og.jpg">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
-<meta property="og:image:alt" content="DataSouq — structured data, ready to work with">
-<meta property="og:locale" content="en_US">
-<meta property="og:locale:alternate" content="ar_SA">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:image" content="https://datasouq.github.io/assets/og.jpg">
-<link rel="canonical" href="https://datasouq.github.io/">
+<link rel="canonical" href="https://datasouq.github.io/dataset.html">
 
-<!-- One tag, rewritten from data-theme by the pre-paint script and by
-     toggleTheme(). The two media-scoped tags it replaces keyed off the OS while
-     the page defaults to light regardless, so an OS-dark phone with no stored
-     choice painted dark chrome above a light page. -->
 <meta name="theme-color" id="theme-color" content="#fdfdfd">
 
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%233ecf8e'/%3E%3Ctext x='16' y='22' font-size='17' font-family='Arial' font-weight='bold' text-anchor='middle' fill='%23101010'%3ED%3C/text%3E%3C/svg%3E">
@@ -36,11 +28,6 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;450;500&family=Manrope:wght@500;600&family=IBM+Plex+Sans+Arabic:wght@400;500;600&display=swap" rel="stylesheet">
-
-<!-- The wordmark, and nothing else. `text=` returns a subset carrying only
-     these glyphs: 4.7 KB for both weights, against 44.6 KB for two full faces
-     to set eight letters. Change the wordmark and this string must change with
-     it, or the new letters drop to Inter. -->
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;500&text=DataSouq&display=swap" rel="stylesheet">
 
 <link rel="stylesheet" href="assets/css/styles.css">
@@ -60,16 +47,11 @@
   })();
 </script>
 
-<!-- Structured data. Organization and WebSite are the only entries authored
-     here — one Dataset entry per assets/js/datasets.js entry is appended to
-     this same @graph by renderDatasetStructuredData() in site.js at
-     startup, so a new dataset gets a JSON-LD entry for free the moment it is
-     added to that file, without this script tag changing. variableMeasured
-     stays a short summary of the columns that identify a record: the
-     complete field list is published on each dataset's own page, where it
-     can carry every column's description beside it, which a flat array of
-     names here cannot. The Dataset type is what Google Dataset Search
-     reads. -->
+<!-- Organization and WebSite only, same as the landing page. The Dataset
+     entry for whichever dataset this page is showing is appended by
+     site.js's renderDatasetStructuredData() — on this page it narrows to
+     the one being viewed, so a crawler reading this URL gets markup about
+     this dataset rather than the whole catalogue. -->
 <script type="application/ld+json" id="ld-json">
 {
   "@context": "https://schema.org",
@@ -78,7 +60,7 @@
       "@type": "Organization",
       "@id": "https://datasouq.github.io/#organization",
       "name": "DataSouq",
-      "alternateName": "\u062f\u0627\u062a\u0627 \u0633\u0648\u0642",
+      "alternateName": "داتا سوق",
       "url": "https://datasouq.github.io/",
       "image": "https://datasouq.github.io/assets/og.jpg",
       "description": "DataSouq cleans, deduplicates and structures raw records, then delivers them as datasets ready to import.",
@@ -105,167 +87,59 @@
 </head>
 <body>
 
-<!--
-  Icons follow apps/design-system/content/docs/icons.mdx:
-    - UI icons come from Lucide, paths unmodified
-    - Stroke attributes live on the root <svg>, never on children
-    - Brand logos are not in Lucide, so WhatsApp and GitHub are custom
-      fill-only icons: stroke="none" on the root, fill="currentColor" on paths
-
-  accessibility.mdx asks for an explicit tabIndex on every button and link
-  (Safari does not tab to them by default), and a skip link as the first
-  focusable element on any layout with persistent header chrome.
--->
-
-<!--
-  Every WhatsApp link ships with a real href. site.js replaces it with the same
-  URL plus a prefilled ?text=, but the plain one has to stand on its own: these
-  four are the only way to reach us on WhatsApp, and until now all four pointed
-  at "#", so with scripting off the primary call to action opened a blank tab.
-  The handle here and CONFIG.whatsappHandle in site.js have to stay in step.
--->
-
 <a class="skip-link" href="#main" tabindex="0" data-i18n="skipLink">Skip to content</a>
 
 <!-- ============================ Nav ============================ -->
 <header class="nav">
   <div class="container nav__inner">
-    <!-- Wordmark: one word, two weights. The break between "Data" and "Souq"
-         is carried by weight and tone, not by a space or a separator. -->
-    <a class="brand" href="#top" tabindex="0" lang="en" aria-label="DataSouq — home"
+    <a class="brand" href="index.html#top" tabindex="0" lang="en" aria-label="DataSouq — home"
+       data-i18n-attr="aria-label:brandHome"
        ><span class="brand__data">Data</span><span class="brand__souq">Souq</span></a>
   </div>
 </header>
 
-<!-- tabindex="-1" is the skip link's other half. Without it Safari and Firefox
-     scroll to the fragment and leave focus on the link, so the next Tab goes
-     back to the nav and the skip link does nothing for the only audience it
-     exists for. skip-to-content.mdx states the contract as
-     `<main id="main" tabIndex={-1} className="scroll-mt-… outline-hidden">`;
-     the scroll offset is already on html via scroll-padding-top. -->
 <main id="main" tabindex="-1">
 
-  <!-- ============================ Hero ============================ -->
-  <section class="hero" id="top">
+  <!-- Everything below is written by assets/js/dataset-page.js from the
+       dataset's assets/js/datasets.js entry and its generated
+       assets/data/<id>.js payload. The page holds the shells only, so it
+       never needs editing when a dataset is added. -->
+  <section class="section detail__head">
     <div class="container">
-      <h1 data-i18n="heroTitle">Structured data, ready to work with</h1>
-      <p class="hero__lead" data-i18n="heroLead">DataSouq cleans, deduplicates and structures raw records, then delivers them as datasets ready to import.</p>
+      <a class="backlink" href="index.html#datasets" tabindex="0" data-i18n="backToCatalogue">
+        <!-- Lucide: arrow-left — flipped for RTL by CSS -->
+        <svg class="backlink__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="m12 19-7-7 7-7"/><path d="M19 12H5"/>
+        </svg>
+        <span data-i18n="backToCatalogue">All datasets</span>
+      </a>
 
-      <div class="hero__cta">
-        <a class="btn btn--primary" data-wa href="https://wa.me/@mbi.group" target="_blank"
-           rel="noopener noreferrer" tabindex="0" data-i18n="ctaContact">Message us on WhatsApp</a>
-        <a class="btn btn--default" href="mailto:mbi.datasouq@gmail.com"
-           tabindex="0" data-i18n="ctaEmail">Send an email</a>
-      </div>
+      <div id="detail-head"></div>
     </div>
   </section>
 
-  <!-- ============================ Catalogue ============================ -->
-  <section class="section" id="datasets">
-    <div class="container">
-      <div class="head">
-        <div class="head__label" data-i18n="catalogueLabel">Catalogue</div>
-        <h2 data-i18n="catalogueTitle">Datasets</h2>
-        <p data-i18n="catalogueLead">Structured datasets, cleaned and deduplicated before delivery.</p>
-      </div>
-
-      <!-- A fixed span, not a full-width card: each card holds to its own
-           width instead of stretching to fill the row. At the md breakpoint
-           that's span 6 of 12 — two cards per row, the third wrapping to its
-           own; at lg it's span 4 — three sit in one row, four wrap 3+1, and
-           so on as assets/js/datasets.js grows.
-
-           The grid itself is empty markup: renderCatalogue() in site.js
-           fills it with one .card--dataset per assets/js/datasets.js entry,
-           on load and again on every language switch. Adding a dataset is a
-           one-file change — nothing here or in site.js's rendering code
-           needs to know how many cards exist. -->
-      <div class="cards cards--catalogue"></div>
-
-      <!-- Every dataset card, its WhatsApp link and the footer's dataset
-           list all depend on site.js running — there is no per-dataset
-           fallback markup to keep in step as assets/js/datasets.js grows.
-           This is the one thing a script-disabled visitor loses; everything
-           else on the page (nav, hero, "what we do", contact links) still
-           renders and works without it. The two links below are real,
-           static hrefs — same as the hero's — not JS-dependent, so this
-           block stands on its own rather than pointing elsewhere for one. -->
-      <noscript>
-        <p class="card__body">This page needs JavaScript to list our datasets. Message us and we'll tell you what's available.</p>
-        <div class="hero__cta">
-          <a class="btn btn--primary" href="https://wa.me/@mbi.group" target="_blank" rel="noopener noreferrer">Message us on WhatsApp</a>
-          <a class="btn btn--default" href="mailto:mbi.datasouq@gmail.com">Send an email</a>
-        </div>
-      </noscript>
-    </div>
-  </section>
-
-  <!-- ============================ What we do ============================ -->
-  <section class="section" id="what-we-do">
+  <section class="section" id="figures">
     <div class="container">
       <div class="head">
-        <div class="head__label" data-i18n="whatLabel">What we do</div>
-        <h2 data-i18n="whatTitle">Datasets, cleaning, and custom work</h2>
-        <p data-i18n="whatLead">The scope is narrow on purpose. Everything is cleaned, structured and documented before it reaches you.</p>
+        <div class="head__label" data-i18n="chartsLabel">Inside the data</div>
+        <h2 data-i18n="chartsTitle">What the file actually holds</h2>
+        <p data-i18n="chartsLead">Every figure below is counted from the delivered file, not estimated.</p>
       </div>
-
-      <div class="cards">
-        <article class="card">
-          <div class="card__head">
-            <div class="card__icon">
-              <!-- Lucide: database -->
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                <ellipse cx="12" cy="5" rx="9" ry="3"/>
-                <path d="M3 5V19A9 3 0 0 0 21 19V5"/>
-                <path d="M3 12A9 3 0 0 0 21 12"/>
-              </svg>
-            </div>
-            <h3 data-i18n="card1Title">Curated datasets</h3>
-          </div>
-          <p data-i18n="card1Body">Ready-made datasets, deduplicated and normalised, delivered in Excel or CSV.</p>
-        </article>
-
-        <article class="card">
-          <div class="card__head">
-            <div class="card__icon">
-              <!-- Lucide: list-checks -->
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                <path d="M13 5h8"/>
-                <path d="M13 12h8"/>
-                <path d="M13 19h8"/>
-                <path d="m3 17 2 2 4-4"/>
-                <path d="m3 7 2 2 4-4"/>
-              </svg>
-            </div>
-            <h3 data-i18n="card2Title">Cleaning &amp; structuring</h3>
-          </div>
-          <p data-i18n="card2Body">Send us the messy files. We standardise formats, remove duplicates and fill the gaps.</p>
-        </article>
-
-        <article class="card">
-          <div class="card__head">
-            <div class="card__icon">
-              <!-- Lucide: chart-pie -->
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                <path d="M21 12c.552 0 1.005-.449.95-.998a10 10 0 0 0-8.953-8.951c-.55-.055-.998.398-.998.95v8a1 1 0 0 0 1 1z"/>
-                <path d="M21.21 15.89A10 10 0 1 1 8 2.83"/>
-              </svg>
-            </div>
-            <h3 data-i18n="card3Title">Custom requests</h3>
-          </div>
-          <p data-i18n="card3Body">Need something specific? Describe it and we will tell you if we can build it.</p>
-        </article>
-      </div>
+      <div id="detail-charts" class="charts"></div>
     </div>
   </section>
 
-  <!-- ============================ Empty state ============================
-       Presentational empty state, per ui-patterns/empty-states.mdx and the
-       Empty State Presentational fragment: an icon, a title in active language
-       that prompts an action, a description explaining the value, and an
-       action. The action repeats the hero button, so it takes the `default`
-       variant — the fragment requires the original to stay the only primary.
-  -->
+  <section class="section" id="dictionary">
+    <div class="container">
+      <div class="head">
+        <div class="head__label" data-i18n="dictLabel">Data dictionary</div>
+        <h2 data-i18n="dictTitle">Every field, described</h2>
+        <p data-i18n="dictLead">The full column list as it ships in the file, with what each one holds and the values it takes.</p>
+      </div>
+      <div id="detail-dictionary"></div>
+    </div>
+  </section>
+
   <section class="section">
     <div class="container">
       <div class="panel">
@@ -278,12 +152,9 @@
             <path d="M21 12.43a1.93 1.93 0 0 0 0-3.36L8.83 2.2a1.64 1.64 0 0 0-1.63 0L3 4.57a1.93 1.93 0 0 0 0 3.36l12.18 6.86a1.636 1.636 0 0 0 1.63 0z"/>
           </svg>
         </div>
-        <h2 data-i18n="soonTitle">Tell us what you're looking for</h2>
-        <p data-i18n="soonBody">Describe what you need and we will tell you whether we already hold it or can build it for you.</p>
-        <div class="panel__actions">
-          <a class="btn btn--default" data-wa href="https://wa.me/@mbi.group" target="_blank"
-             rel="noopener noreferrer" tabindex="0" data-i18n="ctaContact">Message us on WhatsApp</a>
-        </div>
+        <h2 data-i18n="detailCtaTitle">Want this file?</h2>
+        <p data-i18n="detailCtaBody">Message us and we'll send a sample of the real records and the price.</p>
+        <div class="panel__actions" id="detail-cta"></div>
       </div>
     </div>
   </section>
@@ -291,34 +162,19 @@
 </main>
 
 <!-- ============================ Footer ============================ -->
-<!--
-  Organised the way supabase.com organises its own: a brand block spanning two
-  of seven columns (wordmark, one line of copy, the channel icons), the site's
-  own links in columns beside it, and a rule-topped bar underneath carrying the
-  copyright. Their block holds a newsletter form where ours holds the pitch
-  line; everything else is the same shape with our content in it.
-
-  Still English throughout and still pinned LTR, as asked, so lang="en".
--->
 <footer class="footer">
   <div class="container">
     <div class="footer__grid">
 
       <div class="footer__brand">
-        <!-- Larger than the one in the nav, because theirs is: their footer logo
-             measures 160x30 against 124x24 in the header, about 1.29x. 22px over
-             16px is 1.375, the nearest step on the scale. -->
-        <a class="brand brand--footer" href="#top" tabindex="0" lang="en"
+        <a class="brand brand--footer" href="index.html#top" tabindex="0" lang="en"
            aria-label="DataSouq — home" data-i18n-attr="aria-label:brandHome"
            ><span class="brand__data">Data</span><span class="brand__souq">Souq</span></a>
 
-        <!-- Contact channels. GitHub is not among them: it points at the source,
-             not at a way to reach us, so it sits with the copyright below. -->
         <div class="footer__social">
           <span class="sr-only" role="status" aria-live="polite" id="copy-status"></span>
       <a class="social" data-wa href="https://wa.me/@mbi.group" target="_blank" rel="noopener noreferrer"
          tabindex="0" aria-label="WhatsApp" title="WhatsApp">
-        <!-- Custom fill-only icon: WhatsApp is a brand logo, not in Lucide -->
         <svg viewBox="0 0 24 24" fill="none" stroke="none" aria-hidden="true">
           <path fill="currentColor" d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 0 1-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 0 1 2.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0 0 12.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 0 0 5.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 0 0-3.48-8.413Z"/>
         </svg>
@@ -326,23 +182,14 @@
 
       <a class="social" href="https://x.com/xdatasouq" target="_blank"
          rel="noopener noreferrer" tabindex="0" aria-label="X" title="X">
-        <!-- Custom fill-only icon: X is a brand logo, not in Lucide. The mark is
-             drawn 21.57 x 19.50 inside a 24 box, so the viewBox is cropped to it
-             and the glyph sets the same 22px of ink as the rest of the row. -->
         <svg viewBox="1.25 2.25 21.57 19.5" fill="none" stroke="none" aria-hidden="true">
           <path fill="currentColor" d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
         </svg>
       </a>
 
-      <!-- Discord gives a username, not a URL. discord.com/users/ wants a numeric
-           id and there is no public route for a handle, so a link here would
-           only ever land on Discord's own "not found" page. What a visitor
-           actually does with a username is copy it, so that is what this does.
-           Give me a discord.gg invite and it becomes an ordinary link. -->
       <button class="social" type="button" tabindex="0" data-copy="datasouq"
               aria-label="Copy our Discord username, datasouq" title="Discord — datasouq"
               data-i18n-attr="aria-label:discordCopy,title:discordTitle">
-        <!-- Custom fill-only icon: Discord is a brand logo, not in Lucide -->
         <svg viewBox="0 0 24 24" fill="none" stroke="none" aria-hidden="true">
           <path fill="currentColor" d="M20.317 4.3658a19.7913 19.7913 0 0 0-4.8851-1.5152.0741.0741 0 0 0-.0785.0371c-.211.3753-.4447.8648-.6083 1.2495-1.8447-.2762-3.68-.2762-5.4868 0-.1636-.3933-.4058-.8742-.6177-1.2495a.077.077 0 0 0-.0785-.037 19.7363 19.7363 0 0 0-4.8852 1.515.0699.0699 0 0 0-.0321.0277C.5334 9.0458-.319 13.5799.0992 18.0578a.0824.0824 0 0 0 .0312.0561c2.0528 1.5076 4.0413 2.4228 5.9929 3.0294a.0777.0777 0 0 0 .0842-.0276c.4616-.6304.8731-1.2952 1.226-1.9942a.076.076 0 0 0-.0416-.1057c-.6528-.2476-1.2743-.5495-1.8722-.8923a.077.077 0 0 1-.0076-.1277c.1258-.0943.2517-.1923.3718-.2914a.0743.0743 0 0 1 .0776-.0105c3.9278 1.7933 8.18 1.7933 12.0614 0a.0739.0739 0 0 1 .0785.0095c.1202.099.246.1981.3728.2924a.077.077 0 0 1-.0066.1276 12.2986 12.2986 0 0 1-1.873.8914.0766.0766 0 0 0-.0407.1067c.3604.698.7719 1.3628 1.225 1.9932a.076.076 0 0 0 .0842.0286c1.961-.6067 3.9495-1.5219 6.0023-3.0294a.077.077 0 0 0 .0313-.0552c.5004-5.177-.8382-9.6739-3.5485-13.6604a.061.061 0 0 0-.0312-.0286zM8.02 15.3312c-1.1825 0-2.1569-1.0857-2.1569-2.419 0-1.3332.9555-2.4189 2.157-2.4189 1.2108 0 2.1757 1.0952 2.1568 2.419 0 1.3332-.9555 2.4189-2.1569 2.4189zm7.9748 0c-1.1825 0-2.1569-1.0857-2.1569-2.419 0-1.3332.9554-2.4189 2.1569-2.4189 1.2108 0 2.1757 1.0952 2.1568 2.419 0 1.3332-.946 2.4189-2.1568 2.4189Z"/>
         </svg>
@@ -350,7 +197,6 @@
 
       <a class="social" href="https://www.facebook.com/DataSouq.page" target="_blank"
          rel="noopener noreferrer" tabindex="0" aria-label="Facebook" title="Facebook">
-        <!-- Custom fill-only icon: Facebook is a brand logo, not in Lucide -->
         <svg viewBox="0 0 24 24" fill="none" stroke="none" aria-hidden="true">
           <path fill="currentColor" d="M9.101 23.691v-7.98H6.627v-3.667h2.474v-1.58c0-4.085 1.848-5.978 5.858-5.978.401 0 .955.042 1.468.103a8.68 8.68 0 0 1 1.141.195v3.325a8.623 8.623 0 0 0-.653-.036 26.805 26.805 0 0 0-.733-.009c-.707 0-1.259.096-1.675.309a1.686 1.686 0 0 0-.679.622c-.258.42-.374.995-.374 1.752v1.297h3.919l-.386 2.103-.287 1.564h-3.246v8.245C19.396 23.238 24 18.179 24 12.044c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.628 3.874 10.35 9.101 11.647Z"/>
         </svg>
@@ -358,7 +204,6 @@
 
       <a class="social" href="https://www.instagram.com/datasouq" target="_blank"
          rel="noopener noreferrer" tabindex="0" aria-label="Instagram" title="Instagram">
-        <!-- Custom fill-only icon: Instagram is a brand logo, not in Lucide -->
         <svg viewBox="0 0 24 24" fill="none" stroke="none" aria-hidden="true">
           <path fill="currentColor" d="M7.0301.084c-1.2768.0602-2.1487.264-2.911.5634-.7888.3075-1.4575.72-2.1228 1.3877-.6652.6677-1.075 1.3368-1.3802 2.127-.2954.7638-.4956 1.6365-.552 2.914-.0564 1.2775-.0689 1.6882-.0626 4.947.0062 3.2586.0206 3.6671.0825 4.9473.061 1.2765.264 2.1482.5635 2.9107.308.7889.72 1.4573 1.388 2.1228.6679.6655 1.3365 1.0743 2.1285 1.38.7632.295 1.6361.4961 2.9134.552 1.2773.056 1.6884.069 4.9462.0627 3.2578-.0062 3.668-.0207 4.9478-.0814 1.28-.0607 2.147-.2652 2.9098-.5633.7889-.3086 1.4578-.72 2.1228-1.3881.665-.6682 1.0745-1.3378 1.3795-2.1284.2957-.7632.4966-1.636.552-2.9124.056-1.2809.0692-1.6898.063-4.948-.0063-3.2583-.021-3.6668-.0817-4.9465-.0607-1.2797-.264-2.1487-.5633-2.9117-.3084-.7889-.72-1.4568-1.3876-2.1228C21.2982 1.33 20.628.9208 19.8378.6165 19.074.321 18.2017.1197 16.9244.0645 15.6471.0093 15.236-.005 11.977.0014 8.718.0076 8.31.0215 7.0301.0839m.1402 21.6932c-1.17-.0509-1.8053-.2453-2.2287-.408-.5606-.216-.96-.4771-1.3819-.895-.422-.4178-.6811-.8186-.9-1.378-.1644-.4234-.3624-1.058-.4171-2.228-.0595-1.2645-.072-1.6442-.079-4.848-.007-3.2037.0053-3.583.0607-4.848.05-1.169.2456-1.805.408-2.2282.216-.5613.4762-.96.895-1.3816.4188-.4217.8184-.6814 1.3783-.9003.423-.1651 1.0575-.3614 2.227-.4171 1.2655-.06 1.6447-.072 4.848-.079 3.2033-.007 3.5835.005 4.8495.0608 1.169.0508 1.8053.2445 2.228.408.5608.216.96.4754 1.3816.895.4217.4194.6816.8176.9005 1.3787.1653.4217.3617 1.056.4169 2.2263.0602 1.2655.0739 1.645.0796 4.848.0058 3.203-.0055 3.5834-.061 4.848-.051 1.17-.245 1.8055-.408 2.2294-.216.5604-.4763.96-.8954 1.3814-.419.4215-.8181.6811-1.3783.9-.4224.1649-1.0577.3617-2.2262.4174-1.2656.0595-1.6448.072-4.8493.079-3.2045.007-3.5825-.006-4.848-.0608M16.953 5.5864A1.44 1.44 0 1 0 18.39 4.144a1.44 1.44 0 0 0-1.437 1.4424M5.8385 12.012c.0067 3.4032 2.7706 6.1557 6.173 6.1493 3.4026-.0065 6.157-2.7701 6.1506-6.1733-.0065-3.4032-2.771-6.1565-6.174-6.1498-3.403.0067-6.156 2.771-6.1496 6.1738M8 12.0077a4 4 0 1 1 4.008 3.9921A3.9996 3.9996 0 0 1 8 12.0077"/>
         </svg>
@@ -366,7 +211,6 @@
 
       <a class="social" href="https://www.tiktok.com/@datasouq" target="_blank"
          rel="noopener noreferrer" tabindex="0" aria-label="TikTok" title="TikTok">
-        <!-- Custom fill-only icon: TikTok is a brand logo, not in Lucide -->
         <svg viewBox="0 0 24 24" fill="none" stroke="none" aria-hidden="true">
           <path fill="currentColor" d="M12.525.02c1.31-.02 2.61-.01 3.91-.02.08 1.53.63 3.09 1.75 4.17 1.12 1.11 2.7 1.62 4.24 1.79v4.03c-1.44-.05-2.89-.35-4.2-.97-.57-.26-1.1-.59-1.62-.93-.01 2.92.01 5.84-.02 8.75-.08 1.4-.54 2.79-1.35 3.94-1.31 1.92-3.58 3.17-5.91 3.21-1.43.08-2.86-.31-4.08-1.03-2.02-1.19-3.44-3.37-3.65-5.71-.02-.5-.03-1-.01-1.49.18-1.9 1.12-3.72 2.58-4.96 1.66-1.44 3.98-2.13 6.15-1.72.02 1.48-.04 2.96-.04 4.44-.99-.32-2.15-.23-3.02.37-.63.41-1.11 1.04-1.36 1.75-.21.51-.15 1.07-.14 1.61.24 1.64 1.82 3.02 3.5 2.87 1.12-.01 2.19-.66 2.77-1.61.19-.33.4-.67.41-1.06.1-1.79.06-3.57.07-5.36.01-4.03-.01-8.05.02-12.07z"/>
         </svg>
@@ -374,28 +218,12 @@
 
       <a class="social" href="mailto:mbi.datasouq@gmail.com" tabindex="0" aria-label="Email" title="Email"
          data-i18n-attr="aria-label:emailLabel,title:emailLabel">
-        <!-- A solid envelope, not Lucide's outlined one. Every other mark in this
-             row is a filled brand logo, and a 2px stroke among them reads as a
-             lighter, thinner, faintly broken icon however you size it — cropping
-             its viewBox fixed the width and did nothing for the weight. Filled,
-             it sits at the same density as its neighbours: ink spans the full
-             viewBox width and 75% of its height, the same proportion Discord and
-             YouTube have in supabase.com's own row.
-
-             Lucide's mail is still what the metrics row uses, where every icon
-             around it is a stroke icon and the outline is the consistent choice. -->
         <svg viewBox="0 0 16 16" fill="none" stroke="none" aria-hidden="true">
           <path fill="currentColor" d="M.05 3.555A2 2 0 0 1 2 2h12a2 2 0 0 1 1.95 1.555L8 8.414zM0 4.697v7.104l5.803-3.558zM6.761 8.83l-6.57 4.027A2 2 0 0 0 2 14h12a2 2 0 0 0 1.808-1.144l-6.57-4.027L8 9.586zm3.436-.586L16 11.801V4.697z"/>
         </svg>
       </a>
         </div>
 
-        <!-- Their newsletter block, in its place in the stack. There is no
-             backend here and no third-party script: submitting opens the
-             visitor's own mail client with a subscribe request already written,
-             addressed to us. It does something real on a static host, and it
-             sends nothing anywhere on its own. Point the form at a list service
-             later and the markup barely changes. -->
         <form class="footer__form" id="subscribe" novalidate>
           <p data-i18n="subLead">Get new datasets and updates from DataSouq.</p>
           <input class="field" type="email" id="subscribe-email" required
@@ -406,13 +234,6 @@
                   data-i18n="subBtn">Subscribe</button>
         </form>
 
-        <!-- Swapped in for the form once it is submitted, the way theirs is.
-             The wording is deliberately not "Thanks for subscribing": all this
-             page can do is open a message: until the visitor sends it, nothing
-             has reached us and saying otherwise would be untrue. Styled from our
-             own tokens at the size the label it replaces uses — their success
-             state was not measured, because measuring it would have meant
-             submitting a subscription on someone else's site. -->
         <div class="footer__thanks" role="status" aria-live="polite" hidden>
           <p class="footer__thanks-title" data-i18n="thanksTitle">Check your mail app</p>
           <p data-i18n="thanksBody">We opened a message with the request ready. Send it and you are on the list.</p>
@@ -421,12 +242,6 @@
 
       <div class="footer__nav">
         <div class="footer__cols">
-          <!-- The heading reuses catalogueTitle, so a second copy of
-               "Datasets" is not a second thing to keep in step; footerCompany
-               below is the only new string this footer needs. The links
-               themselves are rendered by renderCatalogue() in site.js, one
-               per assets/js/datasets.js entry — this list starts empty and
-               grows with that file, same as the catalogue's own cards. -->
           <div class="footer__col">
             <h2 data-i18n="catalogueTitle">Datasets</h2>
             <ul role="list" id="footer-dataset-links"></ul>
@@ -435,7 +250,7 @@
           <div class="footer__col">
             <h2 data-i18n="footerCompany">Company</h2>
             <ul role="list">
-              <li><a href="#what-we-do" tabindex="0" data-i18n="whatLabel">What we do</a></li>
+              <li><a href="index.html#what-we-do" tabindex="0" data-i18n="whatLabel">What we do</a></li>
             </ul>
           </div>
         </div>
@@ -447,35 +262,7 @@
       <span>© <span id="year">2026</span> DataSouq ·
         <span class="footer__rights" data-i18n="rights">All rights reserved.</span></span>
 
-      <!-- Language, theme and the source link, in that order, at the bar's
-           right edge. These two controls were in the header bar; the tab order
-           is better for it, since a keyboard user reaching the page no longer
-           passes two settings before the first sentence of content. -->
       <div class="footer__bar-actions">
-        <!--
-          The design system's ToggleGroup, read from source rather than copied off
-          a screenshot. toggle-group.tsx's root is `flex items-center
-          justify-center gap-1`; each item is toggleVariants(), whose base is
-            inline-flex items-center justify-center rounded-md font-medium
-            transition-colors text-foreground-light hover:bg-muted
-            aria-checked:bg-accent aria-checked:text-foreground focus-ring
-          with variant `default` = `bg-transparent` and size `tiny` =
-          `h-[26px] px-2.5 text-xs`. So: the off option is --muted-foreground on
-          nothing, the on option is --accent behind --foreground, and the size
-          is tiny — which is what this bar's own 12px type asks for, and what it
-          was when both controls sat in the header.
-
-          The globe sits OUTSIDE the radiogroup, not in it: a radiogroup's
-          children are its radios, and a decorative icon among them is a thing to
-          explain rather than a thing to do.
-
-          aria-checked, not aria-pressed. The component's own class string keys off
-          `aria-checked:`, which is radio semantics, and these two options are
-          mutually exclusive — which is what a radiogroup means and what
-          aria-pressed on a pair does not say. Each name is the visible code plus
-          the language spelled out, so it reads "EN, English": WCAG 2.5.3 wants the
-          visible text inside the name, and "EN" alone does not say what it is.
-        -->
         <div class="langctl">
           <!-- Lucide: globe -->
           <svg class="langctl__globe" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
@@ -514,7 +301,6 @@
 
         <a class="social" href="https://github.com/datasouq" target="_blank"
            rel="noopener noreferrer" tabindex="0" aria-label="GitHub" title="GitHub">
-          <!-- Custom fill-only icon: GitHub is a brand logo, not in Lucide -->
           <svg viewBox="0 0 24 24" fill="none" stroke="none" aria-hidden="true">
             <path fill="currentColor" d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"/>
           </svg>
@@ -524,12 +310,9 @@
   </div>
 </footer>
 
-<!-- Load order matters: site.js reads the ICONS and DATASETS globals these
-     two declare, so they run first, as plain scripts, not modules — this is
-     a static host with no bundler, so a global is the simplest way to share
-     data between files. -->
 <script src="assets/js/icons.js"></script>
 <script src="assets/js/datasets.js"></script>
 <script src="assets/js/site.js"></script>
+<script src="assets/js/dataset-page.js"></script>
 </body>
 </html>

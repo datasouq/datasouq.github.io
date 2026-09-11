@@ -38,9 +38,9 @@ const DATASETS = [
     titleEn: "Contractors in Saudi Arabia",
     titleAr: "المقاولون في السعودية",
     bodyEn:
-      "<strong>A structured dataset of contractors across Saudi Arabia</strong>, cleaned and deduplicated, delivered in Arabic and English. Message us for the full field list and the price.",
+      "<strong>A structured dataset of contractors across Saudi Arabia</strong>, cleaned and deduplicated, delivered in Arabic and English. Message us for the price.",
     bodyAr:
-      "<strong>قاعدة بيانات منظّمة للمقاولين في المملكة</strong>، منقّحة وخالية من التكرار، تُسلَّم بالعربية والإنجليزية. تواصل معنا للحصول على قائمة الحقول كاملة والسعر.",
+      "<strong>قاعدة بيانات منظّمة للمقاولين في المملكة</strong>، منقّحة وخالية من التكرار، تُسلَّم بالعربية والإنجليزية. تواصل معنا لمعرفة السعر.",
 
     /* Every figure is measured from the file, not estimated, and re-measured
        against it before each change.
@@ -97,9 +97,9 @@ const DATASETS = [
     titleEn: "Engineering Offices in Saudi Arabia",
     titleAr: "المكاتب الهندسية في السعودية",
     bodyEn:
-      "<strong>A structured dataset of engineering offices and consulting firms across Saudi Arabia</strong>, cleaned and deduplicated, delivered in Arabic. Message us for the full field list and the price.",
+      "<strong>A structured dataset of engineering offices and consulting firms across Saudi Arabia</strong>, cleaned and deduplicated, delivered in Arabic. Message us for the price.",
     bodyAr:
-      "<strong>قاعدة بيانات منظّمة للمكاتب الهندسية والشركات الاستشارية في المملكة</strong>، منقّحة وخالية من التكرار، تُسلَّم بالعربية. تواصل معنا للحصول على قائمة الحقول كاملة والسعر.",
+      "<strong>قاعدة بيانات منظّمة للمكاتب الهندسية والشركات الاستشارية في المملكة</strong>، منقّحة وخالية من التكرار، تُسلَّم بالعربية. تواصل معنا لمعرفة السعر.",
 
     /* The file's only record sheet is Arabic (office_name_ar, region_ar,
        city_ar — no English columns), so unlike the contractors dataset this
@@ -142,9 +142,9 @@ const DATASETS = [
     titleEn: "Healthcare Facilities in Saudi Arabia",
     titleAr: "المنشآت الصحية في السعودية",
     bodyEn:
-      "<strong>A structured dataset of healthcare facilities across Saudi Arabia</strong>, spanning hospitals, clinics and health centers, cleaned and deduplicated. Message us for the full field list and the price.",
+      "<strong>A structured dataset of healthcare facilities across Saudi Arabia</strong>, spanning hospitals, clinics and health centers, cleaned and deduplicated. Message us for the price.",
     bodyAr:
-      "<strong>قاعدة بيانات منظّمة للمنشآت الصحية في المملكة</strong>، تشمل المستشفيات والعيادات والمراكز الصحية، منقّحة وخالية من التكرار. تواصل معنا للحصول على قائمة الحقول كاملة والسعر.",
+      "<strong>قاعدة بيانات منظّمة للمنشآت الصحية في المملكة</strong>، تشمل المستشفيات والعيادات والمراكز الصحية، منقّحة وخالية من التكرار. تواصل معنا لمعرفة السعر.",
 
     /* The source sheet is titled المنشآت (Facilities), not مستشفيات
        (Hospitals): only 916 of its 4,563 rows, 20.07%, are one of the six
