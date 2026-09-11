@@ -78,8 +78,8 @@ DATASET_DETAILS["healthcare"] = {
       "unit": "count",
       "titleEn": "Facilities by type",
       "titleAr": "المنشآت حسب النوع",
-      "noteEn": "18 distinct facility types across the file.",
-      "noteAr": "١٨ نوع منشأة مختلف في الملف.",
+      "noteEn": "The 8 largest of 18 facility types; the remaining 10 are summed as Other.",
+      "noteAr": "أكبر ٨ أنواع من ١٨ نوعاً في الملف، والباقي (10) مجموع تحت «أنواع أخرى».",
       "items": [
         {
           "labelEn": "Primary health centres",
@@ -122,54 +122,9 @@ DATASET_DETAILS["healthcare"] = {
           "value": 92
         },
         {
-          "labelEn": "Private specialised centres",
-          "labelAr": "مراكز تخصصية خاصة",
-          "value": 80
-        },
-        {
-          "labelEn": "Military hospitals",
-          "labelAr": "المستشفيات العسكرية",
-          "value": 53
-        },
-        {
-          "labelEn": "Seasonal hospitals",
-          "labelAr": "مستشفيات موسمية",
-          "value": 39
-        },
-        {
-          "labelEn": "Toxicology screening centres",
-          "labelAr": "مراكز فحص السموم",
-          "value": 18
-        },
-        {
-          "labelEn": "University hospitals",
-          "labelAr": "المستشفيات الجامعية",
-          "value": 16
-        },
-        {
-          "labelEn": "Seasonal health centres",
-          "labelAr": "مراكز صحية موسمية",
-          "value": 15
-        },
-        {
-          "labelEn": "Toxicology clinics",
-          "labelAr": "عيادة فحص السموم",
-          "value": 14
-        },
-        {
-          "labelEn": "Medical cities",
-          "labelAr": "المدن الطبية",
-          "value": 12
-        },
-        {
-          "labelEn": "Pharmacies",
-          "labelAr": "صيدلية",
-          "value": 10
-        },
-        {
-          "labelEn": "Specialised hospitals",
-          "labelAr": "المستشفيات التخصصية",
-          "value": 5
+          "labelEn": "Other types",
+          "labelAr": "أنواع أخرى",
+          "value": 262
         }
       ]
     },
@@ -388,32 +343,36 @@ DATASET_DETAILS["healthcare"] = {
     },
     {
       "id": "lines",
-      "type": "bar",
+      "type": "split",
       "unit": "count",
       "titleEn": "Phone line type",
       "titleAr": "نوع خط الهاتف",
-      "noteEn": null,
-      "noteAr": null,
+      "noteEn": "Of the facilities that carry a number at all.",
+      "noteAr": "من المنشآت التي تحمل رقماً أصلاً.",
       "items": [
         {
           "labelEn": "Landline",
           "labelAr": "أرضي",
-          "value": 2852
+          "value": 2852,
+          "share": 62.5
         },
         {
           "labelEn": "Not specified",
           "labelAr": "غير محدد",
-          "value": 1173
+          "value": 1173,
+          "share": 25.7
         },
         {
           "labelEn": "Mobile",
           "labelAr": "موبايل",
-          "value": 454
+          "value": 454,
+          "share": 9.9
         },
         {
           "labelEn": "Unified / toll-free",
           "labelAr": "رقم موحد / مجاني",
-          "value": 84
+          "value": 84,
+          "share": 1.8
         }
       ]
     },

@@ -94,6 +94,50 @@
     const details = DATASET_DETAILS[dataset.id];
     if (!host || !details) return;
 
+    /* Segment colours come off the ordinal ramp rather than a second
+       palette: the steps are already validated, they stay one hue, and the
+       key beside them carries the identity so nothing rests on telling two
+       greens apart. Spread across the ramp so neighbouring segments are as
+       far apart in lightness as the count allows. */
+    const segmentFill = (index, count, lastIsNeutral) => {
+      if (lastIsNeutral && index === count - 1) return "var(--chart-null)";
+      const steps = lastIsNeutral ? count - 1 : count;
+      const spread = steps > 1 ? Math.round((index * 5) / (steps - 1)) : 0;
+      return "var(--chart-ramp-" + (spread + 1) + ")";
+    };
+
+    const renderSplit = (chart) => {
+      const items = chart.items;
+      /* A "Not recorded" segment is the absence of a value, so it takes the
+         neutral rather than a ramp step — same rule the ordinal bars use. */
+      const last = items[items.length - 1];
+      const lastIsNeutral = /not recorded|not specified|غير مسجَّل|غير محدد/i.test(
+        last.labelEn + " " + last.labelAr
+      );
+      const fill = (index) => segmentFill(index, items.length, lastIsNeutral);
+
+      const bar = items
+        .map(
+          (item, index) =>
+            `<span class="split__seg" style="inline-size:${item.share}%;background:${fill(index)}"></span>`
+        )
+        .join("");
+
+      const key = items
+        .map(
+          (item, index) => `
+          <li class="split__row">
+            <span class="split__swatch" style="background:${fill(index)}"></span>
+            <span class="split__name">${escapeHtml(lang === "ar" ? item.labelAr : item.labelEn)}</span>
+            <span class="split__share">${percent(item.share, t)}</span>
+            <span class="split__count">${number(item.value, t)}</span>
+          </li>`
+        )
+        .join("");
+
+      return `<div class="split">${bar}</div><ul class="split__key" role="list">${key}</ul>`;
+    };
+
     host.innerHTML = details.charts
       .map((chart) => {
         const coverage = chart.type === "coverage";
@@ -129,13 +173,18 @@
           .join("");
 
         const note = lang === "ar" ? chart.noteAr : chart.noteEn;
+        const body =
+          chart.type === "split"
+            ? renderSplit(chart)
+            : `<ul class="chart__rows" role="list">${rows}</ul>`;
+
         return `
         <figure class="chart${coverage ? " chart--coverage" : ""}">
           <figcaption class="chart__head">
             <h3 class="chart__title">${escapeHtml(lang === "ar" ? chart.titleAr : chart.titleEn)}</h3>
             ${note ? `<p class="chart__note">${escapeHtml(note)}</p>` : ""}
           </figcaption>
-          <ul class="chart__rows" role="list">${rows}</ul>
+          ${body}
         </figure>`;
       })
       .join("");
