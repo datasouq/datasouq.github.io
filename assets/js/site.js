@@ -88,6 +88,9 @@ const I18N = {
       usability: "Whether you can act on a record once you have it.",
       composition: "How the file is made up — which classes, which types.",
     },
+    /* The dot map's size key. Deliberately noun-free: the same string serves
+       records, offices and facilities. */
+    dotsKey: (count) => count + " per dot",
     dictColField: "Field",
     dictColMeaning: "What it holds, and the values it takes",
     detailCtaTitle: "Want this file?",
@@ -209,6 +212,7 @@ const I18N = {
       usability: "هل تستطيع التصرف في السجل بعد ما تأخذه.",
       composition: "ممّا يتكوّن الملف — أي الفئات، وأي الأنواع.",
     },
+    dotsKey: (count) => count + " في النقطة",
     dictColField: "الحقل",
     dictColMeaning: "ما يحتويه، والقيم التي يأخذها",
     detailCtaTitle: "تريد هذا الملف؟",

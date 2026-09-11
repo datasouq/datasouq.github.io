@@ -41,7 +41,8 @@ reader is asking, then pick from its family. *(Carbon; FT)*
 | How does it spread across a ladder? | Comparison, ordered | bar sorted by the ladder + ordinal ramp |
 | What is the share of each class? | Part-to-whole | one segmented bar (`split`) |
 | What share carries this attribute? | Part-to-whole | meter against a 0–100 track (`coverage`) |
-| Where is it concentrated? | Spatial | choropleth of the 13 regions (`map`), always beside the region bar chart |
+| Where is it concentrated, by area? | Spatial | choropleth of the 13 regions (`map`), always beside the region bar chart |
+| Where exactly is each one? | Spatial | a dot per location (`dots`), when the file carries coordinates |
 | What is this one number? | — | a stat tile, not a chart |
 
 **Rule 1.2 — One value is not a chart.** A single figure is a stat tile; the
@@ -102,11 +103,31 @@ covers what the other cannot. *(Carbon's Geospatial family; FT's Spatial. The
 pairing is **House**, and it is also what keeps rule 6.2 satisfied — the
 exact counts stay on the page rather than in a hover.)*
 
-A map is only correct where the geography of the data IS the geography drawn.
-The healthcare dataset has no map: its regions are MOH health directorates,
-20 of them, and Jeddah and Makkah are separate entries — shading the 13
-administrative regions with those counts would be a map of something that
-does not exist.
+**Rule 1.7b — A choropleth is only correct where the geography of the data IS
+the geography drawn. Where it is not, and the file has coordinates, use
+dots.** The healthcare register's region column holds **20 MOH health
+directorates**, not the 13 administrative regions, and eight of the twenty
+are units *inside* a region — Jeddah, Taif and Al-Qunfudhah inside Makkah;
+Al-Ahsa and Hafar Al-Batin inside Eastern Province; Bisha inside Asir;
+Qurayyat inside Al-Jouf. `REGION_ISO` matched 12 of the 20, so a choropleth
+would have quietly dropped **1,282 facilities, 28% of the file**, into the
+"not on the map" line. That is why it had no map for so long.
+
+It has one now because the file turned out to carry real coordinates: its
+map-link column is a `?q=<lat>,<lon>` URL, and 3,731 of 4,563 rows parse to a
+point inside the country with nothing malformed and nothing outside. A dot
+map needs no administrative join at all, so the directorate problem simply
+does not arise — and FT's dot-density entry, "used to show the location of
+individual events/locations", is what a facility is. *(FT's Spatial family)*
+
+**Rule 1.7c — A dot map publishes positions, never coordinates.** The
+projection and the rounding happen in `tools/build_dataset_details.py`, and
+what reaches the payload is whole viewBox units — **one unit is 2.14 km**.
+Un-projecting gets a two-kilometre square, not an address. This is not a
+technicality: the coordinate column is part of what the site is selling, and
+a map that shipped it would be giving a column away to draw a picture of it.
+The rounding also merges 3,731 points into 2,487 positions, each carrying its
+own count, so density survives the merge. **House.**
 
 **Geometry**: `tools/geo/sa-admin1.geojson`, the 13 regions extracted from
 **Natural Earth**, which is public domain — "You may use the maps in any
@@ -179,8 +200,11 @@ diverging midpoint.
 **Rule 4.4 — Never a rainbow for magnitude; never more than 8 colour classes
 carrying meaning.** *(dataviz skill)*
 
-**Rule 4.4b — On a map, colour IS the value, and it is the only place on this
-page where that is true.** It therefore takes the same one-hue ramp as an
+**Rule 4.4b — On a CHOROPLETH, colour IS the value, and it is the only place
+on this page where that is true.** (On a `dots` map colour carries nothing:
+position is the value and size is the count, so it takes the single brand
+step like a bar, and its key shows three sizes rather than six shades —
+"legend design matters — 3 example sizes usually".) It therefore takes the same one-hue ramp as an
 ordered scale, and it must carry a scale legend naming every band — a
 sequential encoding without one is unreadable. *(dataviz skill: "No table
 view / color-only encoding on a continuous scale" is an anti-pattern)*
@@ -191,6 +215,29 @@ bottom, leaving a map that shows only where the capital is. Quantiles give
 each band a similar number of regions. Both choices are defensible and they
 say different things, so the one in use is named on the chart rather than
 left for the reader to assume. **House.**
+
+**Rule 4.4d — The choropleth's key names the regions in each band, not the
+range of values it spans.** A key reading "729–2,552" asks the reader to hold
+a number range in their head, look at a shade, and match the two. "Eastern
+Province 2,552 · Madinah 729" removes that step: the shade points at the
+places and every place carries its own figure — which is rule 6.1, the value
+printed rather than decoded, applied to the map at last.
+
+Grouped **by band**, six rows, and not one row per region. Thirteen rows of
+name-and-count *is* the "Records by region" chart beside it minus the bars;
+six rows explain the shading without becoming a second copy of it.
+
+*This does not fix what it looks like it fixes.* FT is explicit that a
+choropleth "should always be rates rather than totals", and ours shades
+totals — the trap being that Riyadh region is both the largest in area and
+the largest in count, so area and magnitude are confounded exactly as the
+rule warns. Naming the regions defuses most of the harm, because nobody has
+to read a magnitude off a colour any more, but **the encoding is unchanged**.
+The two real fixes are a rate (per capita, which needs a population source
+the repo does not have and a figure rule 8.1 forbids typing in) or
+proportional symbols at region centroids (same data, correct form, and it
+would make all three maps look alike again). Open, and recorded as open.
+**House.**
 
 **Rule 4.5b — A ramp's end-of-scale allowance applies to whichever end is
 nearest the surface.** The band below is written "lightest ≥ 2:1" because it
@@ -279,8 +326,8 @@ it takes the width the longest label needs and stops there. *(dataviz skill:
 **6.5 — In Arabic, quantities take Arabic-Indic digits; codes do not.**
 A count, a share or a band edge is a quantity and converts — U+0660–U+0669
 with U+066C for thousands, U+066B for the decimal, U+066A for percent. An
-identifier does not: `E.164`, a grade range of `1-6`, a tier key of `A`
-stay as the delivered file writes them, because they are the value stored in
+identifier does not: `E.164` or a grade range of `1-6`
+stays as the delivered file writes it, because they are the value stored in
 the column and not a measurement of anything. The data dictionary is
 therefore left alone; the charts are converted. **House.**
 
@@ -400,6 +447,14 @@ viewport and 755×619 at 860px, both **taller** than the 657×539 it gets at
 1280px. A smaller screen was getting a bigger map. **House**, and a defect
 that shipped.
 
+**Rule 7.5c — A group of one takes the whole row.** Left in the two-column
+flow a lone card sat in the left column with the right half empty, which
+reads as a card that failed to load rather than as a group with one chart in
+it. The bars simply get longer, which costs nothing: rule 6.1 prints every
+value, so precision never rested on a bar's length. **House.** It stopped
+being an edge case when the Completeness tier was dropped from contractors
+and engineering, which made Usability a single card on all three datasets.
+
 **Rule 7.6 — White space does the grouping: 40px between groups, 12px
 between cards inside one.** No rules, no boxes around groups — the gap is
 the separator. *(Carbon: "White space either sets elements apart or brings
@@ -442,7 +497,7 @@ at all underneath them.
 1. Find the reader's question in the table in §1. If it has no row there, add
    the row — with its source — before writing any code.
 2. Add it in `tools/build_dataset_details.py` using `bar()`, `ordinal()`,
-   `split()` or `coverage()`.
+   `split()`, `coverage()`, `region_map()` or `dots()`.
 3. Give it a group and a rank in `CHART_GROUPS` in the same file (rule 7.4).
    Anything not listed there falls to **What's in it**, last.
 4. Run `python tools/build_dataset_details.py "<folder with the .xlsx files>"`.

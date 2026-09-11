@@ -245,7 +245,6 @@ CHART_GROUPS = {
     "directorates": ("coverage", 1),
     "cities": ("coverage", 2),
     "coverage": ("usability", 0),
-    "quality": ("usability", 1),
     "classification": ("composition", 0),
     "types": ("composition", 1),
     "hospitals": ("composition", 2),
@@ -300,7 +299,9 @@ def headline(chart, total, noun):
     """
     en_plural, ar_plural, _ = noun
     items = chart["items"]
-    if not items:
+    # The dots chart is checked before the empty guard: it has no `items` at
+    # all, its counts live in `points`, and the guard was swallowing it.
+    if chart["type"] != "dots" and not items:
         return None, None
 
     if chart["type"] == "coverage":
@@ -313,6 +314,24 @@ def headline(chart, total, noun):
             "%s في %s من %s، و%s في %s فقط."
             % (top["labelAr"], as_pct(top["value"]), ar_plural,
                bottom["labelAr"], as_pct(bottom["value"])),
+        )
+
+    if chart["type"] == "dots":
+        # How CONCENTRATED the dots are: the smallest number of places that
+        # together hold half of them. A ranked list of directorates cannot
+        # say this, because a directorate is not a place.
+        counts = sorted(chart["points"][2::3], reverse=True)
+        half, running, places = sum(counts) / 2.0, 0, 0
+        for count in counts:
+            places += 1
+            running += count
+            if running >= half:
+                break
+        return (
+            "Half of them sit in %s of the %s places on the map."
+            % (format(places, ","), format(len(counts), ",")),
+            "نصفها في %s موضعاً من %s على الخريطة."
+            % (format(places, ","), format(len(counts), ",")),
         )
 
     if chart["type"] == "map":
@@ -379,6 +398,8 @@ def metric(chart, total, noun):
     en_plural, _, ar_counted = noun
     if chart["type"] == "coverage":
         covered = total          # every record is in the denominator already
+    elif chart["type"] == "dots":
+        covered = chart["placed"]
     else:
         covered = sum(item["value"] for item in chart["items"])
     return {
@@ -518,6 +539,72 @@ def region_map(chart_id, title_en, title_ar, triples, note_en=None, note_ar=None
         "noteEn": note_en,
         "noteAr": note_ar,
         "items": shaded,
+    }
+
+
+MAP_LINK = re.compile(r"[?&]q=(-?\d+\.?\d*),\s*(-?\d+\.?\d*)")
+
+
+def dots(chart_id, title_en, title_ar, links, total, note_en=None, note_ar=None):
+    """A dot per location, drawn on the same outline as the choropleth.
+
+    Reached for when the file carries real coordinates instead of an
+    administrative name. The healthcare register does: its map-link column is
+    a Google Maps URL of the form ?q=<lat>,<lon>, and 3,731 of 4,563 rows
+    parse to a point inside the country with nothing malformed.
+
+    This is the FT's spatial family read properly. Its choropleth entry says
+    shading "should always be rates rather than totals"; ours are totals. Its
+    dot-density entry is for "the location of individual events/locations",
+    which is what a facility is. So the form that fits this file is also the
+    form the source prescribes for what we actually have.
+
+    WHAT IS PUBLISHED IS NOT THE COORDINATE. The lat/lon is projected here
+    and rounded to whole viewBox units before it ever reaches the payload,
+    and one unit is 2.14 km. Un-projecting gets you a two-kilometre square,
+    not an address, so the map ships without shipping the column it was drawn
+    from -- which matters, because that column is part of what is being sold.
+    Rounding also merges the 3,731 points into 2,479 positions; each carries
+    its count so the density survives the merge.
+    """
+    import build_map
+    project, _, _, _ = build_map.projector()
+
+    cells, placed, unparsed = Counter(), 0, 0
+    for link in links:
+        if not link:
+            continue
+        found = MAP_LINK.search(str(link))
+        if not found:
+            unparsed += 1
+            continue
+        lat, lon = float(found.group(1)), float(found.group(2))
+        x, y = project(lon, lat)
+        cells[(int(round(x)), int(round(y)))] += 1
+        placed += 1
+
+    # Busiest last, so the dense cells paint over the sparse ones rather than
+    # under them -- SVG has no z-index and paints in document order.
+    ordered = sorted(cells.items(), key=lambda entry: entry[1])
+    flat = []
+    for (x, y), count in ordered:
+        flat.extend((x, y, count))
+
+    return {
+        "id": chart_id,
+        "type": "dots",
+        "unit": "count",
+        "geo": "sa-regions",
+        "titleEn": title_en,
+        "titleAr": title_ar,
+        "noteEn": note_en,
+        "noteAr": note_ar,
+        "points": flat,
+        "placed": placed,
+        "cells": len(cells),
+        "unparsed": unparsed,
+        "missing": total - placed - unparsed,
+        "items": [],
     }
 
 
@@ -697,8 +784,7 @@ def build_contractors(source):
     arabic = {row["record_id"]: row for row in rows_of(book["AR"], "record_id")}
 
     total = len(english)
-    regions, cities, classes, members, tiers, email_types, priorities = (
-        Counter(),
+    regions, cities, classes, members, email_types, priorities = (
         Counter(),
         Counter(),
         Counter(),
@@ -714,7 +800,6 @@ def build_contractors(source):
         cities[(row["city"], arabic_row.get("city_ar"))] += 1
         classes[(row["contractor_classification"], arabic_row.get("contractor_classification"))] += 1
         members[(row["membership_type"], arabic_row.get("membership_type"))] += 1
-        tiers[row["quality_tier"]] += 1
         email_types[(row["email_type"], arabic_row.get("email_type"))] += 1
         priorities[row["outreach_priority"]] += 1
 
@@ -768,8 +853,8 @@ def build_contractors(source):
             "Where the records are",
             "أين تتركّز السجلات",
             paired(regions, drop_blank=False),
-            note_en="The same counts as the chart beside it, on the map. Shading is by quantile, so each band holds a similar number of regions rather than an equal slice of the range — otherwise Riyadh alone would set the scale and twelve regions would share one shade.",
-            note_ar="نفس أرقام الرسم المجاور، على الخريطة. التظليل بالشرائح المتساوية العدد لا المتساوية المدى — وإلا لانفردت الرياض بالمقياس وتشارك اثنتا عشرة منطقة لوناً واحداً.",
+            note_en="Shading is by quantile: each band holds a similar number of regions rather than an equal slice of the range — otherwise Riyadh alone would set the scale and twelve regions would share one shade. The key names the regions in each band and what each one holds.",
+            note_ar="التظليل بالشرائح المئينية: كل شريحة تضمّ عدداً متقارباً من المناطق بدل أن تقتسم المدى بالتساوي، وإلا لانفردت الرياض بالمقياس وتشاركت اثنتا عشرة منطقة لوناً واحداً. والمفتاح يسمّي مناطق كل شريحة وما في كل منها.",
         ),
         ordinal(
             "classification",
@@ -795,15 +880,6 @@ def build_contractors(source):
             paired(members, drop_blank=False),
             note_en="One class holds almost the whole file, so the split is the finding rather than four bars of wildly different length.",
             note_ar="فئة واحدة تستحوذ على معظم الملف، فالنسبة نفسها هي المعلومة، لا أربعة أعمدة متفاوتة.",
-        ),
-        ordinal(
-            "quality",
-            "Completeness tier",
-            "تصنيف الاكتمال",
-            [(tier, tier, value) for tier, value in sorted(tiers.items()) if tier],
-            ["A", "B", "C", "D"],
-            note_en="A is 80-100 complete, D is under 40.",
-            note_ar="A من ٨٠ إلى ١٠٠، وD أقل من ٤٠.",
         ),
         coverage(
             "coverage",
@@ -835,7 +911,7 @@ def build_engineering(source):
     records = list(rows_of(book["AR"], "record_id"))
     total = len(records)
 
-    regions, cities, classes, types, tiers = Counter(), Counter(), Counter(), Counter(), Counter()
+    regions, cities, classes, types = Counter(), Counter(), Counter(), Counter()
     filled = Counter()
 
     for row in records:
@@ -843,7 +919,6 @@ def build_engineering(source):
         cities[row["city_ar"]] += 1
         classes[row["office_classification"]] += 1
         types[row["office_type"]] += 1
-        tiers[row["quality_tier"]] += 1
         if row["organization_email"]:
             filled["email"] += 1
         if row["organization_mobile_number"]:
@@ -867,8 +942,8 @@ def build_engineering(source):
             % format(blank_region, ",")),
         region_map("map", "Where the offices are", "أين تتركّز المكاتب",
             counted(regions, drop_blank=False),
-            note_en="The same counts as the chart beside it, on the map. Shading is by quantile, so each band holds a similar number of regions rather than an equal slice of the range.",
-            note_ar="نفس أرقام الرسم المجاور، على الخريطة. التظليل بالشرائح المتساوية العدد لا المتساوية المدى."),
+            note_en="Shading is by quantile: each band holds a similar number of regions rather than an equal slice of the range. The key names the regions in each band and what each one holds.",
+            note_ar="التظليل بالشرائح المئينية: كل شريحة تضمّ عدداً متقارباً من المناطق بدل أن تقتسم المدى بالتساوي. والمفتاح يسمّي مناطق كل شريحة وما في كل منها."),
         ordinal("classification", "Classification grades", "درجات التصنيف",
             counted(classes, drop_blank=False), GRADE_ORDER,
             note_en="Unclassified is a value in the source register, not a gap in the data.",
@@ -879,11 +954,6 @@ def build_engineering(source):
         bar("cities", "Top 10 cities", "أكبر ١٠ مدن", counted(cities)[:10],
             note_en="Out of 133 cities in the file; %s offices carry no city." % format(blank_city, ","),
             note_ar="من إجمالي ١٣٣ مدينة في الملف، و%s مكتباً بلا مدينة مسجَّلة." % format(blank_city, ",")),
-        ordinal("quality", "Completeness tier", "تصنيف الاكتمال",
-            [(tier, tier, value) for tier, value in sorted(tiers.items()) if tier],
-            ["A", "B", "C", "D"],
-            note_en="A is 80-100 complete, D is under 40.",
-            note_ar="A من ٨٠ إلى ١٠٠، وD أقل من ٤٠."),
         coverage(
             "coverage",
             "Contact coverage",
@@ -938,6 +1008,7 @@ def build_healthcare(source):
 
     types, directorates, cities, lines = Counter(), Counter(), Counter(), Counter()
     filled = Counter()
+    map_links = []
 
     hospital_types = {
         "المستشفيات الخاصة",
@@ -963,6 +1034,7 @@ def build_healthcare(source):
             filled["email"] += 1
         if row["الفاكس"]:
             filled["fax"] += 1
+        map_links.append(row["رابط الموقع على الخريطة"])
         if row["رابط الموقع على الخريطة"]:
             filled["map"] += 1
 
@@ -973,7 +1045,33 @@ def build_healthcare(source):
 
     folded_types, folded_rest = fold_tail(counted(types), 8)
 
+    placed_map = dots(
+        "map",
+        "Where the facilities are",
+        "أين تقع المنشآت",
+        map_links,
+        total,
+    )
+    # The note is written after the chart, because it has to report the
+    # numbers the chart itself arrived at rather than a figure typed here.
+    placed_map["noteEn"] = (
+        "One dot per facility that carries a map link, at its own position rather "
+        "than inside an administrative area. Positions are rounded to ~2 km, which "
+        "merges %s facilities into %s dots; a bigger dot holds more. Off the map: "
+        "%s facilities with no map link."
+        % (format(placed_map["placed"], ","), format(placed_map["cells"], ","),
+           format(placed_map["missing"], ","))
+    )
+    placed_map["noteAr"] = (
+        "نقطة لكل منشأة تحمل رابطاً على الخريطة، في موضعها هي لا داخل منطقة إدارية. "
+        "المواضع مُقرّبة إلى نحو ٢ كم، فاندمجت %s منشأة في %s نقطة؛ والنقطة الأكبر تضمّ أكثر. "
+        "خارج الخريطة: %s منشأة بلا رابط."
+        % (format(placed_map["placed"], ","), format(placed_map["cells"], ","),
+           format(placed_map["missing"], ","))
+    )
+
     charts = [
+        placed_map,
         bar("types", "Facilities by type", "المنشآت حسب النوع", folded_types,
             note_en="The 8 largest of 18 facility types; the remaining %d are summed as Other." % folded_rest,
             note_ar="أكبر ٨ أنواع من ١٨ نوعاً في الملف، والباقي (%d) مجموع تحت «أنواع أخرى»." % folded_rest),
@@ -1076,11 +1174,27 @@ def catalogue_ids():
 
 def write(dataset_id, payload):
     path = os.path.join(OUT_DIR, dataset_id + ".js")
-    body = json.dumps(
-        {"dictionary": payload["dictionary"], "charts": payload["charts"]},
-        ensure_ascii=False,
-        indent=2,
-    )
+
+    # The dots map is thousands of bare numbers, and indent=2 gives each one
+    # its own line: the healthcare payload came out at 104 KB, of which about
+    # 75 KB was leading spaces. The coordinate lists go out on one line each
+    # and everything else stays readable.
+    dumped = {"dictionary": payload["dictionary"], "charts": []}
+    flats = []
+    for chart in payload["charts"]:
+        if isinstance(chart.get("points"), list):
+            chart = dict(chart)
+            chart["points"] = "@@FLAT%d@@" % len(flats)
+            flats.append(payload["charts"][len(dumped["charts"])]["points"])
+        dumped["charts"].append(chart)
+
+    body = json.dumps(dumped, ensure_ascii=False, indent=2)
+    for index, flat in enumerate(flats):
+        body = body.replace(
+            '"@@FLAT%d@@"' % index,
+            json.dumps(flat, separators=(",", ":")),
+            1,
+        )
     with io.open(path, "w", encoding="utf-8", newline="\n") as handle:
         handle.write(
             "/* Generated by tools/build_dataset_details.py — do not edit by hand.\n"

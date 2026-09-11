@@ -1966,7 +1966,7 @@ main:focus, main:focus-visible { outline: none; }
       their own value would encode the length twice and spend the only free
       channel on what the bar already says.
    2. ORDINAL ramp (--chart-ramp-1..6). Categories that ARE a scale:
-      classification grades 1-6, completeness tiers A-D. The ramp carries
+      classification grades 1-6. The ramp carries
       the rung, so the reader sees the shape of the ladder even where the
       bars are sorted by it rather than by size. Off-scale values —
       Unclassified, Not recorded — take --chart-null, a neutral grey,
@@ -1982,6 +1982,7 @@ main:focus, main:focus-visible { outline: none; }
   --chart-bar: #097C4F;
   --chart-track: rgba(3, 3, 3, 0.055);
   --chart-null: rgba(3, 3, 3, 0.26);
+  --dots-opacity: 0.88;
   --chart-ramp-1: #2dcc87;
   --chart-ramp-2: #27b175;
   --chart-ramp-3: #219764;
@@ -1993,6 +1994,7 @@ main:focus, main:focus-visible { outline: none; }
   --chart-bar: #2BA770;
   --chart-track: rgba(243, 246, 244, 0.06);
   --chart-null: rgba(243, 246, 244, 0.24);
+  --dots-opacity: 0.62;
   --chart-ramp-1: #afe6ce;
   --chart-ramp-2: #76d4ab;
   --chart-ramp-3: #3cbf87;
@@ -2018,6 +2020,15 @@ main:focus, main:focus-visible { outline: none; }
 .charts { column-gap: 12px; }
 @media (min-width: 900px) {
   .charts { column-count: 2; }
+
+  /* A group of one takes the whole row. Left in a two-column flow it sat in
+     the left column with the right half empty, which reads as a card that
+     failed to load rather than as a group with one chart in it. Dropping the
+     Completeness tier made this the shape of Usability on all three datasets
+     at once, so it stopped being an edge case. The bars just get longer,
+     which costs nothing: rule 6.1 prints every value, so precision never
+     rested on the bar's length. */
+  .charts > .chart:only-child { column-span: all; }
 }
 
 /* Groups, because seven cards in one flow have no hierarchy and nothing to
@@ -2089,12 +2100,20 @@ main:focus, main:focus-visible { outline: none; }
     display: flex;
     align-items: center;
     gap: 32px;
-    max-width: 780px;
+    inline-size: fit-content;
+    max-inline-size: 100%;
     margin-inline: auto;
   }
+  /* A fixed drawing width, not a flexible one. Flexible, the drawing was
+     whatever the legend left it: the choropleth's legend grew from 91px to
+     271px when it started naming regions and the map shrank from 657 to 477
+     in the same edit, while the dot map beside it kept its width. Two maps
+     on the same site at two sizes for no reason the reader can see is
+     exactly what Carbon's "all charts should use the same layout" is about.
+     620 is the widest that keeps the country under ~510px tall. */
   .chart--map .map {
-    flex: 1 1 auto;
-    min-width: 0;
+    flex: 0 0 auto;
+    inline-size: 620px;
     max-inline-size: none;
     margin-block-end: 0;
   }
@@ -2314,6 +2333,44 @@ main:focus, main:focus-visible { outline: none; }
 .map:hover .map__region { opacity: 0.55; }
 .map .map__region:hover { opacity: 1; }
 
+/* The dot map. The country is drawn first as a quiet ground and the dots
+   sit on top of it: without the outline the shape of the place — which is
+   the only reason a map beats a ranked list — is left to be inferred from
+   where the dots stop.
+
+   The ground is a flat fill, not a ramp. It carries no value at all here;
+   its whole job is to say "this is Saudi Arabia" and then get out of the
+   way, so it takes the same neutral the off-scale bars take. */
+.dots__ground {
+  fill: var(--chart-track);
+  stroke: var(--border);
+  stroke-width: 1;
+  stroke-linejoin: round;
+}
+
+/* Partly transparent so overlap reads as density: two dots on top of each
+   other are darker than one, which is what a dot map is for in a city.
+
+   The opacity differs by theme because the same 0.55 does not mean the same
+   thing on the two cards. Rule 4.5 wants a mark at 3:1 against its surface,
+   and a LONE dot is the worst case: at 0.55 the light bar (#097C4F blending
+   toward white) fell to 1.80:1 while the dark one (#2BA770 blending toward
+   near-black) still measured 3.44:1. Solved rather than nudged — light
+   needs at least 0.824 to clear 3:1 and dark only 0.452, so 0.88 and 0.62
+   give both a margin (3.48:1 and 3.62:1). Density then rides mostly on the
+   radius, which is fine: that is the channel FT prescribes for totals. */
+.dots__dot {
+  fill: var(--chart-bar);
+  fill-opacity: var(--dots-opacity);
+}
+.dots__key { display: inline-flex; align-items: center; gap: 6px; }
+.dots__swatch {
+  inline-size: 18px;
+  block-size: 18px;
+  flex-shrink: 0;
+  overflow: visible;
+}
+
 /* Low to high, left to right, each band naming the range it covers. */
 .map__legend {
   display: flex;
@@ -2324,12 +2381,23 @@ main:focus, main:focus-visible { outline: none; }
   color: var(--muted-foreground);
   font-variant-numeric: tabular-nums;
 }
-.map__key { display: inline-flex; align-items: center; gap: 6px; }
+/* align-items: start, not center: a band can hold two or three regions and
+   the swatch belongs beside the FIRST line of them, not floating against the
+   middle of a wrapped block. */
+.map__key { display: flex; align-items: start; gap: 6px; }
+
+/* The places in one band. Each name keeps its count next to it and the pair
+   never breaks across lines — a region separated from its figure is worse
+   than no figure. */
+.map__places { display: flex; flex-wrap: wrap; gap: 2px 10px; }
+.map__place { white-space: nowrap; }
+.map__place b { font-weight: 500; color: var(--foreground); font-variant-numeric: tabular-nums; }
 .map__swatch {
   inline-size: 10px;
   block-size: 10px;
   border-radius: 2px;
   flex-shrink: 0;
+  margin-block-start: 3px;
 }
 
 /* The split: one bar, segmented, for "what is the share of each class".

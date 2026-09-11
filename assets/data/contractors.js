@@ -175,8 +175,8 @@ DATASET_DETAILS["contractors"] = {
       "geo": "sa-regions",
       "titleEn": "Where the records are",
       "titleAr": "أين تتركّز السجلات",
-      "noteEn": "The same counts as the chart beside it, on the map. Shading is by quantile, so each band holds a similar number of regions rather than an equal slice of the range — otherwise Riyadh alone would set the scale and twelve regions would share one shade. Not on the map: Not recorded (1,649).",
-      "noteAr": "نفس أرقام الرسم المجاور، على الخريطة. التظليل بالشرائح المتساوية العدد لا المتساوية المدى — وإلا لانفردت الرياض بالمقياس وتشارك اثنتا عشرة منطقة لوناً واحداً. خارج الخريطة: غير مسجَّل (1,649).",
+      "noteEn": "Shading is by quantile: each band holds a similar number of regions rather than an equal slice of the range — otherwise Riyadh alone would set the scale and twelve regions would share one shade. The key names the regions in each band and what each one holds. Not on the map: Not recorded (1,649).",
+      "noteAr": "التظليل بالشرائح المئينية: كل شريحة تضمّ عدداً متقارباً من المناطق بدل أن تقتسم المدى بالتساوي، وإلا لانفردت الرياض بالمقياس وتشاركت اثنتا عشرة منطقة لوناً واحداً. والمفتاح يسمّي مناطق كل شريحة وما في كل منها. خارج الخريطة: غير مسجَّل (1,649).",
       "items": [
         {
           "iso": "SA-01",
@@ -460,49 +460,6 @@ DATASET_DETAILS["contractors"] = {
       ],
       "headlineEn": "Email address on 99.5% of the records, street address on only 7.2%.",
       "headlineAr": "بريد إلكتروني في 99.5% من السجلات، وعنوان تفصيلي في 7.2% فقط.",
-      "metric": {
-        "value": 100.0,
-        "labelEn": "of 17,304 records",
-        "labelAr": "من 17,304 سجل"
-      },
-      "group": "usability"
-    },
-    {
-      "id": "quality",
-      "type": "ordinal",
-      "unit": "count",
-      "titleEn": "Completeness tier",
-      "titleAr": "تصنيف الاكتمال",
-      "noteEn": "A is 80-100 complete, D is under 40.",
-      "noteAr": "A من ٨٠ إلى ١٠٠، وD أقل من ٤٠.",
-      "items": [
-        {
-          "labelEn": "A",
-          "labelAr": "A",
-          "value": 2378,
-          "step": 0
-        },
-        {
-          "labelEn": "B",
-          "labelAr": "B",
-          "value": 4982,
-          "step": 1
-        },
-        {
-          "labelEn": "C",
-          "labelAr": "C",
-          "value": 8730,
-          "step": 2
-        },
-        {
-          "labelEn": "D",
-          "labelAr": "D",
-          "value": 1214,
-          "step": 3
-        }
-      ],
-      "headlineEn": "C: 50.5% of the records.",
-      "headlineAr": "C: 50.5% من السجلات.",
       "metric": {
         "value": 100.0,
         "labelEn": "of 17,304 records",

@@ -179,11 +179,11 @@
       const sorted = chart.items.slice().sort((a, b) => a.value - b.value);
       const bands = 6;
       const bandOf = {};
-      const edges = [];
+      const inBand = [];
       sorted.forEach((item, index) => {
         const band = Math.min(bands - 1, Math.floor((index * bands) / sorted.length));
         bandOf[item.iso] = band;
-        (edges[band] = edges[band] || []).push(item.value);
+        (inBand[band] = inBand[band] || []).push(item);
       });
 
       const paths = geo.regions
@@ -204,19 +204,44 @@
         })
         .join("");
 
-      /* One entry per band, reading low to high, each naming the range it
-         covers — a scale legend, which a sequential encoding always needs. */
-      const legend = edges
-        .map((values, band) => {
-          const low = Math.min.apply(null, values);
-          const high = Math.max.apply(null, values);
-          const range = low === high ? number(low, t) : number(low, t) + "–" + number(high, t);
+      /* One entry per band, reading high to low, each naming the REGIONS in
+         that band and their counts rather than the range of values it spans.
+
+         A band label of "729–2,552" asks the reader to hold a number range
+         in their head, look at a shade, and match the two. Naming the
+         regions removes that step: the shade points at the places, and every
+         place carries its own figure — which is rule 6.1, the value printed
+         rather than decoded, finally applied to the map as well.
+
+         Grouped by band and not one row per region on purpose. Thirteen rows
+         of name-and-count IS the "Records by region" chart sitting beside
+         this one, minus the bars; six rows explain the shading without
+         becoming a second copy of it.
+
+         What this does NOT fix: the shading still encodes totals, and FT is
+         explicit that a choropleth "should always be rates rather than
+         totals". Naming the regions defuses most of the harm — nobody has to
+         read a magnitude off the colour any more — but the encoding is
+         unchanged. Recorded as rule 4.4d rather than left implied. */
+      const legend = inBand
+        .map((items, band) => {
+          const names = items
+            .slice()
+            .sort((a, b) => b.value - a.value)
+            .map(
+              (item) =>
+                `<span class="map__place">${escapeHtml(
+                  lang === "ar" ? item.labelAr : item.labelEn
+                )} <b>${number(item.value, t)}</b></span>`
+            )
+            .join("");
           return `
           <li class="map__key">
             <span class="map__swatch" style="background:var(--chart-ramp-${band + 1})"></span>
-            <span>${range}</span>
+            <span class="map__places">${names}</span>
           </li>`;
         })
+        .reverse()
         .join("");
 
       const summary = lang === "ar" ? chart.titleAr : chart.titleEn;
@@ -227,6 +252,78 @@
         <div class="map__wrap">
           <svg class="map" viewBox="${geo.viewBox}" role="img" aria-label="${escapeHtml(summary)}">${paths}</svg>
           <ul class="map__legend" role="list">${legend}</ul>
+        </div>`;
+    };
+
+    /* A dot per location, on the same outline as the choropleth.
+
+       Reached for when the file carries real coordinates rather than an
+       administrative name, which the healthcare register does. It is the
+       right form twice over: FT's choropleth entry says shading "should
+       always be rates rather than totals" and ours are totals, while its
+       dot-density entry is for "the location of individual events" — which
+       is what a facility is.
+
+       The payload holds viewBox positions, not coordinates: the projection
+       and the rounding happen in tools/build_dataset_details.py and one unit
+       is 2.14 km, so nothing here could reconstruct an address even if it
+       wanted to. Each dot carries how many facilities merged into it, and
+       area follows that count — radius is the square root, because the eye
+       reads a circle by its area and scaling the radius instead would make a
+       cell of 18 look like a cell of 324. */
+    const renderDots = (chart) => {
+      const geo = typeof GEO_SA_REGIONS !== "undefined" ? GEO_SA_REGIONS : null;
+      if (!geo) return "";
+
+      const points = chart.points || [];
+      const base = 1.8;
+      let biggest = 1;
+      for (let i = 2; i < points.length; i += 3) {
+        if (points[i] > biggest) biggest = points[i];
+      }
+
+      /* The country first, as a quiet ground. Without it the dots float and
+         the shape of Saudi Arabia — which is the whole reason a map beats a
+         list here — is left for the reader to infer from where the dots
+         stop. */
+      const ground = geo.regions
+        .map((region) => `<path class="dots__ground" d="${region.d}"></path>`)
+        .join("");
+
+      const marks = [];
+      for (let i = 0; i < points.length; i += 3) {
+        const count = points[i + 2];
+        marks.push(
+          `<circle class="dots__dot" cx="${points[i]}" cy="${points[i + 1]}" r="${(
+            base * Math.sqrt(count)
+          ).toFixed(1)}"></circle>`
+        );
+      }
+
+      /* Three sizes, which is what a proportional-symbol key takes: the one
+         every single dot is, the top of the range, and a step between. */
+      const steps = [1, Math.max(2, Math.round(Math.sqrt(biggest))), biggest]
+        .filter((value, index, all) => all.indexOf(value) === index)
+        .map((count) => {
+          const r = base * Math.sqrt(count);
+          const box = base * Math.sqrt(biggest) * 2 + 2;
+          return `
+            <li class="dots__key">
+              <svg class="dots__swatch" viewBox="0 0 ${box} ${box}" aria-hidden="true">
+                <circle class="dots__dot" cx="${box / 2}" cy="${box / 2}" r="${r.toFixed(1)}"></circle>
+              </svg>
+              <span>${t.dotsKey(number(count, t))}</span>
+            </li>`;
+        })
+        .join("");
+
+      const summary = lang === "ar" ? chart.titleAr : chart.titleEn;
+      return `
+        <div class="map__wrap">
+          <svg class="map" viewBox="${geo.viewBox}" role="img" aria-label="${escapeHtml(summary)}">
+            <g>${ground}</g><g>${marks.join("")}</g>
+          </svg>
+          <ul class="map__legend" role="list">${steps}</ul>
         </div>`;
     };
 
@@ -303,6 +400,8 @@
             ? renderSplit(chart)
             : chart.type === "map"
             ? renderMap(chart)
+            : chart.type === "dots"
+            ? renderDots(chart)
             : `<ul class="chart__rows" role="list">${rows}</ul>`;
 
         /* Three lines, three jobs, and no two of them say the same thing.
@@ -328,7 +427,7 @@
 
         return `
         <figure class="chart${coverage ? " chart--coverage" : ""}${
-          chart.type === "map" ? " chart--map" : ""
+          chart.type === "map" || chart.type === "dots" ? " chart--map" : ""
         }" aria-label="${escapeHtml(subject)}">
           <figcaption class="chart__head">
             <div class="chart__heading">
