@@ -28,6 +28,8 @@ from collections import Counter
 
 import openpyxl
 
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+
 # Where the delivered Excel files sit. Pass the folder as an argument, or set
 # DATASOUQ_SOURCE; the fallback is a path relative to the home directory, so
 # this file — which is public — never carries a machine's own layout or the
@@ -239,6 +241,72 @@ GRADE_ORDER = [
     "Fifth Classified",
     "Sixth Classified",
 ]
+
+
+# ISO 3166-2 codes for the thirteen administrative regions, keyed by every
+# spelling the delivered files actually use. A code is the join key rather
+# than a name because the sources disagree on names — Natural Earth writes
+# "Ar Riyad", the contractors sheet "Riyadh", the engineering sheet
+# "الرياض" — and a code does not drift.
+#
+# Anything not listed is simply left off the map and counted in the note, so
+# a new spelling shows up as a missing region rather than as a silently
+# wrong one.
+REGION_ISO = {
+    "Riyadh": "SA-01", "الرياض": "SA-01",
+    "Makkah": "SA-02", "مكة المكرمة": "SA-02",
+    "Madinah": "SA-03", "المدينة المنورة": "SA-03",
+    "Eastern Province": "SA-04", "المنطقة الشرقية": "SA-04", "الشرقية": "SA-04",
+    "Qassim": "SA-05", "القصيم": "SA-05",
+    "Hail": "SA-06", "حائل": "SA-06",
+    "Tabuk": "SA-07", "تبوك": "SA-07",
+    "Northern Borders": "SA-08", "الحدود الشمالية": "SA-08",
+    "Jizan": "SA-09", "جازان": "SA-09",
+    "Najran": "SA-10", "نجران": "SA-10",
+    "Al-Bahah": "SA-11", "الباحة": "SA-11",
+    "Al-Jouf": "SA-12", "الجوف": "SA-12",
+    "Asir": "SA-14", "عسير": "SA-14",
+}
+
+
+def region_map(chart_id, title_en, title_ar, triples, note_en=None, note_ar=None):
+    """A choropleth of the thirteen regions, shaded by count.
+
+    Paired with the region bar chart rather than replacing it. The map answers
+    "where is this concentrated" — a question a ranked list cannot answer,
+    because a list has no geography in it — and the bar chart beside it
+    carries every exact value, which is what keeps a colour-only scale from
+    being the only way to read a number.
+
+    Regions whose name is not in REGION_ISO are reported in the note instead
+    of being dropped in silence.
+    """
+    shaded, unmatched = [], []
+    for label_en, label_ar, value in triples:
+        iso = REGION_ISO.get(label_en.strip()) or REGION_ISO.get(label_ar.strip())
+        if iso:
+            shaded.append({"iso": iso, "labelEn": label_en, "labelAr": label_ar, "value": value})
+        else:
+            unmatched.append((label_en, value))
+
+    if unmatched:
+        missing_en = ", ".join("%s (%s)" % (name, format(value, ",")) for name, value in unmatched)
+        tail_en = "Not on the map: %s." % missing_en
+        tail_ar = "خارج الخريطة: %s." % missing_en
+        note_en = (note_en + " " + tail_en) if note_en else tail_en
+        note_ar = (note_ar + " " + tail_ar) if note_ar else tail_ar
+
+    return {
+        "id": chart_id,
+        "type": "map",
+        "unit": "count",
+        "geo": "sa-regions",
+        "titleEn": title_en,
+        "titleAr": title_ar,
+        "noteEn": note_en,
+        "noteAr": note_ar,
+        "items": shaded,
+    }
 
 
 def fold_tail(triples, keep, label_en="Other types", label_ar="أنواع أخرى"):
@@ -483,6 +551,14 @@ def build_contractors(source):
             note_ar="كل المناطق الإدارية الـ13 ممثَّلة، و%s سجل بلا منطقة مسجَّلة."
             % format(blank_region, ","),
         ),
+        region_map(
+            "map",
+            "Where the records are",
+            "أين تتركّز السجلات",
+            paired(regions, drop_blank=False),
+            note_en="The same counts as the chart beside it, on the map. Shading is by quantile, so each band holds a similar number of regions rather than an equal slice of the range — otherwise Riyadh alone would set the scale and twelve regions would share one shade.",
+            note_ar="نفس أرقام الرسم المجاور، على الخريطة. التظليل بالشرائح المتساوية العدد لا المتساوية المدى — وإلا لانفردت الرياض بالمقياس وتشارك اثنتا عشرة منطقة لوناً واحداً.",
+        ),
         ordinal(
             "classification",
             "Classification grades",
@@ -576,6 +652,10 @@ def build_engineering(source):
             % format(blank_region, ","),
             note_ar="كل المناطق الإدارية الـ13 ممثَّلة، و%s مكتباً بلا منطقة مسجَّلة."
             % format(blank_region, ",")),
+        region_map("map", "Where the offices are", "أين تتركّز المكاتب",
+            counted(regions, drop_blank=False),
+            note_en="The same counts as the chart beside it, on the map. Shading is by quantile, so each band holds a similar number of regions rather than an equal slice of the range.",
+            note_ar="نفس أرقام الرسم المجاور، على الخريطة. التظليل بالشرائح المتساوية العدد لا المتساوية المدى."),
         ordinal("classification", "Classification grades", "درجات التصنيف",
             counted(classes, drop_blank=False), GRADE_ORDER,
             note_en="Unclassified is a value in the source register, not a gap in the data.",
@@ -819,6 +899,13 @@ def main():
 
     # Every dataset in the catalogue gets a sitemap URL, including any this
     # script has no builder for — a page exists for it either way.
+    # The region geometry is shared by every dataset that maps it, so it is
+    # built once into its own file rather than copied into each payload.
+    import build_map
+    count, before, after, size = build_map.build()
+    print("map          %d regions  %d -> %d points  %d KB  ->  %s"
+          % (count, before, after, size // 1024, os.path.join("assets", "data", "geo-sa-regions.js")))
+
     ids = catalogue_ids()
     sitemap = write_sitemap(ids, datetime.date.today().isoformat())
     print("sitemap      %d dataset pages + the landing page  ->  %s" % (len(ids), os.path.relpath(sitemap)))

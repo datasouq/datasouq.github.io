@@ -69,6 +69,11 @@ const I18N = {
     dictLead:
       "The full column list as it ships in the file, with what each one holds and the values it takes.",
     fieldCount: (count) => count + " fields",
+    /* The table's two column captions. aria-hidden on the header row: it
+       labels the layout for a sighted reader, and a screen reader already
+       gets the name and its description read in order. */
+    dictColField: "Field",
+    dictColMeaning: "What it holds, and the values it takes",
     detailCtaTitle: "Want this file?",
     detailCtaBody: "Message us and we'll send a sample of the real records and the price.",
     notFoundTitle: "That dataset isn't here",
@@ -174,6 +179,8 @@ const I18N = {
     dictLead:
       "قائمة الأعمدة كاملة كما تُسلَّم في الملف، مع ما يحتويه كل عمود والقيم التي يأخذها.",
     fieldCount: (count) => count + " حقلاً",
+    dictColField: "الحقل",
+    dictColMeaning: "ما يحتويه، والقيم التي يأخذها",
     detailCtaTitle: "تريد هذا الملف؟",
     detailCtaBody: "تواصل معنا ونرسل لك عيّنة من السجلات الحقيقية والسعر.",
     notFoundTitle: "قاعدة البيانات هذه غير موجودة",

@@ -1,0 +1,147 @@
+#!/usr/bin/env python3
+"""Turn tools/geo/sa-admin1.geojson into assets/data/geo-sa-regions.js.
+
+The geometry is the same for every dataset, so it is written once to its own
+file and the per-dataset payloads carry only a value per region. The dataset
+page loads this file alongside the dataset's own.
+
+Called by tools/build_dataset_details.py; it also runs standalone.
+
+Method, so it can be checked rather than trusted:
+
+  Projection   Equirectangular with a cos(mean latitude) correction on x.
+               Over a country spanning 16-32 degrees north that keeps the
+               shape close enough to read as Saudi Arabia, and it is the one
+               projection whose maths is short enough to be obvious. A
+               statistical map's job here is recognition, not navigation.
+
+  Simplify     Perpendicular-distance decimation: a point goes when it sits
+               within a tolerance of the line between its neighbours. Cheap,
+               stable, and it keeps the corners that make a border legible.
+               Rings under four points survive untouched.
+
+  Output       One SVG path per region in a viewBox sized to the projected
+               bounds, keyed by ISO 3166-2 code — the join key the datasets
+               use, because names vary between sources ("Ar Riyad",
+               "Riyadh", "الرياض") and a code does not.
+"""
+
+import io
+import json
+import math
+import os
+
+ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+SOURCE = os.path.join(ROOT, "tools", "geo", "sa-admin1.geojson")
+OUT = os.path.join(ROOT, "assets", "data", "geo-sa-regions.js")
+
+WIDTH = 1000.0          # viewBox width; height follows the aspect ratio
+TOLERANCE = 0.012       # degrees, ~1.3 km — below a pixel at the sizes drawn
+
+
+def perpendicular_distance(point, start, end):
+    (x, y), (x1, y1), (x2, y2) = point, start, end
+    dx, dy = x2 - x1, y2 - y1
+    if dx == 0 and dy == 0:
+        return math.hypot(x - x1, y - y1)
+    return abs(dy * x - dx * y + x2 * y1 - y2 * x1) / math.hypot(dx, dy)
+
+
+def simplify(ring, tolerance):
+    """Drop points that sit within `tolerance` of their neighbours' line."""
+    if len(ring) < 4:
+        return ring
+    kept = [ring[0]]
+    for i in range(1, len(ring) - 1):
+        if perpendicular_distance(ring[i], kept[-1], ring[i + 1]) > tolerance:
+            kept.append(ring[i])
+    kept.append(ring[-1])
+    return kept if len(kept) >= 4 else ring
+
+
+def rings_of(geometry):
+    polygons = (
+        geometry["coordinates"]
+        if geometry["type"] == "MultiPolygon"
+        else [geometry["coordinates"]]
+    )
+    for polygon in polygons:
+        for ring in polygon:
+            yield ring
+
+
+def build():
+    with io.open(SOURCE, encoding="utf-8") as handle:
+        data = json.load(handle)
+
+    features = data["features"]
+
+    # Bounds first: the projection needs the mean latitude before it can run.
+    lons = [p[0] for f in features for r in rings_of(f["geometry"]) for p in r]
+    lats = [p[1] for f in features for r in rings_of(f["geometry"]) for p in r]
+    min_lon, max_lon, min_lat, max_lat = min(lons), max(lons), min(lats), max(lats)
+    scale_x = math.cos(math.radians((min_lat + max_lat) / 2))
+
+    span_x = (max_lon - min_lon) * scale_x
+    span_y = max_lat - min_lat
+    height = WIDTH * span_y / span_x
+
+    def project(lon, lat):
+        x = (lon - min_lon) * scale_x / span_x * WIDTH
+        # SVG y grows downward; latitude grows upward.
+        y = (max_lat - lat) / span_y * height
+        return round(x, 1), round(y, 1)
+
+    regions, points_before, points_after = [], 0, 0
+    for feature in features:
+        commands = []
+        for ring in rings_of(feature["geometry"]):
+            points_before += len(ring)
+            thinned = simplify(ring, TOLERANCE)
+            points_after += len(thinned)
+            projected = [project(lon, lat) for lon, lat in thinned]
+            commands.append(
+                "M" + " L".join("%s %s" % (x, y) for x, y in projected) + "Z"
+            )
+        properties = feature["properties"]
+        name_ar = (properties.get("name_ar") or "").strip()
+        # Natural Earth writes these as "منطقة الرياض". The leading word is
+        # dropped only when it IS the leading word: a bare replace turned
+        # "المنطقة الشرقية" into "الالشرقية" by eating the one inside it.
+        prefix = "منطقة "
+        if name_ar.startswith(prefix):
+            name_ar = name_ar[len(prefix):].strip()
+
+        regions.append(
+            {
+                "iso": properties["iso"],
+                "nameEn": properties["name"],
+                "nameAr": name_ar,
+                "d": "".join(commands),
+            }
+        )
+
+    payload = {
+        "viewBox": "0 0 %d %d" % (WIDTH, round(height)),
+        "regions": regions,
+    }
+    body = json.dumps(payload, ensure_ascii=False, separators=(",", ":"))
+
+    with io.open(OUT, "w", encoding="utf-8", newline="\n") as handle:
+        handle.write(
+            "/* Generated by tools/build_map.py — do not edit by hand.\n"
+            "   The thirteen administrative regions of Saudi Arabia, projected and\n"
+            "   simplified from tools/geo/sa-admin1.geojson.\n"
+            "   Made with Natural Earth (public domain) — see tools/geo/NOTICE.md. */\n\n"
+            "const GEO_SA_REGIONS = %s;\n" % body
+        )
+
+    return len(regions), points_before, points_after, os.path.getsize(OUT)
+
+
+if __name__ == "__main__":
+    count, before, after, size = build()
+    print(
+        "map          %d regions  %d -> %d points  %d KB  ->  %s"
+        % (count, before, after, size // 1024, os.path.relpath(OUT, ROOT))
+    )

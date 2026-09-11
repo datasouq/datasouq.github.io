@@ -928,14 +928,17 @@ main:focus, main:focus-visible { outline: none; }
 /* One child now — the wordmark. The 12px gap that used to separate it from the
    controls went with them; flex and align-items are what still earn their
    place, centring the wordmark in a 65px bar. */
-/* Two children now — the theme control and the wordmark, in that order. The
-   12px gap is the one the controls used when they sat here before.
+/* Two children now — the wordmark and the theme control, one at each end.
 
-   direction: ltr is what pins the theme control to the left: it is set on
-   this row for the wordmark's sake (a logo lockup never mirrors), and it
-   holds the control's side steady through a language switch as a
-   consequence. Without it the button would cross the bar in Arabic, which is
-   exactly what it must not do. */
+   direction: ltr is what pins them there: it is set on this row for the
+   wordmark's sake (a logo lockup never mirrors), and it holds both sides
+   steady through a language switch as a consequence. Without it the control
+   would cross the bar in Arabic, which is exactly what it must not do.
+
+   The auto margin is what carries the control to the far edge; there are two
+   children and no third, so justify-content: space-between would do the same
+   thing today and quietly stop doing it the moment anything else joins the
+   row. */
 .nav__inner {
   height: 100%;
   display: flex;
@@ -943,6 +946,7 @@ main:focus, main:focus-visible { outline: none; }
   gap: 12px;
   direction: ltr;
 }
+.nav__inner #theme-toggle { margin-left: auto; }
 
 /* Wordmark. One word set in two weights of Space Grotesk: "Data" light and
    muted, "Souq" medium and full contrast. No mark, no space, no separator —
@@ -1987,13 +1991,22 @@ main:focus, main:focus-visible { outline: none; }
    rather than 700. Worth it here — the value is printed at the end of every
    bar, so precision does not rest on the bar's length. */
 .charts { column-gap: 12px; }
-.chart { break-inside: avoid; margin-bottom: 12px; }
 @media (min-width: 900px) {
   .charts { column-count: 2; }
 }
 
+/* The 12px below each card is the gap between cards stacked in a column, and
+   it matches .charts' own column-gap and the 12px .cards uses between the
+   catalogue's cards — one rhythm for every card grid on the site.
+
+   It belongs in THIS rule and not beside break-inside above, which is where
+   it was: `margin: 0` here is later in the source at the same specificity, so
+   it silently won and the cards sat flush against each other with no gap at
+   all. A figure's default margin is what `margin: 0` was there to clear, so
+   the shorthand stays and carries the 12px itself. */
 .chart {
-  margin: 0;
+  margin: 0 0 12px;
+  break-inside: avoid;
   padding: 20px;
   background: var(--card);
   border: 1px solid var(--border);
@@ -2097,6 +2110,52 @@ main:focus, main:focus-visible { outline: none; }
   border-end-end-radius: 4px;
 }
 
+/* The map. Colour is the value channel here and nowhere else on this page,
+   so it is the one chart that carries a scale legend.
+
+   The borders between regions are drawn in the card colour, not in a border
+   tone: the same rule the bars follow, where white does the separating and a
+   stroke would add ink that is not data. At this size a 1.5-unit stroke on a
+   1000-unit viewBox paints well under a pixel, which is what keeps thirteen
+   shapes reading as one country rather than thirteen outlined tiles.
+
+   The SVG is left to scale with its box; it carries no fixed height, so the
+   viewBox's own aspect ratio decides how tall the card gets. */
+.map {
+  display: block;
+  width: 100%;
+  height: auto;
+  margin-bottom: 14px;
+}
+.map__region {
+  stroke: var(--card);
+  stroke-width: 1.5;
+  stroke-linejoin: round;
+  transition: opacity 0.15s var(--ease);
+}
+/* Hovering lifts one region out of the ramp without recolouring it — the
+   shade still means what the legend says it means. */
+.map:hover .map__region { opacity: 0.55; }
+.map .map__region:hover { opacity: 1; }
+
+/* Low to high, left to right, each band naming the range it covers. */
+.map__legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 12px;
+  font-size: var(--text-xs);
+  line-height: var(--lh-xs);
+  color: var(--muted-foreground);
+  font-variant-numeric: tabular-nums;
+}
+.map__key { display: inline-flex; align-items: center; gap: 6px; }
+.map__swatch {
+  inline-size: 10px;
+  block-size: 10px;
+  border-radius: 2px;
+  flex-shrink: 0;
+}
+
 /* The split: one bar, segmented, for "what is the share of each class".
    Reached for when one class holds most of the file — as separate bars that
    is one full-width bar and three hairlines, which answers nothing.
@@ -2149,27 +2208,59 @@ main:focus, main:focus-visible { outline: none; }
    Data dictionary
    ========================================================================== */
 
+/* One grid for the whole table, with the rows as subgrid — the same
+   mechanism the charts use, and for the same reason: the field column has to
+   size itself to the longest name ONCE and every row has to share that
+   width. As a grid per row it was a flat 0.28fr, which handed
+   `organization_mobile_number` and `row` the same 224px and left most rows
+   with a gap of nothing between the name and what it means.
+
+   fit-content(26%) takes the width the longest identifier needs and stops
+   there, so a name like `row` sits right beside its description. */
 .dict {
+  display: grid;
+  grid-template-columns: 1fr;
   border: 1px solid var(--border);
   border-radius: var(--radius-lg);
   overflow: hidden;
   background: var(--card);
 }
-.dict__row {
+.dict__row,
+.dict__head {
   display: grid;
-  grid-template-columns: 1fr;
+  grid-template-columns: subgrid;
+  grid-column: 1 / -1;
   gap: 4px;
   padding: 14px 16px;
   border-bottom: 1px solid var(--border);
 }
 .dict__row:last-child { border-bottom: 0; }
 
+/* A header row, because the two halves of a row are a name and a meaning and
+   nothing said so. It also gives the table the same shape the design
+   system's own Table has: a muted caption row in the small size, over rows
+   separated by a hairline. */
+.dict__head {
+  font-size: var(--text-xs);
+  line-height: var(--lh-xs);
+  color: var(--tertiary-foreground);
+  background: var(--muted);
+  padding-block: 10px;
+}
+
 @media (min-width: 768px) {
-  .dict__row {
-    grid-template-columns: minmax(0, 0.28fr) minmax(0, 1fr);
-    gap: 16px;
-    align-items: baseline;
-  }
+  .dict { grid-template-columns: fit-content(26%) minmax(0, 1fr); }
+  .dict__row,
+  .dict__head { gap: 16px; align-items: baseline; }
+}
+
+/* Without subgrid every row keeps its own two tracks. They stop tracking the
+   longest name across the table, but the columns still line up, which is the
+   part that matters. */
+@supports not (grid-template-columns: subgrid) {
+  .dict { display: block; }
+  .dict__row,
+  .dict__head { grid-template-columns: minmax(0, 0.26fr) minmax(0, 1fr); }
 }
 
 /* The field name is the literal column header a buyer will see in the file,
@@ -2178,14 +2269,20 @@ main:focus, main:focus-visible { outline: none; }
 
    Set in the sans, not a mono face: this page follows the same call the card
    titles already made upstream-versus-here — supabase's own CardTitle is
-   `text-xs font-mono`, and this build ships no mono companion, so weight and
-   the brand tone carry the "this is an identifier" signal instead of a
-   second family loaded for one column. */
+   `text-xs font-mono`, and this build ships no mono companion, so weight
+   carries the "this is an identifier" signal instead of a second family
+   loaded for one column.
+
+   It took --brand-text until the table had 27 rows of it, at which point the
+   accent was doing nothing but shouting: the brand tone is for the things a
+   reader can act on, and these are labels. --foreground at 500 against a
+   --muted-foreground description is the contrast that actually orders the
+   row — the name is the anchor, and it was the smallest, palest thing in it. */
 .dict__field {
-  font-size: var(--text-xs);
+  font-size: var(--text-sm);
   line-height: var(--lh-sm);
   font-weight: 500;
-  color: var(--brand-text);
+  color: var(--foreground);
   overflow-wrap: anywhere;
   /* Column names are ASCII identifiers even in the Arabic view, so they are
      pinned LTR — otherwise a name ending in a digit or underscore reorders. */
@@ -2196,12 +2293,17 @@ main:focus, main:focus-visible { outline: none; }
 .dict__desc {
   font-size: var(--text-sm);
   line-height: var(--lh-sm);
+  color: var(--muted-foreground);
   margin: 0;
 }
+
+/* The values a column takes, which the file's own dictionary carries in a
+   third column. Kept under the description rather than beside it: some of
+   them run to a paragraph, and a third track would squeeze both. */
 .dict__notes {
   font-size: var(--text-xs);
   line-height: var(--lh-xs);
-  color: var(--muted-foreground);
+  color: var(--tertiary-foreground);
   margin: 4px 0 0;
 }
 
