@@ -34,13 +34,11 @@ const I18N = {
   en: {
     dir: "ltr",
     docTitle: "DataSouq — structured data, ready to work with",
-    /* Each option's name is the visible code plus the language spelled out,
-       so it reads "EN, English". The code alone does not say what it is, and
-       replacing it with an aria-label would drop the visible text out of the
-       name, which is the WCAG 2.5.3 failure this control already had once. */
-    langGroupLabel: "Language",
-    langEnFull: ", English",
-    langArFull: ", Arabic",
+    /* The picker's accessible name says both what the control is and where it
+       currently stands — "Language: English" — which is the name the control
+       at claude.com carries and what WCAG 2.5.3 asks for here: the visible
+       word ("English") is inside the accessible name. */
+    langPickerLabel: "Language: English",
     /* Western digits are already Arabic numerals in the sense the page needs
        for English; this is the identity so the two dictionaries have the same
        shape and the caller never branches. */
@@ -143,9 +141,7 @@ const I18N = {
   ar: {
     dir: "rtl",
     docTitle: "داتا سوق — بيانات منظّمة وجاهزة للاستخدام",
-    langGroupLabel: "اللغة",
-    langEnFull: "، الإنجليزية",
-    langArFull: "، العربية",
+    langPickerLabel: "اللغة: العربية",
 
     /* Arabic-Indic digits, with the Arabic separators that go with them:
        U+066C for thousands, U+066B for the decimal, U+066A for percent. Applied
@@ -403,21 +399,24 @@ const I18N = {
       });
     });
 
-    /* The two codes are static and CSS lights the live one from :root[lang],
-       so the only thing left to write here is the clarifier a screen reader
-       reads after them — the visible text is "en ar", which says nothing about
-       what pressing it does. Keeping the codes in the accessible name is what
-       WCAG 2.5.3 asks: the name contains the visible label.
+    /* The picker names the language it is currently in, and each option is
+       written in its own script — those endonyms are markup, never
+       translated, so a reader stuck in the wrong language can still find
+       theirs. All that changes here is which option is checked and what the
+       trigger says.
+
        The wordmark is tagged lang="en" in the markup so a screen reader does
-       not voice it with Arabic phonemes; the footer used to carry lang="en" on
-       its whole container, and now that it is translated only the wordmark
+       not voice it with Arabic phonemes; the footer used to carry lang="en"
+       on its whole container, and now that it is translated only the wordmark
        inside it still declares English. */
-    /* aria-checked is the state, and the roving tabindex follows it so the
-       group is one tab stop with the live option as its entry point. */
-    document.querySelectorAll(".langgroup__item").forEach((item) => {
+    const current = $("lang-current");
+    document.querySelectorAll(".langpicker__item").forEach((item) => {
       const on = item.dataset.lang === lang;
       item.setAttribute("aria-checked", on ? "true" : "false");
-      item.setAttribute("tabindex", on ? "0" : "-1");
+      /* The trigger's visible word is the live option's own label, taken from
+         the option rather than from this dictionary: there is then one place
+         a language's name is written, and it is the one the menu shows. */
+      if (on && current) current.textContent = item.textContent.trim();
     });
 
     /* The year is the one number on the page that is not a literal in this
@@ -494,24 +493,83 @@ const I18N = {
     renderDatasetStructuredData();
     applyLang(store("datasouq-lang") || CONFIG.defaultLang);
 
-    /* A radiogroup is one tab stop, so the arrows move between the options and
-       select as they go, which is what radio semantics promise. With two of
-       them every arrow does the same thing: go to the other one. */
-    const items = Array.from(document.querySelectorAll(".langgroup__item"));
-    items.forEach((item, index) => {
-      item.addEventListener("click", () => applyLang(item.dataset.lang));
-      item.addEventListener("keydown", (event) => {
-        const keys = ["ArrowRight", "ArrowLeft", "ArrowUp", "ArrowDown", "Home", "End"];
-        if (!keys.includes(event.key)) return;
-        event.preventDefault();
-        const next =
-          event.key === "Home" ? items[0]
-          : event.key === "End" ? items[items.length - 1]
-          : items[(index + 1) % items.length];
-        applyLang(next.dataset.lang);
-        next.focus();
+    /* The language picker: a menu button, following the keyboard contract a
+       menu owes — Enter/Space/Down opens onto the first option, Up opens onto
+       the last, arrows move within it, Escape closes and hands focus back to
+       the trigger, and a click anywhere outside closes it. Without that last
+       one a menu opened by mistake has no way out but the keyboard. */
+    const trigger = $("lang-trigger");
+    const menu = $("lang-menu");
+    const items = Array.from(document.querySelectorAll(".langpicker__item"));
+
+    if (trigger && menu) {
+      const isOpen = () => trigger.getAttribute("aria-expanded") === "true";
+
+      const open = (focusIndex) => {
+        menu.hidden = false;
+        trigger.setAttribute("aria-expanded", "true");
+        if (items.length) items[focusIndex === -1 ? items.length - 1 : focusIndex].focus();
+      };
+
+      const close = (returnFocus) => {
+        /* Focus cannot be left on what is about to be hidden. It is taken
+           back whenever it was still inside the menu — which covers the
+           click-outside case, where the menu closes without anyone asking
+           for the focus to move. Clicking another control is not that case:
+           the browser has already moved focus there, so nothing is stolen
+           back from it. */
+        const hadFocusInside = menu.contains(document.activeElement);
+        menu.hidden = true;
+        trigger.setAttribute("aria-expanded", "false");
+        if (returnFocus || hadFocusInside) trigger.focus();
+      };
+
+      trigger.addEventListener("click", () => (isOpen() ? close(false) : open(0)));
+
+      trigger.addEventListener("keydown", (event) => {
+        if (event.key === "ArrowDown" || event.key === "Enter" || event.key === " ") {
+          event.preventDefault();
+          open(0);
+        } else if (event.key === "ArrowUp") {
+          event.preventDefault();
+          open(-1);
+        }
       });
-    });
+
+      items.forEach((item, index) => {
+        item.addEventListener("click", () => {
+          applyLang(item.dataset.lang);
+          close(true);
+        });
+
+        item.addEventListener("keydown", (event) => {
+          if (event.key === "ArrowDown" || event.key === "ArrowUp") {
+            event.preventDefault();
+            const step = event.key === "ArrowDown" ? 1 : -1;
+            items[(index + step + items.length) % items.length].focus();
+          } else if (event.key === "Home" || event.key === "End") {
+            event.preventDefault();
+            items[event.key === "Home" ? 0 : items.length - 1].focus();
+          } else if (event.key === "Escape") {
+            event.preventDefault();
+            close(true);
+          } else if (event.key === "Tab") {
+            /* Tabbing out of a menu closes it; focus is already leaving, so
+               it is not taken back to the trigger. */
+            close(false);
+          }
+        });
+      });
+
+      document.addEventListener("click", (event) => {
+        if (isOpen() && !event.target.closest(".langpicker")) close(false);
+      });
+
+      document.addEventListener("keydown", (event) => {
+        if (event.key === "Escape" && isOpen()) close(true);
+      });
+    }
+
     $("theme-toggle").addEventListener("click", toggleTheme);
 
     /* Anything carrying data-copy puts that string on the clipboard and says so.
