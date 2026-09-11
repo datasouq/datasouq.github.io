@@ -106,6 +106,83 @@
       return "var(--chart-ramp-" + (spread + 1) + ")";
     };
 
+    /* A choropleth of the thirteen regions.
+
+       Colour is the value channel here, which it is nowhere else on this page
+       — so the two things that keeps honest are both present: a legend naming
+       every band, and the region bar chart beside it carrying each exact
+       count. The map answers "where is this concentrated", which a ranked
+       list cannot; the list answers "how much exactly", which a shaded area
+       cannot.
+
+       Bands are quantiles, not equal slices of the range. Riyadh holds six
+       times what the median region does, so an equal-interval scale would
+       put one region in the top band and eleven in the bottom, and the map
+       would show nothing but where the capital is. The note says which
+       method is in use, because the choice changes what the map appears to
+       say. */
+    const renderMap = (chart) => {
+      /* Read as a bare identifier, not off window: assets/data/geo-sa-regions.js
+         declares it with `const`, and a top-level const is not a property of
+         the global object the way a `var` would be — `window.GEO_SA_REGIONS`
+         is undefined even with the file loaded. ICONS and DATASETS are read
+         the same way for the same reason. typeof guards the case where the
+         file failed to load at all. */
+      const geo = typeof GEO_SA_REGIONS !== "undefined" ? GEO_SA_REGIONS : null;
+      if (!geo) return "";
+
+      const byIso = {};
+      chart.items.forEach((item) => (byIso[item.iso] = item));
+
+      const sorted = chart.items.slice().sort((a, b) => a.value - b.value);
+      const bands = 6;
+      const bandOf = {};
+      const edges = [];
+      sorted.forEach((item, index) => {
+        const band = Math.min(bands - 1, Math.floor((index * bands) / sorted.length));
+        bandOf[item.iso] = band;
+        (edges[band] = edges[band] || []).push(item.value);
+      });
+
+      const paths = geo.regions
+        .map((region) => {
+          const item = byIso[region.iso];
+          const fill =
+            item === undefined
+              ? "var(--chart-null)"
+              : "var(--chart-ramp-" + (bandOf[item.iso] + 1) + ")";
+          const label = item
+            ? (lang === "ar" ? item.labelAr : item.labelEn) + " — " + number(item.value, t)
+            : lang === "ar"
+            ? region.nameAr
+            : region.nameEn;
+          return `<path class="map__region" d="${region.d}" style="fill:${fill}"><title>${escapeHtml(
+            label
+          )}</title></path>`;
+        })
+        .join("");
+
+      /* One entry per band, reading low to high, each naming the range it
+         covers — a scale legend, which a sequential encoding always needs. */
+      const legend = edges
+        .map((values, band) => {
+          const low = Math.min.apply(null, values);
+          const high = Math.max.apply(null, values);
+          const range = low === high ? number(low, t) : number(low, t) + "–" + number(high, t);
+          return `
+          <li class="map__key">
+            <span class="map__swatch" style="background:var(--chart-ramp-${band + 1})"></span>
+            <span>${range}</span>
+          </li>`;
+        })
+        .join("");
+
+      const summary = lang === "ar" ? chart.titleAr : chart.titleEn;
+      return `
+        <svg class="map" viewBox="${geo.viewBox}" role="img" aria-label="${escapeHtml(summary)}">${paths}</svg>
+        <ul class="map__legend" role="list">${legend}</ul>`;
+    };
+
     const renderSplit = (chart) => {
       const items = chart.items;
       /* A "Not recorded" segment is the absence of a value, so it takes the
@@ -176,10 +253,14 @@
         const body =
           chart.type === "split"
             ? renderSplit(chart)
+            : chart.type === "map"
+            ? renderMap(chart)
             : `<ul class="chart__rows" role="list">${rows}</ul>`;
 
         return `
-        <figure class="chart${coverage ? " chart--coverage" : ""}">
+        <figure class="chart${coverage ? " chart--coverage" : ""}${
+          chart.type === "map" ? " chart--map" : ""
+        }">
           <figcaption class="chart__head">
             <h3 class="chart__title">${escapeHtml(lang === "ar" ? chart.titleAr : chart.titleEn)}</h3>
             ${note ? `<p class="chart__note">${escapeHtml(note)}</p>` : ""}
@@ -214,7 +295,13 @@
 
     host.innerHTML = `
       <p class="dict__count">${t.fieldCount(t.digits(details.dictionary.length))}</p>
-      <div class="dict">${rows}</div>`;
+      <div class="dict">
+        <div class="dict__head" aria-hidden="true">
+          <span>${escapeHtml(t.dictColField)}</span>
+          <span>${escapeHtml(t.dictColMeaning)}</span>
+        </div>
+        ${rows}
+      </div>`;
   }
 
   /* The page's own WhatsApp button, naming this dataset the way the card's

@@ -280,6 +280,96 @@ DATASET_DETAILS["engineering"] = {
       ]
     },
     {
+      "id": "map",
+      "type": "map",
+      "unit": "count",
+      "geo": "sa-regions",
+      "titleEn": "Where the offices are",
+      "titleAr": "أين تتركّز المكاتب",
+      "noteEn": "The same counts as the chart beside it, on the map. Shading is by quantile, so each band holds a similar number of regions rather than an equal slice of the range. Not on the map: Not recorded (467).",
+      "noteAr": "نفس أرقام الرسم المجاور، على الخريطة. التظليل بالشرائح المتساوية العدد لا المتساوية المدى. خارج الخريطة: Not recorded (467).",
+      "items": [
+        {
+          "iso": "SA-01",
+          "labelEn": "Riyadh",
+          "labelAr": "الرياض",
+          "value": 2158
+        },
+        {
+          "iso": "SA-02",
+          "labelEn": "Makkah",
+          "labelAr": "مكة المكرمة",
+          "value": 1653
+        },
+        {
+          "iso": "SA-04",
+          "labelEn": "Eastern Province",
+          "labelAr": "الشرقية",
+          "value": 1016
+        },
+        {
+          "iso": "SA-14",
+          "labelEn": "Asir",
+          "labelAr": "عسير",
+          "value": 327
+        },
+        {
+          "iso": "SA-03",
+          "labelEn": "Madinah",
+          "labelAr": "المدينة المنورة",
+          "value": 287
+        },
+        {
+          "iso": "SA-05",
+          "labelEn": "Qassim",
+          "labelAr": "القصيم",
+          "value": 242
+        },
+        {
+          "iso": "SA-09",
+          "labelEn": "Jazan",
+          "labelAr": "جازان",
+          "value": 168
+        },
+        {
+          "iso": "SA-06",
+          "labelEn": "Hail",
+          "labelAr": "حائل",
+          "value": 129
+        },
+        {
+          "iso": "SA-12",
+          "labelEn": "Al-Jouf",
+          "labelAr": "الجوف",
+          "value": 91
+        },
+        {
+          "iso": "SA-10",
+          "labelEn": "Najran",
+          "labelAr": "نجران",
+          "value": 86
+        },
+        {
+          "iso": "SA-07",
+          "labelEn": "Tabuk",
+          "labelAr": "تبوك",
+          "value": 82
+        },
+        {
+          "iso": "SA-11",
+          "labelEn": "Al-Bahah",
+          "labelAr": "الباحة",
+          "value": 55
+        },
+        {
+          "iso": "SA-08",
+          "labelEn": "Northern Borders",
+          "labelAr": "الحدود الشمالية",
+          "value": 47
+        }
+      ]
+    },
+    {
       "id": "classification",
       "type": "ordinal",
       "unit": "count",

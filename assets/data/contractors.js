@@ -250,6 +250,96 @@ DATASET_DETAILS["contractors"] = {
       ]
     },
     {
+      "id": "map",
+      "type": "map",
+      "unit": "count",
+      "geo": "sa-regions",
+      "titleEn": "Where the records are",
+      "titleAr": "أين تتركّز السجلات",
+      "noteEn": "The same counts as the chart beside it, on the map. Shading is by quantile, so each band holds a similar number of regions rather than an equal slice of the range — otherwise Riyadh alone would set the scale and twelve regions would share one shade. Not on the map: Not recorded (1,649).",
+      "noteAr": "نفس أرقام الرسم المجاور، على الخريطة. التظليل بالشرائح المتساوية العدد لا المتساوية المدى — وإلا لانفردت الرياض بالمقياس وتشارك اثنتا عشرة منطقة لوناً واحداً. خارج الخريطة: Not recorded (1,649).",
+      "items": [
+        {
+          "iso": "SA-01",
+          "labelEn": "Riyadh",
+          "labelAr": "الرياض",
+          "value": 6269
+        },
+        {
+          "iso": "SA-02",
+          "labelEn": "Makkah",
+          "labelAr": "مكة المكرمة",
+          "value": 3780
+        },
+        {
+          "iso": "SA-04",
+          "labelEn": "Eastern Province",
+          "labelAr": "الشرقية",
+          "value": 2552
+        },
+        {
+          "iso": "SA-03",
+          "labelEn": "Madinah",
+          "labelAr": "المدينة المنورة",
+          "value": 729
+        },
+        {
+          "iso": "SA-05",
+          "labelEn": "Qassim",
+          "labelAr": "القصيم",
+          "value": 525
+        },
+        {
+          "iso": "SA-14",
+          "labelEn": "Asir",
+          "labelAr": "عسير",
+          "value": 505
+        },
+        {
+          "iso": "SA-09",
+          "labelEn": "Jizan",
+          "labelAr": "جازان",
+          "value": 323
+        },
+        {
+          "iso": "SA-07",
+          "labelEn": "Tabuk",
+          "labelAr": "تبوك",
+          "value": 277
+        },
+        {
+          "iso": "SA-06",
+          "labelEn": "Hail",
+          "labelAr": "حائل",
+          "value": 178
+        },
+        {
+          "iso": "SA-10",
+          "labelEn": "Najran",
+          "labelAr": "نجران",
+          "value": 154
+        },
+        {
+          "iso": "SA-12",
+          "labelEn": "Jawf",
+          "labelAr": "الجوف",
+          "value": 151
+        },
+        {
+          "iso": "SA-08",
+          "labelEn": "Northern Borders",
+          "labelAr": "الحدود الشمالية",
+          "value": 113
+        },
+        {
+          "iso": "SA-11",
+          "labelEn": "Bahah",
+          "labelAr": "الباحة",
+          "value": 99
+        }
+      ]
+    },
+    {
       "id": "classification",
       "type": "ordinal",
       "unit": "count",

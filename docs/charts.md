@@ -36,6 +36,7 @@ reader is asking, then pick from its family. *(Carbon; FT)*
 | How does it spread across a ladder? | Comparison, ordered | bar sorted by the ladder + ordinal ramp |
 | What is the share of each class? | Part-to-whole | one segmented bar (`split`) |
 | What share carries this attribute? | Part-to-whole | meter against a 0–100 track (`coverage`) |
+| Where is it concentrated? | Spatial | choropleth of the 13 regions (`map`), always beside the region bar chart |
 | What is this one number? | — | a stat tile, not a chart |
 
 **Rule 1.2 — One value is not a chart.** A single figure is a stat tile; the
@@ -75,6 +76,28 @@ catalogue, which tags every chart with data shape, occasion and reader time
 so none of its code, templates or catalogue text can be used here: DataSouq
 sells data, which is commercial use and needs the author's separate
 permission. The thresholds and the exception are **House**.*
+
+**Rule 1.7 — A map answers "where", never "how much exactly".** It ships
+paired with the region bar chart, never instead of it. A shaded area cannot
+be read back to a number, and a ranked list has no geography in it; each
+covers what the other cannot. *(Carbon's Geospatial family; FT's Spatial. The
+pairing is **House**, and it is also what keeps rule 6.2 satisfied — the
+exact counts stay on the page rather than in a hover.)*
+
+A map is only correct where the geography of the data IS the geography drawn.
+The healthcare dataset has no map: its regions are MOH health directorates,
+20 of them, and Jeddah and Makkah are separate entries — shading the 13
+administrative regions with those counts would be a map of something that
+does not exist.
+
+**Geometry**: `tools/geo/sa-admin1.geojson`, the 13 regions extracted from
+**Natural Earth**, which is public domain — "You may use the maps in any
+manner… for personal, educational, and commercial purposes. No permission is
+needed." `tools/build_map.py` projects and simplifies it; see
+`tools/geo/NOTICE.md`. The join key is the ISO 3166-2 code, never a name:
+the sources spell the same region "Ar Riyad", "Riyadh" and "الرياض", and a
+region whose spelling is not in the table is reported in the note instead of
+being dropped.
 
 ---
 
@@ -137,6 +160,19 @@ diverging midpoint.
 
 **Rule 4.4 — Never a rainbow for magnitude; never more than 8 colour classes
 carrying meaning.** *(dataviz skill)*
+
+**Rule 4.4b — On a map, colour IS the value, and it is the only place on this
+page where that is true.** It therefore takes the same one-hue ramp as an
+ordered scale, and it must carry a scale legend naming every band — a
+sequential encoding without one is unreadable. *(dataviz skill: "No table
+view / color-only encoding on a continuous scale" is an anti-pattern)*
+
+**Rule 4.4c — Map bands are quantiles, and the note says so.** Equal
+intervals would put Riyadh alone in the top band and eleven regions in the
+bottom, leaving a map that shows only where the capital is. Quantiles give
+each band a similar number of regions. Both choices are defensible and they
+say different things, so the one in use is named on the chart rather than
+left for the reader to assume. **House.**
 
 **Rule 4.5 — Colour is validated, not eyeballed.** Every palette is run
 through `scripts/validate_palette.js` in **both** themes against the card
