@@ -382,6 +382,11 @@
   /* The Card carries shadow-xs — Tailwind's own value, unchanged upstream. */
   --shadow-xs: 0 1px 2px 0 rgb(0 0 0 / 0.05);
 
+  /* Tailwind's shadow-lg, for the one thing on the page that floats over the
+     rest: the language menu. A popover needs to separate from what it covers,
+     which shadow-xs — tuned to lift a card a hair off the page — cannot do. */
+  --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+
   /* --- Type scale ------------------------------------------------------
      Two apps ship this scale and they differ in one place. Both override
      --text-base upward to 15px and set --font-weight-normal: 450, but
@@ -923,7 +928,21 @@ main:focus, main:focus-visible { outline: none; }
 /* One child now — the wordmark. The 12px gap that used to separate it from the
    controls went with them; flex and align-items are what still earn their
    place, centring the wordmark in a 65px bar. */
-.nav__inner { height: 100%; display: flex; align-items: center; direction: ltr; }
+/* Two children now — the theme control and the wordmark, in that order. The
+   12px gap is the one the controls used when they sat here before.
+
+   direction: ltr is what pins the theme control to the left: it is set on
+   this row for the wordmark's sake (a logo lockup never mirrors), and it
+   holds the control's side steady through a language switch as a
+   consequence. Without it the button would cross the bar in Arabic, which is
+   exactly what it must not do. */
+.nav__inner {
+  height: 100%;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  direction: ltr;
+}
 
 /* Wordmark. One word set in two weights of Space Grotesk: "Data" light and
    muted, "Souq" medium and full contrast. No mark, no space, no separator —
@@ -983,53 +1002,83 @@ main:focus, main:focus-visible { outline: none; }
 .ctl:hover { border-color: var(--tertiary-foreground); }
 .ctl--icon { padding-inline: 0; justify-content: center; }
 
-/* The globe and the group. 6px between them is .ctl's own icon-to-label gap,
-   which is the established value in this bar; the 4px inside the group is
-   toggle-group.tsx's `gap-1`. The globe takes --tertiary-foreground and 14px,
-   the same tint and size the .ctl icons take, and it is the only part of this
-   control with no upstream source — a language control with no word in it needs
-   something to say what it selects, and the alternative was a visible label
-   that has to be translated and then changes the control's width. */
-.langctl { display: inline-flex; align-items: center; gap: 6px; }
-.langctl__globe {
-  width: 14px;
-  height: 14px;
-  flex-shrink: 0;
-  color: var(--tertiary-foreground);
+/* Language picker — one button naming the current language, opening a menu.
+
+   Modelled on the control at claude.com, measured from it rather than
+   guessed: its trigger is a bordered pill holding a 20px globe, the language
+   name, and a chevron, `display:flex` with `gap:6px`, and it opens a menu of
+   the languages, each written in its own script. That last part is the point
+   of the pattern — a reader who cannot read the current language still finds
+   their own in the list.
+
+   Two things are deliberately not copied. Their 12px radius and 12px/16px
+   padding belong to a 45px-tall control on a page whose type runs larger;
+   this bar's type is 12px and every other control in it is .ctl at 26px, so
+   the trigger IS a .ctl and takes that geometry. And the swap for two
+   languages stays a menu rather than collapsing to a toggle: the previous
+   control was a two-option toggle reading "EN AR", which says what it is only
+   to someone who already reads one of them.
+
+   The whole bar carries direction: ltr (deviation 7), so the menu is pinned
+   to the trigger's right edge with a physical property — there is no logical
+   edge to track here. */
+.langpicker { position: relative; display: inline-flex; }
+
+/* Wider than a .ctl icon button because it carries a word; the word is the
+   endonym — "English", "العربية" — so its width changes with the language and
+   the control is left to size itself rather than being pinned. */
+.langpicker__trigger { cursor: pointer; }
+.langpicker__trigger[aria-expanded="true"] { border-color: var(--tertiary-foreground); }
+
+/* The chevron turns over when the menu is open, which is the only motion in
+   this control. */
+.langpicker__chevron { transition: transform 0.2s var(--ease); }
+.langpicker__trigger[aria-expanded="true"] .langpicker__chevron { transform: rotate(180deg); }
+
+/* Opens upward: the control sits in the last bar on the page, so downward
+   would render the menu off-screen. */
+.langpicker__menu {
+  position: absolute;
+  bottom: calc(100% + 6px);
+  right: 0;
+  min-width: 100%;
+  padding: 4px;
+  background: var(--popover);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-lg);
+  z-index: 20;
+  display: grid;
+  gap: 2px;
 }
 
-/* toggle-group.tsx's root: `flex items-center justify-center gap-1`. */
-.langgroup { display: flex; align-items: center; justify-content: center; gap: 4px; }
-
-/* toggleVariants, variant `default` at size `tiny`. Everything here is one of
-   its classes: rounded-md, font-medium, transition-colors, text-foreground-light
-   at rest (compat.css aliases that to --muted-foreground), bg-transparent from
-   the variant, and h-[26px] px-2.5 text-xs from the size. */
-.langgroup__item {
-  display: inline-flex;
+/* Each language is written in its own script and never translated: a menu
+   that renders "Arabic" to an English reader and "الإنجليزية" to an Arabic one
+   is a menu neither can use to leave the language they are stuck in. */
+.langpicker__item {
+  display: flex;
   align-items: center;
-  justify-content: center;
-  height: 26px;
-  padding-inline: 10px;
+  gap: 8px;
+  width: 100%;
+  padding: 6px 10px;
   border-radius: var(--radius);
-  font-size: var(--text-xs);
-  line-height: var(--lh-xs);
-  font-weight: 500;
   background: transparent;
-  color: var(--muted-foreground);
-  transition: background-color 0.2s var(--ease), color 0.2s var(--ease);
-}
-
-/* `hover:bg-muted` */
-.langgroup__item:hover { background: var(--muted); }
-
-/* `aria-checked:bg-accent aria-checked:text-foreground` — the state lives in
-   the attribute the screen reader reads, so there is no second source of truth
-   for which language is on. */
-.langgroup__item[aria-checked="true"] {
-  background: var(--accent);
   color: var(--foreground);
+  font-size: var(--text-xs);
+  line-height: var(--lh-sm);
+  text-align: start;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: background-color 0.2s var(--ease);
 }
+.langpicker__item:hover { background: var(--muted); }
+.langpicker__item[aria-checked="true"] { background: var(--accent); }
+
+/* A check marks the live option instead of colour alone, so the state does
+   not rest on a background tint. Its slot is held open on the others, or the
+   labels would jump left and right as the selection moves. */
+.langpicker__check { width: 14px; height: 14px; flex-shrink: 0; opacity: 0; }
+.langpicker__item[aria-checked="true"] .langpicker__check { opacity: 1; }
 
 /* .ctl's 26px min-width is for the icon-only control, which is 16px of icon and
    border without it. 26x26 clears WCAG 2.5.8's 24x24 minimum outright, so the
@@ -1686,6 +1735,20 @@ main:focus, main:focus-visible { outline: none; }
 :root[lang="ar"] .footer__rights {
   direction: rtl;
   unicode-bidi: isolate;
+}
+
+/* The source link now opens the copyright line rather than sitting at the far
+   end of the bar with the settings. It belongs with the line that names who
+   owns the work — it points at the work itself, not at a way to reach us or a
+   thing to change — and the bar's right end is left to the one control that
+   is genuinely a setting.
+
+   The line is a flex row so the 22px mark sits on the text's centre instead of
+   its baseline, where a glyph that tall would drag the line box down. */
+.footer__copy {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
 }
 
 /* The bar: `border-default mt-32 flex justify-between border-t pt-8`, which in
