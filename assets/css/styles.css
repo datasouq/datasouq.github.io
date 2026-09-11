@@ -1899,6 +1899,31 @@ main:focus, main:focus-visible { outline: none; }
 }
 .detail__missing p { color: var(--muted-foreground); margin-bottom: 20px; }
 
+/* Shown where the charts or the dictionary would be when a dataset has been
+   added to datasets.js but not yet measured. Built like a chart card so the
+   section keeps its shape — Supabase: an empty state "should provide the
+   initial state in the same presentation as the list when there is data". */
+.emptystate {
+  padding: 32px 20px;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  text-align: center;
+}
+.emptystate__title {
+  font-size: var(--text-base);
+  line-height: var(--lh-base);
+  font-weight: 600;
+  margin: 0 0 6px;
+}
+.emptystate__body {
+  font-size: var(--text-sm);
+  line-height: var(--lh-sm);
+  color: var(--muted-foreground);
+  margin: 0 auto 20px;
+  max-inline-size: 60ch;
+}
+
 /* ==========================================================================
    Charts — horizontal bars, built from HTML rather than SVG
    ==========================================================================
@@ -2020,7 +2045,17 @@ main:focus, main:focus-visible { outline: none; }
   line-height: var(--lh-xs);
   font-weight: 500;
   color: var(--muted-foreground);
+  margin: 0 0 2px;
+}
+
+/* The line Supabase pairs with every section title. Same size and colour as
+   the title — it is the same voice continuing, not a second level. */
+.chartgroup__note {
+  font-size: var(--text-xs);
+  line-height: var(--lh-xs);
+  color: var(--muted-foreground);
   margin: 0 0 12px;
+  max-inline-size: 58ch;
 }
 
 /* The map spans both columns. It is the one chart whose subject is a shape
@@ -2060,7 +2095,8 @@ main:focus, main:focus-visible { outline: none; }
   .chart--map .map {
     flex: 1 1 auto;
     min-width: 0;
-    margin-bottom: 0;
+    max-inline-size: none;
+    margin-block-end: 0;
   }
   /* One key per line, low band at the top, so the column reads as a scale. */
   .chart--map .map__legend {
@@ -2087,18 +2123,74 @@ main:focus, main:focus-visible { outline: none; }
   border: 1px solid var(--border);
   border-radius: var(--radius-lg);
 }
-.chart__head { margin-bottom: 16px; }
+/* Heading on one side, metric on the other, note across the bottom — which
+   is Supabase's ChartHeader (a title beside a ChartMetric) with our note
+   under it. The metric never wraps under the heading on a narrow card
+   because it is a short number; `align-items: baseline` sits it on the same
+   line as the title rather than floating above it. */
+.chart__head {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: baseline;
+  column-gap: 16px;
+  margin-bottom: 16px;
+}
+.chart__heading { min-inline-size: 0; }
+
+/* The subject, so a page of findings can still be scanned for one chart. */
+.chart__kicker {
+  font-size: var(--text-xs);
+  line-height: var(--lh-xs);
+  color: var(--muted-foreground);
+  margin: 0 0 2px;
+}
 .chart__title {
   font-size: var(--text-base);
   line-height: var(--lh-base);
   font-weight: 600;
-  margin: 0 0 4px;
+  margin: 0;
+  text-wrap: balance;
 }
+
+/* Supabase's ChartMetric: the value large, its label small underneath,
+   aligned to the end of the header. */
+.chart__metric {
+  margin: 0;
+  text-align: end;
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+}
+.chart__metric-value {
+  display: block;
+  font-size: var(--text-base);
+  line-height: var(--lh-base);
+  font-weight: 600;
+}
+.chart__metric-label {
+  display: block;
+  font-size: var(--text-xs);
+  line-height: var(--lh-xs);
+  color: var(--muted-foreground);
+}
+
+/* Capped at 80 characters. Uncapped, the note under the full-width map card
+   ran 1,031px at 12px — 180 characters a line, where the comfortable range
+   is 45 to 75 and WCAG 1.4.8 stops at 80. Every other note on the page was
+   already inside that by accident of sitting in a column; the map's was the
+   one the full-width span broke.
+
+   58ch, not 80ch: `ch` is the width of a "0", and a "0" is wider than the
+   average letter, so 80ch measured out at 107 real characters. 58ch lands
+   on 78. The number is calibrated against this font at this size, which is
+   why it is written down rather than guessed at again later. */
 .chart__note {
   font-size: var(--text-xs);
   line-height: var(--lh-xs);
   color: var(--muted-foreground);
   margin: 0;
+  grid-column: 1 / -1;
+  padding-block-start: 8px;
+  max-inline-size: 58ch;
 }
 
 /* ONE grid for the whole chart, not a grid per row — the three columns have
@@ -2196,11 +2288,20 @@ main:focus, main:focus-visible { outline: none; }
 
    The SVG is left to scale with its box; it carries no fixed height, so the
    viewBox's own aspect ratio decides how tall the card gets. */
+/* The cap lives HERE, not only inside the 900px query where it started.
+   Between 768 and 899 the card is already full width but the two-column
+   query has not fired, so the drawing had nothing stopping it: 663x544 at a
+   768px viewport and 755x619 at 860px — both TALLER than the 657x539 it
+   gets at 1280px, which is the opposite of what a smaller screen wants.
+   Above 900px .map__wrap overrides this and lets the drawing take the width
+   the legend leaves it. */
 .map {
   display: block;
   width: 100%;
+  max-inline-size: 560px;
   height: auto;
-  margin-bottom: 14px;
+  margin-block-end: 14px;
+  margin-inline: auto;
 }
 .map__region {
   stroke: var(--card);
@@ -2274,7 +2375,7 @@ main:focus, main:focus-visible { outline: none; }
 .split__name { color: var(--muted-foreground); overflow-wrap: anywhere; }
 .split__share { font-weight: 500; font-variant-numeric: tabular-nums; }
 .split__count {
-  color: var(--tertiary-foreground);
+  color: var(--muted-foreground);
   font-variant-numeric: tabular-nums;
   white-space: nowrap;
 }
@@ -2315,10 +2416,16 @@ main:focus, main:focus-visible { outline: none; }
    nothing said so. It also gives the table the same shape the design
    system's own Table has: a muted caption row in the small size, over rows
    separated by a hairline. */
+/* --muted-foreground, not --tertiary-foreground, and for the reason
+   deviation 4 at the top of this file already gives: that token fails AA on
+   these surfaces. Measured in dark, composited through the translucent
+   --muted strip: 2.72:1 where 12px text needs 4.5. The same swap fixes
+   .split__count and .dict__notes, both 4.27:1 on --card. In light all three
+   already passed; dark is where the token gives out. */
 .dict__head {
   font-size: var(--text-xs);
   line-height: var(--lh-xs);
-  color: var(--tertiary-foreground);
+  color: var(--muted-foreground);
   background: var(--muted);
   padding-block: 10px;
 }
@@ -2365,11 +2472,16 @@ main:focus, main:focus-visible { outline: none; }
   unicode-bidi: isolate;
   text-align: start;
 }
+/* Same 80-character cap as the chart note, in the same calibrated `ch`: the
+   description column is 830px wide at 1280px, which ran 129 characters a
+   line. The cap stops the line, the column keeps its width — so the table
+   still fills the card and the sentence still reads. */
 .dict__desc {
   font-size: var(--text-sm);
   line-height: var(--lh-sm);
   color: var(--muted-foreground);
   margin: 0;
+  max-inline-size: 56ch;
 }
 
 /* The values a column takes, which the file's own dictionary carries in a
@@ -2378,7 +2490,7 @@ main:focus, main:focus-visible { outline: none; }
 .dict__notes {
   font-size: var(--text-xs);
   line-height: var(--lh-xs);
-  color: var(--tertiary-foreground);
+  color: var(--muted-foreground);
   margin: 4px 0 0;
 }
 

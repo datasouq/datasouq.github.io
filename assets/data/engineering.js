@@ -287,6 +287,13 @@ DATASET_DETAILS["engineering"] = {
           "value": 47
         }
       ],
+      "headlineEn": "Riyadh holds 13 times what the median region does.",
+      "headlineAr": "نصيب الرياض 13 ضعف نصيب المنطقة الوسيطة.",
+      "metric": {
+        "value": 93.1,
+        "labelEn": "of 6,808 offices",
+        "labelAr": "من 6,808 مكتب"
+      },
       "group": "coverage"
     },
     {
@@ -369,6 +376,13 @@ DATASET_DETAILS["engineering"] = {
           "value": 47
         }
       ],
+      "headlineEn": "Riyadh and Makkah together: 56% of the offices.",
+      "headlineAr": "الرياض ومكة المكرمة معاً: 56% من المكاتب.",
+      "metric": {
+        "value": 100.0,
+        "labelEn": "of 6,808 offices",
+        "labelAr": "من 6,808 مكتب"
+      },
       "group": "coverage"
     },
     {
@@ -431,6 +445,13 @@ DATASET_DETAILS["engineering"] = {
           "value": 126
         }
       ],
+      "headlineEn": "Riyadh and Jeddah together: 45.2% of the offices.",
+      "headlineAr": "الرياض وجدة معاً: 45.2% من المكاتب.",
+      "metric": {
+        "value": 73.5,
+        "labelEn": "of 6,808 offices",
+        "labelAr": "من 6,808 مكتب"
+      },
       "group": "coverage"
     },
     {
@@ -467,6 +488,13 @@ DATASET_DETAILS["engineering"] = {
           "count": 2581
         }
       ],
+      "headlineEn": "Mobile number on 70.5% of the offices, website on only 37.9%.",
+      "headlineAr": "رقم جوال في 70.5% من المكاتب، وموقع إلكتروني في 37.9% فقط.",
+      "metric": {
+        "value": 100.0,
+        "labelEn": "of 6,808 offices",
+        "labelAr": "من 6,808 مكتب"
+      },
       "group": "usability"
     },
     {
@@ -503,6 +531,13 @@ DATASET_DETAILS["engineering"] = {
           "step": 3
         }
       ],
+      "headlineEn": "A: 43.7% of the offices.",
+      "headlineAr": "A: 43.7% من المكاتب.",
+      "metric": {
+        "value": 100.0,
+        "labelEn": "of 6,808 offices",
+        "labelAr": "من 6,808 مكتب"
+      },
       "group": "usability"
     },
     {
@@ -551,6 +586,13 @@ DATASET_DETAILS["engineering"] = {
           "step": 5
         }
       ],
+      "headlineEn": "Sixth Classified: 43.4% of the offices.",
+      "headlineAr": "مصنف درجة سادسة: 43.4% من المكاتب.",
+      "metric": {
+        "value": 62.6,
+        "labelEn": "of 6,808 offices",
+        "labelAr": "من 6,808 مكتب"
+      },
       "group": "composition"
     },
     {
@@ -603,6 +645,13 @@ DATASET_DETAILS["engineering"] = {
           "value": 2
         }
       ],
+      "headlineEn": "Engineering consultancy offices and Mixed professional companies together: 21.7% of the offices.",
+      "headlineAr": "مكاتب استشارات هندسية وشركات مهنية مختلطة معاً: 21.7% من المكاتب.",
+      "metric": {
+        "value": 100.0,
+        "labelEn": "of 6,808 offices",
+        "labelAr": "من 6,808 مكتب"
+      },
       "group": "composition"
     }
   ]

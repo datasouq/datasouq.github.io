@@ -257,6 +257,13 @@ DATASET_DETAILS["contractors"] = {
           "value": 99
         }
       ],
+      "headlineEn": "Riyadh holds 19 times what the median region does.",
+      "headlineAr": "نصيب الرياض 19 ضعف نصيب المنطقة الوسيطة.",
+      "metric": {
+        "value": 90.5,
+        "labelEn": "of 17,304 records",
+        "labelAr": "من 17,304 سجل"
+      },
       "group": "coverage"
     },
     {
@@ -339,6 +346,13 @@ DATASET_DETAILS["contractors"] = {
           "value": 1649
         }
       ],
+      "headlineEn": "Riyadh and Makkah together: 58.1% of the records.",
+      "headlineAr": "الرياض ومكة المكرمة معاً: 58.1% من السجلات.",
+      "metric": {
+        "value": 100.0,
+        "labelEn": "of 17,304 records",
+        "labelAr": "من 17,304 سجل"
+      },
       "group": "coverage"
     },
     {
@@ -401,6 +415,13 @@ DATASET_DETAILS["contractors"] = {
           "value": 218
         }
       ],
+      "headlineEn": "Riyadh and Jeddah together: 46.8% of the records.",
+      "headlineAr": "الرياض وجدة معاً: 46.8% من السجلات.",
+      "metric": {
+        "value": 71.1,
+        "labelEn": "of 17,304 records",
+        "labelAr": "من 17,304 سجل"
+      },
       "group": "coverage"
     },
     {
@@ -437,6 +458,13 @@ DATASET_DETAILS["contractors"] = {
           "count": 1244
         }
       ],
+      "headlineEn": "Email address on 99.5% of the records, street address on only 7.2%.",
+      "headlineAr": "بريد إلكتروني في 99.5% من السجلات، وعنوان تفصيلي في 7.2% فقط.",
+      "metric": {
+        "value": 100.0,
+        "labelEn": "of 17,304 records",
+        "labelAr": "من 17,304 سجل"
+      },
       "group": "usability"
     },
     {
@@ -473,6 +501,13 @@ DATASET_DETAILS["contractors"] = {
           "step": 3
         }
       ],
+      "headlineEn": "C: 50.5% of the records.",
+      "headlineAr": "C: 50.5% من السجلات.",
+      "metric": {
+        "value": 100.0,
+        "labelEn": "of 17,304 records",
+        "labelAr": "من 17,304 سجل"
+      },
       "group": "usability"
     },
     {
@@ -521,6 +556,13 @@ DATASET_DETAILS["contractors"] = {
           "step": 5
         }
       ],
+      "headlineEn": "Sixth Classified: 12.3% of the records.",
+      "headlineAr": "مصنف درجة سادسة: 12.3% من السجلات.",
+      "metric": {
+        "value": 31.2,
+        "labelEn": "of 17,304 records",
+        "labelAr": "من 17,304 سجل"
+      },
       "group": "composition"
     },
     {
@@ -557,6 +599,13 @@ DATASET_DETAILS["contractors"] = {
           "share": 0.5
         }
       ],
+      "headlineEn": "Saudi Contractor: 90% of the records.",
+      "headlineAr": "مقاول سعودي: 90% من السجلات.",
+      "metric": {
+        "value": 100.0,
+        "labelEn": "of 17,304 records",
+        "labelAr": "من 17,304 سجل"
+      },
       "group": "composition"
     }
   ]
