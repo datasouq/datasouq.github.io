@@ -1909,13 +1909,24 @@ main:focus, main:focus-visible { outline: none; }
   --chart-ramp-6: #236d4d;
 }
 
-.charts {
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: 12px;
-}
+/* Columns, not a grid. These cards run from four rows to twenty, and a grid
+   lays them in ROWS: every card stretches to the tallest of its pair, so a
+   four-row chart beside an eighteen-row one was padded to 670px with 400 of
+   them blank. align-items: start stops the stretching but leaves the hole,
+   because the next grid row still clears the taller card.
+
+   Multi-column flows each card at its own height and packs the next one
+   directly beneath, which is what this content wants. DOM order is
+   unchanged, so the reading order a screen reader follows is still the
+   order the charts were written in; break-inside keeps a card whole.
+
+   The trade is track width: two columns give each bar about 310px to run in
+   rather than 700. Worth it here — the value is printed at the end of every
+   bar, so precision does not rest on the bar's length. */
+.charts { column-gap: 12px; }
+.chart { break-inside: avoid; margin-bottom: 12px; }
 @media (min-width: 900px) {
-  .charts { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .charts { column-count: 2; }
 }
 
 .chart {
@@ -1939,16 +1950,47 @@ main:focus, main:focus-visible { outline: none; }
   margin: 0;
 }
 
-.chart__rows { display: grid; gap: 10px; }
+/* ONE grid for the whole chart, not a grid per row — the three columns have
+   to line up down the card, and a row-by-row grid cannot do that.
 
-/* label / bar / value. The label column caps at 40% so a long Arabic
-   category cannot squeeze the bars down to stubs, and the value column sizes
-   to its content so the numbers line up under each other. */
+   It was a row-by-row grid, and the bars visibly failed to share a baseline:
+   the value column was `auto`, so a row reading 910 sized that column
+   narrower than one reading 2,974, which left the two fr columns a different
+   width to divide and shifted where each bar began. Column widths have to be
+   resolved once, for the whole chart, which is what subgrid does.
+
+   fit-content(38%) on the labels fixes the second half of it. As 0.4fr the
+   label column claimed its share whatever was in it, so a tier chart whose
+   labels are "A" to "D" pushed its bars 200px clear of them with nothing in
+   between. fit-content takes only the width the longest label needs and
+   stops at 38%, so short labels sit beside their bars and a long Arabic
+   category still cannot squeeze the bars to stubs. */
+.chart__rows {
+  display: grid;
+  grid-template-columns: fit-content(38%) minmax(0, 1fr) auto;
+  gap: 10px;
+  align-items: center;
+}
 .chart__row {
   display: grid;
-  grid-template-columns: minmax(0, 0.4fr) minmax(0, 1fr) auto;
+  grid-column: 1 / -1;
+  grid-template-columns: subgrid;
   align-items: center;
-  gap: 10px;
+}
+
+/* Without subgrid the row keeps its own three columns. They no longer track
+   the longest label in the card, but a fixed value column at least holds the
+   bars to one baseline, which is the defect that mattered. */
+@supports not (grid-template-columns: subgrid) {
+  .chart__rows { display: block; }
+  .chart__row {
+    display: grid;
+    grid-template-columns: minmax(0, 0.32fr) minmax(0, 1fr) 4.5rem;
+    gap: 10px;
+    margin-bottom: 10px;
+  }
+  .chart__row:last-child { margin-bottom: 0; }
+  .chart__value { text-align: end; }
 }
 .chart__label {
   font-size: var(--text-xs);
@@ -1990,6 +2032,54 @@ main:focus, main:focus-visible { outline: none; }
   border-end-start-radius: 0;
   border-start-end-radius: 4px;
   border-end-end-radius: 4px;
+}
+
+/* The split: one bar, segmented, for "what is the share of each class".
+   Reached for when one class holds most of the file — as separate bars that
+   is one full-width bar and three hairlines, which answers nothing.
+
+   The 2px separator is a gap in the card colour, not a stroke: a border
+   around each segment would add ink that is not data, and at these segment
+   widths it would read as a thicker mark rather than a boundary. */
+.split {
+  display: flex;
+  gap: 2px;
+  margin-bottom: 14px;
+}
+.split__seg {
+  display: block;
+  block-size: 14px;
+  min-inline-size: 3px;
+  border-radius: 2px;
+}
+.split__seg:first-child {
+  border-start-start-radius: 4px;
+  border-end-start-radius: 4px;
+}
+.split__seg:last-child {
+  border-start-end-radius: 4px;
+  border-end-end-radius: 4px;
+}
+
+/* The key carries the identity, so nothing depends on matching a colour to a
+   segment by eye — and it carries both the share and the count, because a
+   percentage alone hides how few records a 0.1% slice is. */
+.split__key { display: grid; gap: 6px; }
+.split__row {
+  display: grid;
+  grid-template-columns: 10px minmax(0, 1fr) auto auto;
+  align-items: center;
+  gap: 8px;
+  font-size: var(--text-xs);
+  line-height: var(--lh-xs);
+}
+.split__swatch { inline-size: 10px; block-size: 10px; border-radius: 3px; }
+.split__name { color: var(--muted-foreground); overflow-wrap: anywhere; }
+.split__share { font-weight: 500; font-variant-numeric: tabular-nums; }
+.split__count {
+  color: var(--tertiary-foreground);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
 }
 
 /* ==========================================================================

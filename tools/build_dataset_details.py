@@ -7,8 +7,9 @@ hand. Re-run this whenever a delivered file changes:
 
     python tools/build_dataset_details.py ["<source folder>"]
 
-The source folder defaults to the client delivery folder below. Output is
-written to assets/data/<id>.js, one file per dataset, each declaring
+The source folder is the one holding the delivered .xlsx files; it can also
+come from the DATASOUQ_SOURCE environment variable. Output is written to
+assets/data/<id>.js, one file per dataset, each declaring
 DATASET_DETAILS["<id>"]. Those files are generated — edit this script, not
 them.
 
@@ -27,7 +28,14 @@ from collections import Counter
 
 import openpyxl
 
-DEFAULT_SOURCE = r"~/Desktop/DATASOUQ/datasouq for client"
+# Where the delivered Excel files sit. Pass the folder as an argument, or set
+# DATASOUQ_SOURCE; the fallback is a path relative to the home directory, so
+# this file — which is public — never carries a machine's own layout or the
+# name of whoever is logged into it.
+DEFAULT_SOURCE = os.environ.get(
+    "DATASOUQ_SOURCE",
+    os.path.join(os.path.expanduser("~"), "Desktop", "DATASOUQ", "datasouq for client"),
+)
 OUT_DIR = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "assets", "data")
 
 # ---------------------------------------------------------------------------
@@ -233,28 +241,100 @@ GRADE_ORDER = [
 ]
 
 
+def fold_tail(triples, keep, label_en="Other types", label_ar="أنواع أخرى"):
+    """Keep the biggest `keep` categories; sum the rest into one bar.
+
+    A long tail on a linear scale is unreadable: with 18 facility types the
+    top one is five times the second and half the bars land under three
+    pixels. Folding the tail keeps every bar legible and still adds up to the
+    record count — the note says how many categories the fold covers, so the
+    reader knows what was rolled up rather than finding a chart that quietly
+    stops at eight.
+    """
+    triples = list(triples)
+    if len(triples) <= keep + 1:
+        return triples, 0
+    head, tail = triples[:keep], triples[keep:]
+    head.append((label_en, label_ar, sum(value for _, _, value in tail)))
+    return head, len(tail)
+
+
+def split(chart_id, title_en, title_ar, triples, note_en=None, note_ar=None):
+    """One 100% bar, segmented — for "what is the split of this attribute".
+
+    Reached for when a single class holds most of the file. As separate bars,
+    15,581 Saudi contractors against 18 affiliate organisations gives one
+    full-width bar and three hairlines, which answers nothing; as segments of
+    one bar the proportions are the point and read at a glance. Segments take
+    steps of the same ordinal ramp, so this needs no second palette, and each
+    is labelled with its share underneath.
+    """
+    total = sum(value for _, _, value in triples) or 1
+    return {
+        "id": chart_id,
+        "type": "split",
+        "unit": "count",
+        "titleEn": title_en,
+        "titleAr": title_ar,
+        "noteEn": note_en,
+        "noteAr": note_ar,
+        "items": [
+            {
+                "labelEn": label_en,
+                "labelAr": label_ar,
+                "value": value,
+                "share": round(100.0 * value / total, 1),
+            }
+            for label_en, label_ar, value in triples
+        ],
+    }
+
+
 def ordinal(chart_id, title_en, title_ar, triples, scale, note_en=None, note_ar=None):
     """A bar chart whose categories are an ordered scale, not a nominal list.
 
     Grades 1-6 and completeness tiers A-D are ladders: the reader's question
     is "how does the file spread across the scale", so the bars are sorted by
-    the scale, never by count, and carry a light-to-dark ramp step. Anything
-    off the scale — Unclassified, Not recorded — keeps its place at the end
-    and is marked step=None, which the page paints neutral grey: it is the
-    absence of a grade, not a seventh grade.
+    the scale, never by count, and carry a light-to-dark ramp step.
+
+    Values that are NOT on the ladder — Unclassified, Not recorded — are kept
+    out of the plot and reported in the note instead. They are the absence of
+    a grade rather than a further grade, and on a shared linear scale they
+    destroy the chart they sit in: Unclassified is 11,905 against a biggest
+    grade of 2,134, which flattened all six grades into hairlines and made
+    the ramp invisible. Off the scale, the same six bars span the full width
+    and the ladder is legible; the note keeps the count honest.
     """
     by_label = {label_en: (label_en, label_ar, value) for label_en, label_ar, value in triples}
-    items = []
+    items, off_scale = [], []
 
     for position, label in enumerate(scale):
         if label in by_label:
             label_en, label_ar, value = by_label.pop(label)
             items.append({"labelEn": label_en, "labelAr": label_ar, "value": value, "step": position})
 
-    # Whatever the scale did not claim, in the order it arrived (biggest first).
     for label_en, label_ar, value in triples:
         if label_en in by_label:
-            items.append({"labelEn": label_en, "labelAr": label_ar, "value": value, "step": None})
+            off_scale.append((label_en, label_ar, value))
+
+    if off_scale:
+        plotted = sum(item["value"] for item in items)
+        total = plotted + sum(value for _, _, value in off_scale)
+        parts_en = ", ".join(
+            "%s %s" % (format(value, ","), label_en.lower()) for label_en, _, value in off_scale
+        )
+        parts_ar = " و".join(
+            "%s %s" % (format(value, ","), label_ar) for _, label_ar, value in off_scale
+        )
+        share = round(100.0 * plotted / total) if total else 0
+        tail_en = "Charted here are the %s records on the scale, %d%% of the file; %s sit outside it." % (
+            format(plotted, ","), share, parts_en,
+        )
+        tail_ar = "المرسوم هنا هو %s سجل على السلّم، أي %d%% من الملف؛ وخارجه %s." % (
+            format(plotted, ","), share, parts_ar,
+        )
+        note_en = (note_en + " " + tail_en) if note_en else tail_en
+        note_ar = (note_ar + " " + tail_ar) if note_ar else tail_ar
 
     return {
         "id": chart_id,
@@ -420,11 +500,13 @@ def build_contractors(source):
             note_en="Out of 301 cities in the file; %s records carry no city." % format(blank_city, ","),
             note_ar="من إجمالي ٣٠١ مدينة في الملف، و%s سجل بلا مدينة مسجَّلة." % format(blank_city, ","),
         ),
-        bar(
+        split(
             "membership",
             "Membership type",
             "نوع العضوية",
             paired(members, drop_blank=False),
+            note_en="One class holds almost the whole file, so the split is the finding rather than four bars of wildly different length.",
+            note_ar="فئة واحدة تستحوذ على معظم الملف، فالنسبة نفسها هي المعلومة، لا أربعة أعمدة متفاوتة.",
         ),
         ordinal(
             "quality",
@@ -595,10 +677,12 @@ def build_healthcare(source):
         for column, description_en, description_ar, notes in HEALTHCARE_DICTIONARY
     ]
 
+    folded_types, folded_rest = fold_tail(counted(types), 8)
+
     charts = [
-        bar("types", "Facilities by type", "المنشآت حسب النوع", counted(types),
-            note_en="18 distinct facility types across the file.",
-            note_ar="١٨ نوع منشأة مختلف في الملف."),
+        bar("types", "Facilities by type", "المنشآت حسب النوع", folded_types,
+            note_en="The 8 largest of 18 facility types; the remaining %d are summed as Other." % folded_rest,
+            note_ar="أكبر ٨ أنواع من ١٨ نوعاً في الملف، والباقي (%d) مجموع تحت «أنواع أخرى»." % folded_rest),
         bar("hospitals", "Hospitals by network", "المستشفيات حسب الجهة", counted(hospitals),
             note_en="The 916 hospital-labelled records, out of 4,563 facilities in total.",
             note_ar="سجلات المستشفيات الـ٩١٦ من إجمالي ٤٬٥٦٣ منشأة."),
@@ -611,7 +695,9 @@ def build_healthcare(source):
             % format(sum(v for k, v in cities.items() if k in (None, "")), ","),
             note_ar="من إجمالي ٣٢٨ مدينة في الملف، و%s منشأة بلا مدينة مسجَّلة."
             % format(sum(v for k, v in cities.items() if k in (None, "")), ",")),
-        bar("lines", "Phone line type", "نوع خط الهاتف", counted(lines, drop_blank=False)),
+        split("lines", "Phone line type", "نوع خط الهاتف", counted(lines, drop_blank=False),
+            note_en="Of the facilities that carry a number at all.",
+            note_ar="من المنشآت التي تحمل رقماً أصلاً."),
         coverage(
             "coverage",
             "Contact coverage",

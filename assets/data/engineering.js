@@ -285,8 +285,8 @@ DATASET_DETAILS["engineering"] = {
       "unit": "count",
       "titleEn": "Classification grades",
       "titleAr": "درجات التصنيف",
-      "noteEn": "Unclassified is a value in the source register, not a gap in the data.",
-      "noteAr": "«غير مصنّف» قيمة في السجل المصدر، وليست نقصاً في البيانات.",
+      "noteEn": "Unclassified is a value in the source register, not a gap in the data. Charted here are the 4,259 records on the scale, 63% of the file; 2,549 unclassified sit outside it.",
+      "noteAr": "«غير مصنّف» قيمة في السجل المصدر، وليست نقصاً في البيانات. المرسوم هنا هو 4,259 سجل على السلّم، أي 63% من الملف؛ وخارجه 2,549 غير مصنف.",
       "items": [
         {
           "labelEn": "First Classified",
@@ -323,12 +323,6 @@ DATASET_DETAILS["engineering"] = {
           "labelAr": "مصنف درجة سادسة",
           "value": 2956,
           "step": 5
-        },
-        {
-          "labelEn": "Unclassified",
-          "labelAr": "غير مصنف",
-          "value": 2549,
-          "step": null
         }
       ]
     },

@@ -255,8 +255,8 @@ DATASET_DETAILS["contractors"] = {
       "unit": "count",
       "titleEn": "Classification grades",
       "titleAr": "درجات التصنيف",
-      "noteEn": "Unclassified is a value in the source register, not a gap in the data.",
-      "noteAr": "«غير مصنّف» قيمة في السجل المصدر، وليست نقصاً في البيانات.",
+      "noteEn": "Unclassified is a value in the source register, not a gap in the data. Charted here are the 5,398 records on the scale, 31% of the file; 11,905 unclassified, 1 not recorded sit outside it.",
+      "noteAr": "«غير مصنّف» قيمة في السجل المصدر، وليست نقصاً في البيانات. المرسوم هنا هو 5,398 سجل على السلّم، أي 31% من الملف؛ وخارجه 11,905 غير مصنف و1 غير مسجَّل.",
       "items": [
         {
           "labelEn": "First Classified",
@@ -293,18 +293,6 @@ DATASET_DETAILS["contractors"] = {
           "labelAr": "مصنف درجة سادسة",
           "value": 2134,
           "step": 5
-        },
-        {
-          "labelEn": "Unclassified",
-          "labelAr": "غير مصنف",
-          "value": 11905,
-          "step": null
-        },
-        {
-          "labelEn": "Not recorded",
-          "labelAr": "غير مسجَّل",
-          "value": 1,
-          "step": null
         }
       ]
     },
@@ -371,32 +359,36 @@ DATASET_DETAILS["contractors"] = {
     },
     {
       "id": "membership",
-      "type": "bar",
+      "type": "split",
       "unit": "count",
       "titleEn": "Membership type",
       "titleAr": "نوع العضوية",
-      "noteEn": null,
-      "noteAr": null,
+      "noteEn": "One class holds almost the whole file, so the split is the finding rather than four bars of wildly different length.",
+      "noteAr": "فئة واحدة تستحوذ على معظم الملف، فالنسبة نفسها هي المعلومة، لا أربعة أعمدة متفاوتة.",
       "items": [
         {
           "labelEn": "Saudi Contractor",
           "labelAr": "مقاول سعودي",
-          "value": 15581
+          "value": 15581,
+          "share": 90.0
         },
         {
           "labelEn": "Non-Saudi Contractor",
           "labelAr": "مقاول غير سعودي",
-          "value": 1624
+          "value": 1624,
+          "share": 9.4
         },
         {
           "labelEn": "Affiliate-Organization",
           "labelAr": "مهتم - منشأة",
-          "value": 18
+          "value": 18,
+          "share": 0.1
         },
         {
           "labelEn": "Not recorded",
           "labelAr": "غير مسجَّل",
-          "value": 81
+          "value": 81,
+          "share": 0.5
         }
       ]
     },
