@@ -73,103 +73,6 @@ DATASET_DETAILS["healthcare"] = {
   ],
   "charts": [
     {
-      "id": "types",
-      "type": "bar",
-      "unit": "count",
-      "titleEn": "Facilities by type",
-      "titleAr": "المنشآت حسب النوع",
-      "noteEn": "The 8 largest of 18 facility types; the remaining 10 are summed as Other.",
-      "noteAr": "أكبر ٨ أنواع من ١٨ نوعاً في الملف، والباقي (10) مجموع تحت «أنواع أخرى».",
-      "items": [
-        {
-          "labelEn": "Primary health centres",
-          "labelAr": "مراكز صحية أولية",
-          "value": 2453
-        },
-        {
-          "labelEn": "Private hospitals",
-          "labelAr": "المستشفيات الخاصة",
-          "value": 468
-        },
-        {
-          "labelEn": "Government specialised centres",
-          "labelAr": "مراكز تخصصية حكومية",
-          "value": 371
-        },
-        {
-          "labelEn": "MOH hospitals",
-          "labelAr": "مستشفيات وزارة الصحة",
-          "value": 335
-        },
-        {
-          "labelEn": "General medical complexes",
-          "labelAr": "مجمع طبي عام",
-          "value": 310
-        },
-        {
-          "labelEn": "Private dispensaries",
-          "labelAr": "مستوصفات خاصة",
-          "value": 170
-        },
-        {
-          "labelEn": "Government non-MOH facilities",
-          "labelAr": "منشآت صحية حكومية غير تابعة لوزارة الصحة",
-          "value": 102
-        },
-        {
-          "labelEn": "Private laboratories",
-          "labelAr": "مختبرات خاصة",
-          "value": 92
-        },
-        {
-          "labelEn": "Other types",
-          "labelAr": "أنواع أخرى",
-          "value": 262
-        }
-      ]
-    },
-    {
-      "id": "hospitals",
-      "type": "bar",
-      "unit": "count",
-      "titleEn": "Hospitals by network",
-      "titleAr": "المستشفيات حسب الجهة",
-      "noteEn": "The 916 hospital-labelled records, out of 4,563 facilities in total.",
-      "noteAr": "سجلات المستشفيات الـ٩١٦ من إجمالي ٤٬٥٦٣ منشأة.",
-      "items": [
-        {
-          "labelEn": "Private hospitals",
-          "labelAr": "المستشفيات الخاصة",
-          "value": 468
-        },
-        {
-          "labelEn": "MOH hospitals",
-          "labelAr": "مستشفيات وزارة الصحة",
-          "value": 335
-        },
-        {
-          "labelEn": "Military hospitals",
-          "labelAr": "المستشفيات العسكرية",
-          "value": 53
-        },
-        {
-          "labelEn": "Seasonal hospitals",
-          "labelAr": "مستشفيات موسمية",
-          "value": 39
-        },
-        {
-          "labelEn": "University hospitals",
-          "labelAr": "المستشفيات الجامعية",
-          "value": 16
-        },
-        {
-          "labelEn": "Specialised hospitals",
-          "labelAr": "المستشفيات التخصصية",
-          "value": 5
-        }
-      ]
-    },
-    {
       "id": "directorates",
       "type": "bar",
       "unit": "count",
@@ -278,7 +181,8 @@ DATASET_DETAILS["healthcare"] = {
           "labelAr": "القريات",
           "value": 33
         }
-      ]
+      ],
+      "group": "coverage"
     },
     {
       "id": "cities",
@@ -320,7 +224,7 @@ DATASET_DETAILS["healthcare"] = {
           "value": 140
         },
         {
-          "labelEn": "الهفوف",
+          "labelEn": "Al-Hofuf",
           "labelAr": "الهفوف",
           "value": 94
         },
@@ -339,42 +243,8 @@ DATASET_DETAILS["healthcare"] = {
           "labelAr": "الاحساء",
           "value": 77
         }
-      ]
-    },
-    {
-      "id": "lines",
-      "type": "split",
-      "unit": "count",
-      "titleEn": "Phone line type",
-      "titleAr": "نوع خط الهاتف",
-      "noteEn": "Of the facilities that carry a number at all.",
-      "noteAr": "من المنشآت التي تحمل رقماً أصلاً.",
-      "items": [
-        {
-          "labelEn": "Landline",
-          "labelAr": "أرضي",
-          "value": 2852,
-          "share": 62.5
-        },
-        {
-          "labelEn": "Not specified",
-          "labelAr": "غير محدد",
-          "value": 1173,
-          "share": 25.7
-        },
-        {
-          "labelEn": "Mobile",
-          "labelAr": "موبايل",
-          "value": 454,
-          "share": 9.9
-        },
-        {
-          "labelEn": "Unified / toll-free",
-          "labelAr": "رقم موحد / مجاني",
-          "value": 84,
-          "share": 1.8
-        }
-      ]
+      ],
+      "group": "coverage"
     },
     {
       "id": "coverage",
@@ -409,7 +279,143 @@ DATASET_DETAILS["healthcare"] = {
           "value": 26.7,
           "count": 1217
         }
-      ]
+      ],
+      "group": "usability"
+    },
+    {
+      "id": "types",
+      "type": "bar",
+      "unit": "count",
+      "titleEn": "Facilities by type",
+      "titleAr": "المنشآت حسب النوع",
+      "noteEn": "The 8 largest of 18 facility types; the remaining 10 are summed as Other.",
+      "noteAr": "أكبر ٨ أنواع من ١٨ نوعاً في الملف، والباقي (10) مجموع تحت «أنواع أخرى».",
+      "items": [
+        {
+          "labelEn": "Primary health centres",
+          "labelAr": "مراكز صحية أولية",
+          "value": 2453
+        },
+        {
+          "labelEn": "Private hospitals",
+          "labelAr": "المستشفيات الخاصة",
+          "value": 468
+        },
+        {
+          "labelEn": "Government specialised centres",
+          "labelAr": "مراكز تخصصية حكومية",
+          "value": 371
+        },
+        {
+          "labelEn": "MOH hospitals",
+          "labelAr": "مستشفيات وزارة الصحة",
+          "value": 335
+        },
+        {
+          "labelEn": "General medical complexes",
+          "labelAr": "مجمع طبي عام",
+          "value": 310
+        },
+        {
+          "labelEn": "Private dispensaries",
+          "labelAr": "مستوصفات خاصة",
+          "value": 170
+        },
+        {
+          "labelEn": "Government non-MOH facilities",
+          "labelAr": "منشآت صحية حكومية غير تابعة لوزارة الصحة",
+          "value": 102
+        },
+        {
+          "labelEn": "Private laboratories",
+          "labelAr": "مختبرات خاصة",
+          "value": 92
+        },
+        {
+          "labelEn": "Other types",
+          "labelAr": "أنواع أخرى",
+          "value": 262
+        }
+      ],
+      "group": "composition"
+    },
+    {
+      "id": "hospitals",
+      "type": "bar",
+      "unit": "count",
+      "titleEn": "Hospitals by network",
+      "titleAr": "المستشفيات حسب الجهة",
+      "noteEn": "The 916 hospital-labelled records, out of 4,563 facilities in total.",
+      "noteAr": "سجلات المستشفيات الـ٩١٦ من إجمالي ٤٬٥٦٣ منشأة.",
+      "items": [
+        {
+          "labelEn": "Private hospitals",
+          "labelAr": "المستشفيات الخاصة",
+          "value": 468
+        },
+        {
+          "labelEn": "MOH hospitals",
+          "labelAr": "مستشفيات وزارة الصحة",
+          "value": 335
+        },
+        {
+          "labelEn": "Military hospitals",
+          "labelAr": "المستشفيات العسكرية",
+          "value": 53
+        },
+        {
+          "labelEn": "Seasonal hospitals",
+          "labelAr": "مستشفيات موسمية",
+          "value": 39
+        },
+        {
+          "labelEn": "University hospitals",
+          "labelAr": "المستشفيات الجامعية",
+          "value": 16
+        },
+        {
+          "labelEn": "Specialised hospitals",
+          "labelAr": "المستشفيات التخصصية",
+          "value": 5
+        }
+      ],
+      "group": "composition"
+    },
+    {
+      "id": "lines",
+      "type": "split",
+      "unit": "count",
+      "titleEn": "Phone line type",
+      "titleAr": "نوع خط الهاتف",
+      "noteEn": "Of the facilities that carry a number at all.",
+      "noteAr": "من المنشآت التي تحمل رقماً أصلاً.",
+      "items": [
+        {
+          "labelEn": "Landline",
+          "labelAr": "أرضي",
+          "value": 2852,
+          "share": 62.5
+        },
+        {
+          "labelEn": "Not specified",
+          "labelAr": "غير محدد",
+          "value": 1173,
+          "share": 25.7
+        },
+        {
+          "labelEn": "Mobile",
+          "labelAr": "موبايل",
+          "value": 454,
+          "share": 9.9
+        },
+        {
+          "labelEn": "Unified / toll-free",
+          "labelAr": "رقم موحد / مجاني",
+          "value": 84,
+          "share": 1.8
+        }
+      ],
+      "group": "composition"
     }
   ]
 };

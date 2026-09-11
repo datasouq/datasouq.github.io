@@ -41,6 +41,22 @@
     return t.digits(text + "%");
   }
 
+  /* A note is prose with numbers in it, so it cannot go through digits()
+     whole: that maps every "." to the Arabic decimal separator, and a note's
+     last character is a full stop — "مسجّل." would come out "مسجّل٫". Only
+     number tokens are converted, separators included, and the punctuation
+     around them is left where it is.
+
+     Notes are generated with Western digits by
+     tools/build_dataset_details.py, the same way every other value on the
+     site is stored once in Western numerals and converted at render time.
+     Arabic-Indic digits already in a note are untouched: \d is ASCII-only. */
+  function numbersIn(text, t) {
+    return String(text).replace(/\d+(?:[,٬]\d+)*(?:\.\d+)?%?/g, (token) =>
+      t.digits(token)
+    );
+  }
+
   function escapeHtml(value) {
     return String(value)
       .replace(/&/g, "&amp;")
@@ -178,9 +194,14 @@
         .join("");
 
       const summary = lang === "ar" ? chart.titleAr : chart.titleEn;
+      /* Drawing and legend side by side once there is width for it: the card
+         spans both columns, and a centred drawing with empty flanks wastes
+         the span it was given. They stack again on a narrow screen. */
       return `
-        <svg class="map" viewBox="${geo.viewBox}" role="img" aria-label="${escapeHtml(summary)}">${paths}</svg>
-        <ul class="map__legend" role="list">${legend}</ul>`;
+        <div class="map__wrap">
+          <svg class="map" viewBox="${geo.viewBox}" role="img" aria-label="${escapeHtml(summary)}">${paths}</svg>
+          <ul class="map__legend" role="list">${legend}</ul>
+        </div>`;
     };
 
     const renderSplit = (chart) => {
@@ -215,8 +236,8 @@
       return `<div class="split">${bar}</div><ul class="split__key" role="list">${key}</ul>`;
     };
 
-    host.innerHTML = details.charts
-      .map((chart) => {
+    /* One card's markup. The grouping below decides where it lands. */
+    const renderChart = (chart) => {
         const coverage = chart.type === "coverage";
         /* Counts scale to the biggest bar in their own chart; shares always
            scale to 100, so a 27% bar reads as 27% of the row and not as
@@ -249,7 +270,8 @@
           })
           .join("");
 
-        const note = lang === "ar" ? chart.noteAr : chart.noteEn;
+        const raw = lang === "ar" ? chart.noteAr : chart.noteEn;
+        const note = raw ? numbersIn(raw, t) : raw;
         const body =
           chart.type === "split"
             ? renderSplit(chart)
@@ -267,7 +289,38 @@
           </figcaption>
           ${body}
         </figure>`;
-      })
+    };
+
+    /* Charts are grouped, and the groups are ordered, because seven cards in
+       one flow have no hierarchy and nothing to separate them.
+
+       Carbon's dashboard guidance is the source: "Place the most important at
+       the top of the page and follow the F-pattern for the remaining
+       elements, finishing with the least important information", and white
+       space that "either sets elements apart or brings them together to
+       distinguish a point's priority". The group and its rank come from the
+       payload — tools/build_dataset_details.py decides them, so the ordering
+       lives with the data rather than here.
+
+       A group whose charts are all missing renders nothing rather than an
+       empty heading: the healthcare dataset has no map, and a dataset added
+       later may have no usability charts at all. */
+    const groups = [];
+    details.charts.forEach((chart) => {
+      const key = chart.group || "composition";
+      let group = groups.find((entry) => entry.key === key);
+      if (!group) groups.push((group = { key: key, charts: [] }));
+      group.charts.push(chart);
+    });
+
+    host.innerHTML = groups
+      .map(
+        (group) => `
+        <section class="chartgroup">
+          <h3 class="chartgroup__title">${escapeHtml(t.chartGroups[group.key] || group.key)}</h3>
+          <div class="charts">${group.charts.map(renderChart).join("")}</div>
+        </section>`
+      )
       .join("");
   }
 

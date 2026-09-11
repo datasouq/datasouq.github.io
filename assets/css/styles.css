@@ -1995,6 +1995,81 @@ main:focus, main:focus-visible { outline: none; }
   .charts { column-count: 2; }
 }
 
+/* Groups, because seven cards in one flow have no hierarchy and nothing to
+   separate them.
+
+   Carbon's dashboard page is the source for both halves of this. On order:
+   "Place the most important at the top of the page and follow the F-pattern
+   for the remaining elements, finishing with the least important
+   information." On the space between them: white space "either sets elements
+   apart or brings them together to distinguish a point's priority" — so the
+   gap between two groups is deliberately larger than the 12px between two
+   cards, and that difference is the whole mechanism. Cards that touch belong
+   together; groups that stand apart do not.
+
+   Which charts land in which group is decided in
+   tools/build_dataset_details.py, not here: it is a judgement about the data,
+   and it belongs with the data. */
+.chartgroup + .chartgroup { margin-top: 40px; }
+
+/* A quiet label. It names the group without competing with the section's own
+   h2 above it — same size and tone as the eyebrow that heads each section,
+   which is the established way this page labels a band of content. */
+.chartgroup__title {
+  font-size: var(--text-xs);
+  line-height: var(--lh-xs);
+  font-weight: 500;
+  color: var(--muted-foreground);
+  margin: 0 0 12px;
+}
+
+/* The map spans both columns. It is the one chart whose subject is a shape
+   rather than a list, so area is what it converts into legibility — and
+   Carbon puts the same idea the other way round: "the most important data
+   should have the highest contrast and occupy the largest area".
+
+   The drawing is capped and centred inside that span rather than filling it.
+   Left to take the full width it came out 880px tall, which is not hierarchy
+   but a map eating the page — and the shape is legible long before that. The
+   span buys the card its own row; the cap keeps the row a sensible height. */
+@media (min-width: 900px) {
+  .chart--map { column-span: all; }
+
+  /* Drawing and legend side by side. Stacked, the legend sat under a centred
+     drawing with the span's width empty on both flanks — the card had asked
+     for the full row and then used a third of it. Beside the drawing the
+     legend reads as part of the same figure and the flanks shrink.
+
+     Carbon's consistency rule ("legends in the same position relative to the
+     charting area") stays satisfied: this is the page's only legend. The
+     split's swatch list is a key, not a legend — it carries label, share and
+     count, so it is a readout of the bar above it. Rule 6.3 keeps the two
+     apart, and rule 7.7 records the position.
+
+     The pair is capped and centred rather than stretched. The drawing's
+     height follows its width, and left to fill the row it came out 880px
+     tall — not hierarchy but a map eating the page. 780px puts the drawing
+     near the 560px that reads well and gives the legend its column. */
+  .chart--map .map__wrap {
+    display: flex;
+    align-items: center;
+    gap: 32px;
+    max-width: 780px;
+    margin-inline: auto;
+  }
+  .chart--map .map {
+    flex: 1 1 auto;
+    min-width: 0;
+    margin-bottom: 0;
+  }
+  /* One key per line, low band at the top, so the column reads as a scale. */
+  .chart--map .map__legend {
+    flex: 0 0 auto;
+    flex-direction: column;
+    gap: 10px;
+  }
+}
+
 /* The 12px below each card is the gap between cards stacked in a column, and
    it matches .charts' own column-gap and the 12px .cards uses between the
    catalogue's cards — one rhythm for every card grid on the site.

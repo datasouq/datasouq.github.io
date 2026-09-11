@@ -141,6 +141,7 @@ AR_EN = {
     "خليص": "Khulais",
     "الجموم": "Al-Jumum",
     "مكة": "Makkah",
+    "الهفوف": "Al-Hofuf",
     "المدينة": "Madinah",
     "الطايف": "Taif",
     # Classification grades
@@ -209,6 +210,66 @@ def rows_of(ws, key_column):
         if row is None or row[index[key_column]] in (None, ""):
             continue
         yield {name: row[position] for name, position in index.items()}
+
+
+# ---------------------------------------------------------------------------
+# Which group each chart belongs to, and the order inside it.
+#
+# Carbon's dashboard guidance asks for a strong hierarchy — "Place the most
+# important at the top of the page and follow the F-pattern for the remaining
+# elements, finishing with the least important information" — and for white
+# space that "either sets elements apart or brings them together". Seven cards
+# in one undifferentiated flow does neither, so the charts are grouped and the
+# groups are ordered by the question a buyer asks first:
+#
+#   1. coverage     Is this my market? Geography decides whether the rest
+#                   matters at all, so it leads.
+#   2. usability    Can I act on it? Contact reach and completeness are what
+#                   make the file worth money rather than worth reading.
+#   3. composition  What is the mix? Real, and the last thing that changes a
+#                   buying decision.
+#
+# A chart id missing from this table falls to the end of "composition" rather
+# than vanishing — a new chart shows up in the wrong group, which is visible,
+# instead of not showing up at all.
+GROUP_ORDER = ["coverage", "usability", "composition"]
+
+# chart id -> (group, rank within the group). The rank is the F-pattern
+# applied inside a group: the map leads its own because it is the one chart
+# given the full width, and "the most important data should occupy the
+# largest area". Contact reach leads usability for the same reason it is on
+# the card: 99.5% carrying an email is the sentence that sells the file.
+CHART_GROUPS = {
+    "map": ("coverage", 0),
+    "regions": ("coverage", 1),
+    "directorates": ("coverage", 1),
+    "cities": ("coverage", 2),
+    "coverage": ("usability", 0),
+    "quality": ("usability", 1),
+    "classification": ("composition", 0),
+    "types": ("composition", 1),
+    "hospitals": ("composition", 2),
+    "membership": ("composition", 3),
+    "lines": ("composition", 4),
+}
+
+
+def grouped(charts):
+    """Stamp each chart with its group and order the list by group, then rank.
+
+    A chart id missing from the table lands at the end of "composition"
+    rather than vanishing — a new chart in the wrong group is visible, a
+    missing one is not.
+    """
+    for chart in charts:
+        group, _ = CHART_GROUPS.get(chart["id"], ("composition", 99))
+        chart["group"] = group
+
+    def key(chart):
+        group, rank = CHART_GROUPS.get(chart["id"], ("composition", 99))
+        return (GROUP_ORDER.index(group), rank)
+
+    return sorted(charts, key=key)
 
 
 def bar(chart_id, title_en, title_ar, pairs, note_en=None, note_ar=None, limit=None):
@@ -287,12 +348,18 @@ def region_map(chart_id, title_en, title_ar, triples, note_en=None, note_ar=None
         if iso:
             shaded.append({"iso": iso, "labelEn": label_en, "labelAr": label_ar, "value": value})
         else:
-            unmatched.append((label_en, value))
+            unmatched.append((label_en, label_ar, value))
 
     if unmatched:
-        missing_en = ", ".join("%s (%s)" % (name, format(value, ",")) for name, value in unmatched)
+        # Both labels are carried through. Built from label_en alone, the
+        # Arabic note read "خارج الخريطة: Not recorded" — an English string
+        # inside an Arabic sentence, on the one note every map carries.
+        missing_en = ", ".join(
+            "%s (%s)" % (name, format(value, ",")) for name, _, value in unmatched)
+        missing_ar = ", ".join(
+            "%s (%s)" % (name, format(value, ",")) for _, name, value in unmatched)
         tail_en = "Not on the map: %s." % missing_en
-        tail_ar = "خارج الخريطة: %s." % missing_en
+        tail_ar = "خارج الخريطة: %s." % missing_ar
         note_en = (note_en + " " + tail_en) if note_en else tail_en
         note_ar = (note_ar + " " + tail_ar) if note_ar else tail_ar
 
@@ -610,7 +677,7 @@ def build_contractors(source):
     ]
 
     book.close()
-    return {"total": total, "dictionary": dictionary, "charts": charts}
+    return {"total": total, "dictionary": dictionary, "charts": grouped(charts)}
 
 
 def build_engineering(source):
@@ -688,7 +755,7 @@ def build_engineering(source):
     ]
 
     book.close()
-    return {"total": total, "consulting": consulting, "dictionary": dictionary, "charts": charts}
+    return {"total": total, "consulting": consulting, "dictionary": dictionary, "charts": grouped(charts)}
 
 
 # The healthcare workbook ships no Data_Dictionary sheet — it is a single
@@ -795,7 +862,7 @@ def build_healthcare(source):
     ]
 
     book.close()
-    return {"total": total, "dictionary": dictionary, "charts": charts}
+    return {"total": total, "dictionary": dictionary, "charts": grouped(charts)}
 
 
 BUILDERS = {
@@ -876,6 +943,23 @@ def write(dataset_id, payload):
     return path
 
 
+def untranslated(payload):
+    """English labels that are still Arabic — a value AR_EN has no entry for.
+
+    The fallback is deliberate: a missing translation shows the Arabic rather
+    than a blank or a crash. But "visibly wrong" only helps if somebody looks
+    at that exact bar, and Al-Hofuf sat in the healthcare city chart unnoticed
+    until the layout work put eyes on it. The build now says so itself."""
+    found = []
+    for chart in payload["charts"]:
+        for item in chart.get("items", []):
+            label = item.get("labelEn", "")
+            if any("\u0600" <= character <= "\u06ff"
+                   for character in label):
+                found.append((chart["id"], label))
+    return found
+
+
 def main():
     source = sys.argv[1] if len(sys.argv) > 1 else DEFAULT_SOURCE
     if not os.path.isdir(source):
@@ -883,8 +967,10 @@ def main():
     if not os.path.isdir(OUT_DIR):
         os.makedirs(OUT_DIR)
 
+    gaps = []
     for dataset_id, builder in BUILDERS.items():
         payload = builder(source)
+        gaps.extend((dataset_id,) + entry for entry in untranslated(payload))
         path = write(dataset_id, payload)
         print(
             "%-12s %6d records  %2d dictionary fields  %d charts  ->  %s"
@@ -909,6 +995,13 @@ def main():
     ids = catalogue_ids()
     sitemap = write_sitemap(ids, datetime.date.today().isoformat())
     print("sitemap      %d dataset pages + the landing page  ->  %s" % (len(ids), os.path.relpath(sitemap)))
+
+    if gaps:
+        print("\nNOTE: %d label(s) have no English in AR_EN and fell back to"
+              " the Arabic:" % len(gaps))
+        for dataset_id, chart_id, label in gaps:
+            print("      %-12s %-14s %s" % (dataset_id, chart_id, label))
+        print("      Add them to AR_EN above and re-run.")
 
     missing = [dataset_id for dataset_id in ids if dataset_id not in BUILDERS]
     if missing:

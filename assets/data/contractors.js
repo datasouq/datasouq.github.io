@@ -169,87 +169,6 @@ DATASET_DETAILS["contractors"] = {
   ],
   "charts": [
     {
-      "id": "regions",
-      "type": "bar",
-      "unit": "count",
-      "titleEn": "Records by region",
-      "titleAr": "السجلات حسب المنطقة",
-      "noteEn": "All 13 administrative regions are represented; 1,649 records carry no region.",
-      "noteAr": "كل المناطق الإدارية الـ13 ممثَّلة، و1,649 سجل بلا منطقة مسجَّلة.",
-      "items": [
-        {
-          "labelEn": "Riyadh",
-          "labelAr": "الرياض",
-          "value": 6269
-        },
-        {
-          "labelEn": "Makkah",
-          "labelAr": "مكة المكرمة",
-          "value": 3780
-        },
-        {
-          "labelEn": "Eastern Province",
-          "labelAr": "الشرقية",
-          "value": 2552
-        },
-        {
-          "labelEn": "Madinah",
-          "labelAr": "المدينة المنورة",
-          "value": 729
-        },
-        {
-          "labelEn": "Qassim",
-          "labelAr": "القصيم",
-          "value": 525
-        },
-        {
-          "labelEn": "Asir",
-          "labelAr": "عسير",
-          "value": 505
-        },
-        {
-          "labelEn": "Jizan",
-          "labelAr": "جازان",
-          "value": 323
-        },
-        {
-          "labelEn": "Tabuk",
-          "labelAr": "تبوك",
-          "value": 277
-        },
-        {
-          "labelEn": "Hail",
-          "labelAr": "حائل",
-          "value": 178
-        },
-        {
-          "labelEn": "Najran",
-          "labelAr": "نجران",
-          "value": 154
-        },
-        {
-          "labelEn": "Jawf",
-          "labelAr": "الجوف",
-          "value": 151
-        },
-        {
-          "labelEn": "Northern Borders",
-          "labelAr": "الحدود الشمالية",
-          "value": 113
-        },
-        {
-          "labelEn": "Bahah",
-          "labelAr": "الباحة",
-          "value": 99
-        },
-        {
-          "labelEn": "Not recorded",
-          "labelAr": "غير مسجَّل",
-          "value": 1649
-        }
-      ]
-    },
-    {
       "id": "map",
       "type": "map",
       "unit": "count",
@@ -257,7 +176,7 @@ DATASET_DETAILS["contractors"] = {
       "titleEn": "Where the records are",
       "titleAr": "أين تتركّز السجلات",
       "noteEn": "The same counts as the chart beside it, on the map. Shading is by quantile, so each band holds a similar number of regions rather than an equal slice of the range — otherwise Riyadh alone would set the scale and twelve regions would share one shade. Not on the map: Not recorded (1,649).",
-      "noteAr": "نفس أرقام الرسم المجاور، على الخريطة. التظليل بالشرائح المتساوية العدد لا المتساوية المدى — وإلا لانفردت الرياض بالمقياس وتشارك اثنتا عشرة منطقة لوناً واحداً. خارج الخريطة: Not recorded (1,649).",
+      "noteAr": "نفس أرقام الرسم المجاور، على الخريطة. التظليل بالشرائح المتساوية العدد لا المتساوية المدى — وإلا لانفردت الرياض بالمقياس وتشارك اثنتا عشرة منطقة لوناً واحداً. خارج الخريطة: غير مسجَّل (1,649).",
       "items": [
         {
           "iso": "SA-01",
@@ -337,54 +256,90 @@ DATASET_DETAILS["contractors"] = {
           "labelAr": "الباحة",
           "value": 99
         }
-      ]
+      ],
+      "group": "coverage"
     },
     {
-      "id": "classification",
-      "type": "ordinal",
+      "id": "regions",
+      "type": "bar",
       "unit": "count",
-      "titleEn": "Classification grades",
-      "titleAr": "درجات التصنيف",
-      "noteEn": "Unclassified is a value in the source register, not a gap in the data. Charted here are the 5,398 records on the scale, 31% of the file; 11,905 unclassified, 1 not recorded sit outside it.",
-      "noteAr": "«غير مصنّف» قيمة في السجل المصدر، وليست نقصاً في البيانات. المرسوم هنا هو 5,398 سجل على السلّم، أي 31% من الملف؛ وخارجه 11,905 غير مصنف و1 غير مسجَّل.",
+      "titleEn": "Records by region",
+      "titleAr": "السجلات حسب المنطقة",
+      "noteEn": "All 13 administrative regions are represented; 1,649 records carry no region.",
+      "noteAr": "كل المناطق الإدارية الـ13 ممثَّلة، و1,649 سجل بلا منطقة مسجَّلة.",
       "items": [
         {
-          "labelEn": "First Classified",
-          "labelAr": "مصنف درجة أولى",
-          "value": 1197,
-          "step": 0
+          "labelEn": "Riyadh",
+          "labelAr": "الرياض",
+          "value": 6269
         },
         {
-          "labelEn": "Second Classified",
-          "labelAr": "مصنف درجة ثانية",
-          "value": 764,
-          "step": 1
+          "labelEn": "Makkah",
+          "labelAr": "مكة المكرمة",
+          "value": 3780
         },
         {
-          "labelEn": "Third Classified",
-          "labelAr": "مصنف درجة ثالثة",
-          "value": 535,
-          "step": 2
+          "labelEn": "Eastern Province",
+          "labelAr": "الشرقية",
+          "value": 2552
         },
         {
-          "labelEn": "Fourth Classified",
-          "labelAr": "مصنف درجة رابعة",
-          "value": 323,
-          "step": 3
+          "labelEn": "Madinah",
+          "labelAr": "المدينة المنورة",
+          "value": 729
         },
         {
-          "labelEn": "Fifth Classified",
-          "labelAr": "مصنف درجة خامسة",
-          "value": 445,
-          "step": 4
+          "labelEn": "Qassim",
+          "labelAr": "القصيم",
+          "value": 525
         },
         {
-          "labelEn": "Sixth Classified",
-          "labelAr": "مصنف درجة سادسة",
-          "value": 2134,
-          "step": 5
+          "labelEn": "Asir",
+          "labelAr": "عسير",
+          "value": 505
+        },
+        {
+          "labelEn": "Jizan",
+          "labelAr": "جازان",
+          "value": 323
+        },
+        {
+          "labelEn": "Tabuk",
+          "labelAr": "تبوك",
+          "value": 277
+        },
+        {
+          "labelEn": "Hail",
+          "labelAr": "حائل",
+          "value": 178
+        },
+        {
+          "labelEn": "Najran",
+          "labelAr": "نجران",
+          "value": 154
+        },
+        {
+          "labelEn": "Jawf",
+          "labelAr": "الجوف",
+          "value": 151
+        },
+        {
+          "labelEn": "Northern Borders",
+          "labelAr": "الحدود الشمالية",
+          "value": 113
+        },
+        {
+          "labelEn": "Bahah",
+          "labelAr": "الباحة",
+          "value": 99
+        },
+        {
+          "labelEn": "Not recorded",
+          "labelAr": "غير مسجَّل",
+          "value": 1649
         }
-      ]
+      ],
+      "group": "coverage"
     },
     {
       "id": "cities",
@@ -445,77 +400,8 @@ DATASET_DETAILS["contractors"] = {
           "labelAr": "الجبيل",
           "value": 218
         }
-      ]
-    },
-    {
-      "id": "membership",
-      "type": "split",
-      "unit": "count",
-      "titleEn": "Membership type",
-      "titleAr": "نوع العضوية",
-      "noteEn": "One class holds almost the whole file, so the split is the finding rather than four bars of wildly different length.",
-      "noteAr": "فئة واحدة تستحوذ على معظم الملف، فالنسبة نفسها هي المعلومة، لا أربعة أعمدة متفاوتة.",
-      "items": [
-        {
-          "labelEn": "Saudi Contractor",
-          "labelAr": "مقاول سعودي",
-          "value": 15581,
-          "share": 90.0
-        },
-        {
-          "labelEn": "Non-Saudi Contractor",
-          "labelAr": "مقاول غير سعودي",
-          "value": 1624,
-          "share": 9.4
-        },
-        {
-          "labelEn": "Affiliate-Organization",
-          "labelAr": "مهتم - منشأة",
-          "value": 18,
-          "share": 0.1
-        },
-        {
-          "labelEn": "Not recorded",
-          "labelAr": "غير مسجَّل",
-          "value": 81,
-          "share": 0.5
-        }
-      ]
-    },
-    {
-      "id": "quality",
-      "type": "ordinal",
-      "unit": "count",
-      "titleEn": "Completeness tier",
-      "titleAr": "تصنيف الاكتمال",
-      "noteEn": "A is 80-100 complete, D is under 40.",
-      "noteAr": "A من ٨٠ إلى ١٠٠، وD أقل من ٤٠.",
-      "items": [
-        {
-          "labelEn": "A",
-          "labelAr": "A",
-          "value": 2378,
-          "step": 0
-        },
-        {
-          "labelEn": "B",
-          "labelAr": "B",
-          "value": 4982,
-          "step": 1
-        },
-        {
-          "labelEn": "C",
-          "labelAr": "C",
-          "value": 8730,
-          "step": 2
-        },
-        {
-          "labelEn": "D",
-          "labelAr": "D",
-          "value": 1214,
-          "step": 3
-        }
-      ]
+      ],
+      "group": "coverage"
     },
     {
       "id": "coverage",
@@ -550,7 +436,128 @@ DATASET_DETAILS["contractors"] = {
           "value": 7.2,
           "count": 1244
         }
-      ]
+      ],
+      "group": "usability"
+    },
+    {
+      "id": "quality",
+      "type": "ordinal",
+      "unit": "count",
+      "titleEn": "Completeness tier",
+      "titleAr": "تصنيف الاكتمال",
+      "noteEn": "A is 80-100 complete, D is under 40.",
+      "noteAr": "A من ٨٠ إلى ١٠٠، وD أقل من ٤٠.",
+      "items": [
+        {
+          "labelEn": "A",
+          "labelAr": "A",
+          "value": 2378,
+          "step": 0
+        },
+        {
+          "labelEn": "B",
+          "labelAr": "B",
+          "value": 4982,
+          "step": 1
+        },
+        {
+          "labelEn": "C",
+          "labelAr": "C",
+          "value": 8730,
+          "step": 2
+        },
+        {
+          "labelEn": "D",
+          "labelAr": "D",
+          "value": 1214,
+          "step": 3
+        }
+      ],
+      "group": "usability"
+    },
+    {
+      "id": "classification",
+      "type": "ordinal",
+      "unit": "count",
+      "titleEn": "Classification grades",
+      "titleAr": "درجات التصنيف",
+      "noteEn": "Unclassified is a value in the source register, not a gap in the data. Charted here are the 5,398 records on the scale, 31% of the file; 11,905 unclassified, 1 not recorded sit outside it.",
+      "noteAr": "«غير مصنّف» قيمة في السجل المصدر، وليست نقصاً في البيانات. المرسوم هنا هو 5,398 سجل على السلّم، أي 31% من الملف؛ وخارجه 11,905 غير مصنف و1 غير مسجَّل.",
+      "items": [
+        {
+          "labelEn": "First Classified",
+          "labelAr": "مصنف درجة أولى",
+          "value": 1197,
+          "step": 0
+        },
+        {
+          "labelEn": "Second Classified",
+          "labelAr": "مصنف درجة ثانية",
+          "value": 764,
+          "step": 1
+        },
+        {
+          "labelEn": "Third Classified",
+          "labelAr": "مصنف درجة ثالثة",
+          "value": 535,
+          "step": 2
+        },
+        {
+          "labelEn": "Fourth Classified",
+          "labelAr": "مصنف درجة رابعة",
+          "value": 323,
+          "step": 3
+        },
+        {
+          "labelEn": "Fifth Classified",
+          "labelAr": "مصنف درجة خامسة",
+          "value": 445,
+          "step": 4
+        },
+        {
+          "labelEn": "Sixth Classified",
+          "labelAr": "مصنف درجة سادسة",
+          "value": 2134,
+          "step": 5
+        }
+      ],
+      "group": "composition"
+    },
+    {
+      "id": "membership",
+      "type": "split",
+      "unit": "count",
+      "titleEn": "Membership type",
+      "titleAr": "نوع العضوية",
+      "noteEn": "One class holds almost the whole file, so the split is the finding rather than four bars of wildly different length.",
+      "noteAr": "فئة واحدة تستحوذ على معظم الملف، فالنسبة نفسها هي المعلومة، لا أربعة أعمدة متفاوتة.",
+      "items": [
+        {
+          "labelEn": "Saudi Contractor",
+          "labelAr": "مقاول سعودي",
+          "value": 15581,
+          "share": 90.0
+        },
+        {
+          "labelEn": "Non-Saudi Contractor",
+          "labelAr": "مقاول غير سعودي",
+          "value": 1624,
+          "share": 9.4
+        },
+        {
+          "labelEn": "Affiliate-Organization",
+          "labelAr": "مهتم - منشأة",
+          "value": 18,
+          "share": 0.1
+        },
+        {
+          "labelEn": "Not recorded",
+          "labelAr": "غير مسجَّل",
+          "value": 81,
+          "share": 0.5
+        }
+      ],
+      "group": "composition"
     }
   ]
 };

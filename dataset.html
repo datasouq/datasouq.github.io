@@ -150,7 +150,10 @@
         <h2 data-i18n="chartsTitle">What the file actually holds</h2>
         <p data-i18n="chartsLead">Every figure below is counted from the delivered file, not estimated.</p>
       </div>
-      <div id="detail-charts" class="charts"></div>
+      <!-- No .charts here: each group renders its own column container, and
+           a .charts on the outside would put the GROUPS into two columns
+           rather than the cards inside them. -->
+      <div id="detail-charts"></div>
     </div>
   </section>
 

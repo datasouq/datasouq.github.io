@@ -72,6 +72,13 @@ const I18N = {
     /* The table's two column captions. aria-hidden on the header row: it
        labels the layout for a sighted reader, and a screen reader already
        gets the name and its description read in order. */
+    /* The three groups the charts are sorted into, in the order a buyer asks
+       them: is this my market, can I act on it, what is the mix. */
+    chartGroups: {
+      coverage: "Coverage",
+      usability: "Usability",
+      composition: "What's in it",
+    },
     dictColField: "Field",
     dictColMeaning: "What it holds, and the values it takes",
     detailCtaTitle: "Want this file?",
@@ -179,6 +186,11 @@ const I18N = {
     dictLead:
       "قائمة الأعمدة كاملة كما تُسلَّم في الملف، مع ما يحتويه كل عمود والقيم التي يأخذها.",
     fieldCount: (count) => count + " حقلاً",
+    chartGroups: {
+      coverage: "التغطية",
+      usability: "جاهزية الاستخدام",
+      composition: "المكوّنات",
+    },
     dictColField: "الحقل",
     dictColMeaning: "ما يحتويه، والقيم التي يأخذها",
     detailCtaTitle: "تريد هذا الملف؟",
