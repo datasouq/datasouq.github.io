@@ -2,11 +2,16 @@
    DataSouq — configuration, translations and page logic
    الإعدادات والترجمة ومنطق الصفحة
 
-   الصفحة بتعرض قاعدة بيانات واحدة، ومؤشراتها مقيسة من الملف نفسه.
+   الصفحة بتعرض قواعد بيانات، ومؤشرات كل واحدة مقيسة من ملفها نفسه.
    السعر وقائمة الحقول الكاملة مش معروضين — بيتحددوا في المحادثة.
-   One dataset is listed. Its metrics are measured from the file itself; the
-   price and the full field list are not stated anywhere on the page, and the
-   WhatsApp message asks for them instead.
+   The datasets themselves — titles, copy, metrics, icons, SEO fields — live
+   in assets/js/datasets.js, not in this file. This file only renders them:
+   the catalogue cards, the footer's dataset links, the JSON-LD Dataset
+   entries and each card's WhatsApp link are all built from that array, so
+   adding a dataset never touches the code below. Each one's metrics are
+   measured from its own file; the price and the full field list are not
+   stated anywhere on the page, and the WhatsApp message asks for them
+   instead.
    ========================================================================== */
 
 const CONFIG = {
@@ -49,43 +54,11 @@ const I18N = {
        of the one dataset listed today and is stated on its card; as a heading
        for the whole catalogue it would commit every future dataset to it. */
     catalogueLead: "Structured datasets, cleaned and deduplicated before delivery.",
-    /* Named generically on purpose. The dataset is ours; it is not the register
-       of any authority, and the wording must not suggest ownership or any
-       affiliation with one. */
-    datasetTitle: "Contractors in Saudi Arabia",
-    datasetBody:
-      "<strong>A structured dataset of contractors across Saudi Arabia</strong>, cleaned and deduplicated, delivered in Arabic and English. Message us for the full field list and the price.",
+    /* Every dataset's title, body copy and metrics now live in
+       assets/js/datasets.js, one entry per card — see that file's own header
+       comment. Only the copy shared by every card (the CTA label and the
+       WhatsApp message template) stays here. */
     datasetCta: "Ask about this dataset",
-
-    /* Every figure is measured from the file, not estimated, and re-measured
-       against it before each change.
-
-       Two things are deliberately not stated. Phone numbers: the column is
-       filled on 33.21% of rows, but only 45% of those parse as a Saudi mobile
-       — 111111111, 123456789, 0 and friends make up the rest — so 14.95% of
-       records carry a number worth dialling, and a metric would flatter it.
-       Street addresses: 8.02%.
-
-       Measure against the file a buyer actually receives, never against a
-       working copy. The two have diverged before and a metric here went stale
-       without anything on the page looking wrong. Whenever the delivered file
-       changes, re-measure all five before publishing.
-
-       The fifth metric counts membership_type = "Non-Saudi Contractor":
-       1,624 rows, 9.39%. Saudi Contractor is 15,581, and 18 rows are
-       Affiliate-Organization.
-
-       The classification metric says 31%, not 7. The column does hold seven
-       distinct values, but "Unclassified" is one of them and covers 68.80% of
-       the file. "7 classification grades" was true as a count of values and
-       false as a description of the data: it reads as though every record
-       carries a grade when two in three carry none. What is real is 5,398
-       classified contractors, 31.20%, spread over six grades. */
-    m1Value: "17,304",  m1Label: "records",
-    m2Value: "302",     m2Label: "cities across 13 regions",
-    m3Value: "31%",     m3Label: "classified, across 6 grades",
-    m4Value: "99.5%",   m4Label: "carry an email",
-    m5Value: "1,624",   m5Label: "non-Saudi contractors",
 
     heroTitle: "Structured data, ready to work with",
     heroLead:
@@ -115,13 +88,17 @@ const I18N = {
       "Hello 👋\n\nI came across DataSouq and I'd like to know more about " +
       "the datasets you're preparing.\n\nCould you get in touch?",
 
-    waDatasetMessage: () =>
-      "Hello 👋\n\nI'm interested in the *Contractors in Saudi Arabia* " +
+    /* One template for every dataset card, not one function per dataset: the
+       title is the only thing that changes between them, so it is the only
+       thing passed in. Adding dataset #4 needs no new entry here. */
+    waDatasetMessage: (title) =>
+      `Hello 👋\n\nI'm interested in the *${title}* ` +
       "dataset.\n\nCould you send the full field list and the price?",
 
-    /* Footer. The two column headings and their links reuse catalogueTitle,
-       datasetTitle and whatLabel, so only "Company" is new here — a second
-       copy of "Datasets" would be a second thing to keep in step. */
+    /* Footer. The two column headings and their links reuse catalogueTitle
+       and whatLabel, so only "Company" is new here — a second copy of
+       "Datasets" would be a second thing to keep in step. The dataset links
+       themselves are rendered from assets/js/datasets.js, not listed here. */
     footerCompany: "Company",
     rights: "All rights reserved.",
     brandHome: "DataSouq — home",
@@ -169,21 +146,10 @@ const I18N = {
     catalogueLabel: "الكتالوج",
     catalogueTitle: "قواعد البيانات",
     catalogueLead: "قواعد بيانات منظّمة ومنقّحة وخالية من التكرار قبل التسليم.",
-    datasetTitle: "المقاولون في السعودية",
-    datasetBody:
-      "<strong>قاعدة بيانات منظّمة للمقاولين في المملكة</strong>، منقّحة وخالية من التكرار، تُسلَّم بالعربية والإنجليزية. تواصل معنا للحصول على قائمة الحقول كاملة والسعر.",
+    /* عناوين ونصوص وأرقام كل قاعدة بيانات صارت في assets/js/datasets.js —
+       راجع التعليق أعلى الملف. اللي فاضل هنا هو النص المشترك بين كل
+       البطاقات فقط (زر الاستفسار وقالب رسالة واتساب). */
     datasetCta: "استفسر عن هذه القاعدة",
-
-    /* Arabic-Indic digits and Arabic separators, written out rather than
-       converted at render time: these are literals, so there is nothing to
-       convert. The figures are the same ones measured from the file — 17,304 /
-       302 / 31% / 99.5% / 1,624 — and any re-measurement has to be transcribed
-       here as well as into the English block. */
-    m1Value: "١٧٬٣٠٤",   m1Label: "سجل",
-    m2Value: "٣٠٢",      m2Label: "مدينة في ١٣ منطقة",
-    m3Value: "٣١٪",      m3Label: "مصنّفون على ٦ درجات",
-    m4Value: "٩٩٫٥٪",    m4Label: "منهم ببريد إلكتروني",
-    m5Value: "١٬٦٢٤",    m5Label: "مقاول غير سعودي",
 
     heroTitle: "بيانات منظّمة، جاهزة للاستخدام",
     heroLead:
@@ -212,8 +178,11 @@ const I18N = {
       "السلام عليكم 👋\n\nاطّلعت على موقع داتا سوق وأودّ معرفة المزيد عن " +
       "قواعد البيانات المتاحة لديكم.\n\nهل يمكننا التواصل؟",
 
-    waDatasetMessage: () =>
-      "السلام عليكم 👋\n\nأنا مهتم بقاعدة بيانات *المقاولون في السعودية*.\n\n" +
+    /* قالب واحد لكل بطاقات القواعد بدل دالة منفصلة لكل واحدة: العنوان هو
+       الفرق الوحيد بينها، فهو الشيء الوحيد اللي بيتبعت هنا. إضافة قاعدة
+       رابعة مش محتاجة أي تعديل في هذا القالب. */
+    waDatasetMessage: (title) =>
+      `السلام عليكم 👋\n\nأنا مهتم بقاعدة بيانات *${title}*.\n\n` +
       "هل يمكنكم إرسال قائمة الحقول كاملة والسعر؟",
 
     footerCompany: "الشركة",
@@ -257,10 +226,102 @@ const I18N = {
     return null;
   }
 
-  function whatsappUrl(key) {
+  function whatsappUrl(message) {
     const handle = String(CONFIG.whatsappHandle).replace(/^@/, "");
-    const build = I18N[lang][key] || I18N[lang].waMessage;
-    return `https://wa.me/@${handle}?text=${encodeURIComponent(build())}`;
+    return `https://wa.me/@${handle}?text=${encodeURIComponent(message)}`;
+  }
+
+  /* One card's markup, built from its assets/js/datasets.js entry and the
+     active language. Rebuilt in full on every language switch rather than
+     patched in place — there is no per-node state worth preserving, and a
+     fresh render can never drift out of sync with a stale data-i18n node the
+     way the old hand-authored cards could. */
+  function renderDatasetCard(dataset, t) {
+    const title = lang === "ar" ? dataset.titleAr : dataset.titleEn;
+    const body = lang === "ar" ? dataset.bodyAr : dataset.bodyEn;
+    const metrics = dataset.metrics
+      .map(
+        (m) => `
+        <li>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${m.icon}</svg>
+          <span><strong>${t.digits(m.value)}</strong> <span>${lang === "ar" ? m.labelAr : m.labelEn}</span></span>
+        </li>`
+      )
+      .join("");
+
+    return `
+      <article class="card card--dataset">
+        <div class="card__head">
+          <div class="card__icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${dataset.icon}</svg>
+          </div>
+          <h3>${title}</h3>
+        </div>
+        <p class="card__body">${body}</p>
+        <ul class="metrics" role="list">${metrics}</ul>
+        <div class="card__actions">
+          <a class="btn btn--default" data-wa-dataset="${dataset.id}" href="https://wa.me/@mbi.group" target="_blank" rel="noopener noreferrer" tabindex="0">${t.datasetCta}</a>
+        </div>
+      </article>`;
+  }
+
+  /* The catalogue grid and the footer's "Datasets" links both come from the
+     same DATASETS array, so a new dataset appears in both the moment it is
+     added to assets/js/datasets.js — neither this function nor its caller
+     needs to know how many datasets there are. */
+  function renderCatalogue() {
+    const t = I18N[lang];
+
+    const grid = document.querySelector(".cards--catalogue");
+    if (grid) grid.innerHTML = DATASETS.map((d) => renderDatasetCard(d, t)).join("");
+
+    const footerLinks = $("footer-dataset-links");
+    if (footerLinks) {
+      footerLinks.innerHTML = DATASETS.map(
+        (d) =>
+          `<li><a href="#datasets" tabindex="0">${lang === "ar" ? d.titleAr : d.titleEn}</a></li>`
+      ).join("");
+    }
+  }
+
+  /* Adds one schema.org Dataset entry per assets/js/datasets.js entry to the
+     page's existing JSON-LD script (id="ld-json"), which otherwise carries
+     only Organization and WebSite. Run once at startup, not on every
+     language switch: the descriptions here are the canonical English ones
+     search engines read, not the toggled UI language. Dataset entries are
+     filtered out before re-adding so a resume/re-run never duplicates them. */
+  function renderDatasetStructuredData() {
+    const script = $("ld-json");
+    if (!script) return;
+
+    let graph;
+    try {
+      graph = JSON.parse(script.textContent);
+    } catch (e) {
+      return;
+    }
+
+    const base = "https://datasouq.github.io/";
+    graph["@graph"] = graph["@graph"]
+      .filter((node) => node["@type"] !== "Dataset")
+      .concat(
+        DATASETS.map((d) => ({
+          "@type": "Dataset",
+          "@id": base + "#" + d.seo.anchor,
+          name: d.titleEn,
+          alternateName: d.seo.alternateName,
+          description: d.seo.description,
+          inLanguage: d.seo.inLanguage,
+          isAccessibleForFree: false,
+          creator: { "@id": base + "#organization" },
+          provider: { "@id": base + "#organization" },
+          spatialCoverage: { "@type": "Place", name: d.seo.spatialCoverage },
+          encodingFormat: d.seo.encodingFormat,
+          variableMeasured: d.seo.variableMeasured,
+        }))
+      );
+
+    script.textContent = JSON.stringify(graph);
   }
 
   function applyLang(next) {
@@ -270,6 +331,8 @@ const I18N = {
     document.documentElement.lang = lang;
     document.documentElement.dir = t.dir;
     document.title = t.docTitle;
+
+    renderCatalogue();
 
     document.querySelectorAll("[data-i18n]").forEach((node) => {
       const value = t[node.dataset.i18n];
@@ -321,13 +384,20 @@ const I18N = {
 
     describeTheme();
 
-    const general = whatsappUrl("waMessage");
+    const general = whatsappUrl(t.waMessage());
     document.querySelectorAll("[data-wa]").forEach((n) => n.setAttribute("href", general));
 
-    /* The catalogue card opens WhatsApp naming the dataset and asking for the
-       three details the page deliberately does not state. */
-    const dataset = whatsappUrl("waDatasetMessage");
-    document.querySelectorAll("[data-wa-dataset]").forEach((n) => n.setAttribute("href", dataset));
+    /* Each catalogue card opens WhatsApp naming its own dataset and asking
+       for the three details the page deliberately does not state.
+       data-wa-dataset carries the dataset's id from assets/js/datasets.js,
+       so a new dataset gets a correct link the moment it is added — nothing
+       here has to change. */
+    document.querySelectorAll("[data-wa-dataset]").forEach((n) => {
+      const dataset = DATASETS.find((d) => d.id === n.dataset.waDataset);
+      if (!dataset) return;
+      const title = lang === "ar" ? dataset.titleAr : dataset.titleEn;
+      n.setAttribute("href", whatsappUrl(t.waDatasetMessage(title)));
+    });
 
     store("datasouq-lang", lang);
   }
@@ -360,6 +430,7 @@ const I18N = {
   }
 
   function init() {
+    renderDatasetStructuredData();
     applyLang(store("datasouq-lang") || CONFIG.defaultLang);
 
     /* A radiogroup is one tab stop, so the arrows move between the options and

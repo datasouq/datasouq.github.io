@@ -26,6 +26,23 @@ full field list and the price.
 منقّحة وخالية من التكرار، تُسلَّم بالعربية والإنجليزية. تواصل معنا
 للحصول على قائمة الحقول كاملة والسعر.
 
+**Engineering Offices in Saudi Arabia** — a structured dataset of
+engineering offices and consulting firms across the Kingdom, cleaned
+and deduplicated. Message us for the full field list and the price.
+
+**المكاتب الهندسية في السعودية** — قاعدة بيانات منظّمة للمكاتب
+الهندسية والشركات الاستشارية في المملكة، منقّحة وخالية من التكرار،
+تُسلَّم بالعربية. تواصل معنا للحصول على قائمة الحقول كاملة والسعر.
+
+**Healthcare Facilities in Saudi Arabia** — a structured dataset of
+healthcare facilities across the Kingdom, spanning hospitals, clinics
+and health centers, cleaned and deduplicated. Message us for the full
+field list and the price.
+
+**المنشآت الصحية في السعودية** — قاعدة بيانات منظّمة للمنشآت الصحية
+في المملكة، تشمل المستشفيات والعيادات والمراكز الصحية، منقّحة وخالية
+من التكرار. تواصل معنا للحصول على قائمة الحقول كاملة والسعر.
+
 ---
 
 ### Contact · تواصل
