@@ -182,6 +182,13 @@ DATASET_DETAILS["healthcare"] = {
           "value": 33
         }
       ],
+      "headlineEn": "Riyadh and Eastern Province together: 29.3% of the facilities.",
+      "headlineAr": "الرياض والمنطقة الشرقية معاً: 29.3% من المنشآت.",
+      "metric": {
+        "value": 100.0,
+        "labelEn": "of 4,563 facilities",
+        "labelAr": "من 4,563 منشأة"
+      },
       "group": "coverage"
     },
     {
@@ -244,6 +251,13 @@ DATASET_DETAILS["healthcare"] = {
           "value": 77
         }
       ],
+      "headlineEn": "Riyadh and Jeddah together: 16.5% of the facilities.",
+      "headlineAr": "الرياض وجدة معاً: 16.5% من المنشآت.",
+      "metric": {
+        "value": 41.1,
+        "labelEn": "of 4,563 facilities",
+        "labelAr": "من 4,563 منشأة"
+      },
       "group": "coverage"
     },
     {
@@ -280,6 +294,13 @@ DATASET_DETAILS["healthcare"] = {
           "count": 1217
         }
       ],
+      "headlineEn": "Map link on 81.8% of the facilities, fax number on only 26.7%.",
+      "headlineAr": "رابط على الخريطة في 81.8% من المنشآت، ورقم فاكس في 26.7% فقط.",
+      "metric": {
+        "value": 100.0,
+        "labelEn": "of 4,563 facilities",
+        "labelAr": "من 4,563 منشأة"
+      },
       "group": "usability"
     },
     {
@@ -337,6 +358,13 @@ DATASET_DETAILS["healthcare"] = {
           "value": 262
         }
       ],
+      "headlineEn": "Primary health centres: 53.8% of the facilities.",
+      "headlineAr": "مراكز صحية أولية: 53.8% من المنشآت.",
+      "metric": {
+        "value": 100.0,
+        "labelEn": "of 4,563 facilities",
+        "labelAr": "من 4,563 منشأة"
+      },
       "group": "composition"
     },
     {
@@ -379,6 +407,13 @@ DATASET_DETAILS["healthcare"] = {
           "value": 5
         }
       ],
+      "headlineEn": "Private hospitals and MOH hospitals together: 17.6% of the facilities.",
+      "headlineAr": "المستشفيات الخاصة ومستشفيات وزارة الصحة معاً: 17.6% من المنشآت.",
+      "metric": {
+        "value": 20.1,
+        "labelEn": "of 4,563 facilities",
+        "labelAr": "من 4,563 منشأة"
+      },
       "group": "composition"
     },
     {
@@ -415,6 +450,13 @@ DATASET_DETAILS["healthcare"] = {
           "share": 1.8
         }
       ],
+      "headlineEn": "Landline: 62.5% of the facilities.",
+      "headlineAr": "أرضي: 62.5% من المنشآت.",
+      "metric": {
+        "value": 100.0,
+        "labelEn": "of 4,563 facilities",
+        "labelAr": "من 4,563 منشأة"
+      },
       "group": "composition"
     }
   ]

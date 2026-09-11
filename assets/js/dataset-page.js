@@ -57,6 +57,28 @@
     );
   }
 
+  /* Supabase documents this as a pattern, not an afterthought: "Empty states
+     convey the fact that there is nothing to list, perform, or display on
+     the current page. Ideally, they also provide a clear action for the user
+     to take."
+
+     It is reachable by design. The whole point of the architecture is that a
+     dataset appears on the site the moment it is added to datasets.js — so
+     between that edit and the next run of the builder, a real page exists
+     with no measurements behind it. Without this it rendered two section
+     headings promising figures and a data dictionary, with nothing at all
+     underneath them. */
+  function emptyState(t) {
+    return `
+      <div class="emptystate">
+        <p class="emptystate__title">${escapeHtml(t.detailEmptyTitle)}</p>
+        <p class="emptystate__body">${escapeHtml(t.detailEmptyBody)}</p>
+        <a class="btn btn--default" data-wa-dataset="${dataset.id}"
+           href="https://wa.me/@mbi.group" target="_blank" rel="noopener noreferrer"
+           >${escapeHtml(t.detailEmptyCta)}</a>
+      </div>`;
+  }
+
   function escapeHtml(value) {
     return String(value)
       .replace(/&/g, "&amp;")
@@ -108,7 +130,11 @@
   function renderCharts(t, lang) {
     const host = $("detail-charts");
     const details = DATASET_DETAILS[dataset.id];
-    if (!host || !details) return;
+    if (!host) return;
+    if (!details) {
+      host.innerHTML = emptyState(t);
+      return;
+    }
 
     /* Segment colours come off the ordinal ramp rather than a second
        palette: the steps are already validated, they stay one hue, and the
@@ -279,12 +305,46 @@
             ? renderMap(chart)
             : `<ul class="chart__rows" role="list">${rows}</ul>`;
 
+        /* Three lines, three jobs, and no two of them say the same thing.
+
+           KICKER is the subject, so the page can still be scanned for "the
+           region chart" — a page of seven sentences cannot.
+
+           TITLE is the finding. Knaflic: a title carries the message rather
+           than naming the subject. It is generated in
+           tools/build_dataset_details.py from the same counts the bars are
+           drawn from, so it cannot drift from them the way a written-in
+           sentence would (rule 8.1).
+
+           METRIC is how much of the file the chart accounts for, which is
+           rule 2.3 printed instead of left to be checked. It is the figure
+           that differs from card to card: 100% for a chart of everything,
+           71% for the ten biggest cities, 31% for the grade ladder. Shape
+           follows Supabase's ChartMetric — a value with its label under it. */
+        const subject = lang === "ar" ? chart.titleAr : chart.titleEn;
+        const rawHeadline = lang === "ar" ? chart.headlineAr : chart.headlineEn;
+        const headline = rawHeadline ? numbersIn(rawHeadline, t) : subject;
+        const metric = chart.metric;
+
         return `
         <figure class="chart${coverage ? " chart--coverage" : ""}${
           chart.type === "map" ? " chart--map" : ""
-        }">
+        }" aria-label="${escapeHtml(subject)}">
           <figcaption class="chart__head">
-            <h3 class="chart__title">${escapeHtml(lang === "ar" ? chart.titleAr : chart.titleEn)}</h3>
+            <div class="chart__heading">
+              ${rawHeadline ? `<p class="chart__kicker">${escapeHtml(subject)}</p>` : ""}
+              <h4 class="chart__title">${escapeHtml(headline)}</h4>
+            </div>
+            ${
+              metric
+                ? `<p class="chart__metric">
+                     <span class="chart__metric-value">${percent(metric.value, t)}</span>
+                     <span class="chart__metric-label">${escapeHtml(
+                       numbersIn(lang === "ar" ? metric.labelAr : metric.labelEn, t)
+                     )}</span>
+                   </p>`
+                : ""
+            }
             ${note ? `<p class="chart__note">${escapeHtml(note)}</p>` : ""}
           </figcaption>
           ${body}
@@ -313,14 +373,30 @@
       group.charts.push(chart);
     });
 
+    /* The heading is an h3 and the cards inside are h4s. As two h3s the
+       outline said the group and the charts were siblings, so the grouping a
+       sighted reader gets from the gap and the label was simply absent for
+       anyone reading the outline. aria-labelledby gives each group a name,
+       which is what turns a <section> into a region a screen reader can jump
+       between.
+
+       The description under the title is Supabase's pattern, not a flourish:
+       "use PageSectionTitle AND PageSectionDescription to label each
+       section". Without it the label says "Coverage" and leaves the reader
+       to work out what that covers. */
     host.innerHTML = groups
-      .map(
-        (group) => `
-        <section class="chartgroup">
-          <h3 class="chartgroup__title">${escapeHtml(t.chartGroups[group.key] || group.key)}</h3>
+      .map((group) => {
+        const id = "chartgroup-" + group.key;
+        const note = t.chartGroupNotes && t.chartGroupNotes[group.key];
+        return `
+        <section class="chartgroup" aria-labelledby="${id}">
+          <h3 class="chartgroup__title" id="${id}">${escapeHtml(
+            t.chartGroups[group.key] || group.key
+          )}</h3>
+          ${note ? `<p class="chartgroup__note">${escapeHtml(note)}</p>` : ""}
           <div class="charts">${group.charts.map(renderChart).join("")}</div>
-        </section>`
-      )
+        </section>`;
+      })
       .join("");
   }
 
@@ -330,7 +406,11 @@
   function renderDictionary(t, lang) {
     const host = $("detail-dictionary");
     const details = DATASET_DETAILS[dataset.id];
-    if (!host || !details) return;
+    if (!host) return;
+    if (!details) {
+      host.innerHTML = emptyState(t);
+      return;
+    }
 
     const rows = details.dictionary
       .map((field) => {

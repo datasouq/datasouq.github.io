@@ -79,12 +79,25 @@ const I18N = {
       usability: "Usability",
       composition: "What's in it",
     },
+    /* Supabase pairs a PageSectionTitle with a PageSectionDescription, and
+       the reason shows here: "Coverage" alone leaves the reader to guess
+       what is being covered. One line, naming the question the group
+       answers. */
+    chartGroupNotes: {
+      coverage: "Where these records are, and whether the file reaches your market.",
+      usability: "Whether you can act on a record once you have it.",
+      composition: "How the file is made up — which classes, which types.",
+    },
     dictColField: "Field",
     dictColMeaning: "What it holds, and the values it takes",
     detailCtaTitle: "Want this file?",
     detailCtaBody: "Message us and we'll send a sample of the real records and the price.",
     notFoundTitle: "That dataset isn't here",
     notFoundBody: "The link may be out of date. Everything we publish is in the catalogue.",
+    detailEmptyTitle: "The figures for this file aren't published yet",
+    detailEmptyBody:
+      "Every number on these pages is measured from the delivered file, and this one hasn't been measured yet. The file itself is ready.",
+    detailEmptyCta: "Ask us for the breakdown",
 
     heroTitle: "Structured data, ready to work with",
     heroLead:
@@ -191,12 +204,21 @@ const I18N = {
       usability: "جاهزية الاستخدام",
       composition: "المكوّنات",
     },
+    chartGroupNotes: {
+      coverage: "أين تقع هذه السجلات، وهل يصل الملف إلى سوقك.",
+      usability: "هل تستطيع التصرف في السجل بعد ما تأخذه.",
+      composition: "ممّا يتكوّن الملف — أي الفئات، وأي الأنواع.",
+    },
     dictColField: "الحقل",
     dictColMeaning: "ما يحتويه، والقيم التي يأخذها",
     detailCtaTitle: "تريد هذا الملف؟",
     detailCtaBody: "تواصل معنا ونرسل لك عيّنة من السجلات الحقيقية والسعر.",
     notFoundTitle: "قاعدة البيانات هذه غير موجودة",
     notFoundBody: "قد يكون الرابط قديماً. كل ما ننشره موجود في الكتالوج.",
+    detailEmptyTitle: "أرقام هذا الملف لم تُنشر بعد",
+    detailEmptyBody:
+      "كل رقم في هذه الصفحات محسوب من الملف المُسلّم نفسه، وهذا الملف لم يُقَس بعد. الملف نفسه جاهز.",
+    detailEmptyCta: "اطلب منا التفاصيل",
 
     heroTitle: "بيانات منظّمة، جاهزة للاستخدام",
     heroLead:

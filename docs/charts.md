@@ -13,9 +13,11 @@ the keyboard: if a case is not covered here, it gets added here first.
 
 | Source | What it settles | What it does **not** |
 |---|---|---|
-| [Supabase design system](https://supabase.com/design-system/docs/ui-patterns/charts) | The look: components, tokens, spacing — the rest of this site follows it | Which chart to use. Its only line on selection is "Always try to use the default provided charts first" |
+| [Supabase design system](https://supabase.com/design-system/docs/ui-patterns/charts) · [layout](https://supabase.com/design-system/docs/ui-patterns/layout) · [empty states](https://supabase.com/design-system/docs/ui-patterns/empty-states) | The look, and the anatomy: `ChartHeader` (title + `ChartMetric`) over `ChartContent`; `showGrid` and `showYAxis` both default to `false`; a section title paired with a section description; an empty state that "provides a clear action" | Which chart to use. Its only line on selection is "Always try to use the default provided charts first" |
 | [IBM Carbon — chart types](https://carbondesignsystem.com/data-visualization/chart-types/) | The taxonomy: purpose → chart family. "Start by identifying the purpose of the visualization and then choose the appropriate chart type" | Numeric thresholds; its per-chart pages are demos, not rules |
 | [IBM Carbon — dashboards](https://carbondesignsystem.com/data-visualization/dashboards/) | The arrangement: hierarchy, reading order, white space, consistency — what goes where once the forms are chosen | Any number. It gives no sizes, no column count, no gap values |
+| [NN/g — choosing chart types](https://www.nngroup.com/articles/choosing-chart-types/) · [dashboards & preattentive attributes](https://www.nngroup.com/articles/dashboards-preattentive/) | What a reader can actually decode: "length and 2D position" first, bars "ordered in an ascending or descending pattern", horizontal bars "when you're working with long labels" | Anything about a specific design system |
+| Knaflic, **Storytelling with Data** | What a title is for: it carries the message, it does not name the subject | Form, colour, layout |
 | FT **Visual Vocabulary** | The same taxonomy at finer grain — nine data relationships, the charts under each | Marks, colour, layout |
 | Anthropic **dataviz skill** (`references/`, `scripts/validate_palette.js`) | The numbers: mark sizes, colour checks, anti-patterns — and a runnable validator | The taxonomy (it defers to the same job→form idea) |
 | Cleveland & McGill (1984) | Why the ranking is what it is: position > length > angle > area > colour | Anything specific to a design system |
@@ -56,6 +58,16 @@ are two charts. *(dataviz skill, listed first among anti-patterns)*
 **Rule 1.5 — Reach for `split` when one class holds most of the file.** As
 separate bars, 15,581 against 18 is one full bar and three hairlines, which
 answers nothing. **House**, following the part-to-whole family.
+
+*This rule has a source against it, and it stays anyway.* NN/g is blunt:
+stacked bars are "among the charts with the highest error rates", and it
+tells you to use "a series of 3 bar charts instead". The error it is talking
+about is a reader ESTIMATING a segment's size by eye, and it is worst when
+segments have to be compared across several stacked bars with different
+baselines. Neither applies here: there is one bar, not a series, so there is
+nothing to compare across baselines — and nothing is estimated, because the
+key under it prints every segment's share and its count (rule 6.3). If a
+`split` ever grows a second bar, this rule stops covering it and NN/g wins.
 
 **Rule 1.6 — Every chart must be decodable in about 30 seconds, without
 interacting with it.** These sit on a page someone is deciding whether to buy
@@ -180,6 +192,15 @@ each band a similar number of regions. Both choices are defensible and they
 say different things, so the one in use is named on the chart rather than
 left for the reader to assume. **House.**
 
+**Rule 4.5b — A ramp's end-of-scale allowance applies to whichever end is
+nearest the surface.** The band below is written "lightest ≥ 2:1" because it
+was written against a white card, where the light end is the one that runs
+out of contrast — in light theme `--chart-ramp-1` is 2.08:1 and
+`--chart-ramp-2` 2.75:1, both deliberate. In dark theme the constrained end
+is the DARKEST: `--chart-ramp-6` measures 2.66:1 against the dark card, which
+is the same allowance seen from the other side and not a defect. Read
+literally in dark mode the rule checks the wrong end of the ramp. **House.**
+
 **Rule 4.5 — Colour is validated, not eyeballed.** Every palette is run
 through `scripts/validate_palette.js` in **both** themes against the card
 surface, not the page background:
@@ -238,15 +259,18 @@ count chart it would imply a maximum that does not exist. **House.**
 
 **6.1 — The value is printed at the end of every bar.** *(dataviz skill:
 "Direct labels before gridlines; gridlines before a second axis.")* This is
-why the charts carry no axis and no gridlines at all.
+why the charts carry no axis and no gridlines at all — which is also what
+the design system itself does: `ChartBar` and `ChartLine` both default
+`showGrid: false` and `showYAxis: false`. *(Supabase)*
 
 **6.2 — A value must never be reachable only by hover.** A tooltip-only value
 is invisible to a keyboard and to a screen reader. *(dataviz skill: "A tooltip
 as the only way to read a value" is an anti-pattern)*
 
-**6.3 — A single series gets no legend;** the title names what is plotted. A
-`split` does get a key, because it has more than one segment. *(dataviz
-skill)*
+**6.3 — A single series gets no legend;** the kicker names what is plotted
+(rule 6.7). A `split` does get a **key**, because it has more than one
+segment — and a key is not a legend: it carries each segment's label, share
+and count, so it is a readout of the bar above it. *(dataviz skill)*
 
 **6.4 — Labels are never clipped.** The label column is `fit-content(38%)`:
 it takes the width the longest label needs and stops there. *(dataviz skill:
@@ -265,7 +289,43 @@ The conversion happens at render time, never in the payload: `digits()` in
 note. A note cannot go through `digits()` whole — it maps every `.` to the
 Arabic decimal separator, and a note ends in a full stop.
 
-**6.6 — An Arabic string is never built from an English one.** The map's
+**6.7 — A card carries three lines and they never say the same thing.**
+
+| Line | Job | Source |
+|---|---|---|
+| **Kicker** | the subject — "Records by region" | **House.** Knaflic writes for a slide with one chart on it; a page of seven findings and no subjects cannot be scanned |
+| **Title** (`h4`) | the finding — "Riyadh and Makkah together: 58.1% of the records" | Knaflic: a title carries the message |
+| **Metric** | how much of the file the chart covers — "31.2% of 17,304 records" | Supabase's `ChartMetric`: a value with its label, at the end of the `ChartHeader` |
+
+The title is **generated**, not written: `headline()` in
+`tools/build_dataset_details.py` builds it from the same counts the bars are
+drawn from, so it cannot drift from them (rule 8.1). Its shares are always
+of the dataset total, never of what the chart happens to plot — "the ten
+biggest cities are 46.8% of the records" is a fact a buyer can use, "46.8%
+of the ten biggest cities" is a denominator nobody asked about.
+
+The form is `subject: share`, with a colon and no verb, because a generated
+sentence has to be grammatical for every label it will ever be handed and
+the verb is where that breaks — "Primary health centres **is** 53.8%" in
+English, and in Arabic an adjective that has to agree with a gender the
+script does not know. An `ordinal` chart never names two categories: its
+bars are a ladder, so the two biggest by count come out in whatever order
+the counts fall — "Sixth Classified and First Classified" — which reads as a
+mistake even when it is true.
+
+The metric is rule 2.3 printed rather than left to be checked, and it is the
+one figure that differs from card to card: 100% for a chart of everything,
+71.1% for the ten biggest cities, 31.2% for the grade ladder.
+
+**6.8 — No line of prose runs past 80 characters.** *(WCAG 1.4.8 caps a
+block at 80; the comfortable range is 45–75.)* The note under the
+full-width map card ran **180** before this, because a full-width card gives
+its text the full width too. Capped with `max-inline-size` in `ch`
+— **58ch**, not 80ch: `ch` is the width of a "0", which is wider than the
+average letter, so 80ch measured out at 107 real characters and 58ch lands
+on 78. The number is calibrated, which is why it is written down.
+
+**6.9 — An Arabic string is never built from an English one.** The map's
 "not on the map" tail was assembled from `label_en` for both languages and
 put "Not recorded" inside an Arabic sentence. Any generated sentence carries
 both labels through from `counted()`, which already returns the pair.
@@ -314,11 +374,31 @@ The group of a chart is set in `CHART_GROUPS` in
 `tools/build_dataset_details.py`, next to the data, not in the CSS — it is a
 judgement about what the chart says.
 
+**Rule 7.4b — A group is an `h3`, its charts are `h4`s, and the section is
+named.** As two `h3`s the outline said the group and its charts were
+siblings, so the grouping a sighted reader gets from the 40px gap and the
+label was simply absent from the document outline. `aria-labelledby` on the
+`<section>` is what turns it into a region a screen reader can jump between.
+**House**, and the accessibility half of Carbon's hierarchy rule.
+
+**Rule 7.4c — A group title is followed by a group description.** *(Supabase:
+"use `PageSectionTitle` **and** `PageSectionDescription` to label each
+section")* One line, naming the question the group answers. "Coverage" on
+its own leaves the reader to work out what is being covered.
+
 **Rule 7.5 — The lead chart of the lead group gets the largest area.** The
 map spans both columns; every other card takes one. *(Carbon: "The most
 important data should have the highest contrast and occupy the largest
 area")* The span is a cap, not a stretch: a drawing left to fill the row came
 out 880px tall, which is a map eating the page rather than a hierarchy.
+
+**Rule 7.5b — A drawing's size cap belongs outside the media query that
+widened it.** The map's cap lived inside `@media (min-width: 900px)`, so
+between 768 and 899 — where the card is already full width but the
+two-column layout has not fired — nothing stopped it: 663×544 at a 768px
+viewport and 755×619 at 860px, both **taller** than the 657×539 it gets at
+1280px. A smaller screen was getting a bigger map. **House**, and a defect
+that shipped.
 
 **Rule 7.6 — White space does the grouping: 40px between groups, 12px
 between cards inside one.** No rules, no boxes around groups — the gap is
@@ -342,7 +422,18 @@ is the page's only legend. It sits beside the drawing.
 **8.2 — Re-measure on every delivery.** The script rewrites all payloads and
 `sitemap.xml` in one run.
 **8.3 — Every non-subset chart reconciles to the record count** (rule 2.3),
-which is worth re-checking after any change to the builders.
+which is worth re-checking after any change to the builders. Rule 6.7 now
+prints that reconciliation on the card instead of leaving it to be checked.
+
+**8.4 — A dataset with no measurements says so.** *(Supabase: "Empty states
+convey the fact that there is nothing to list, perform, or display on the
+current page. Ideally, they also provide a clear action for the user to
+take.")* This state is reachable by design, not by accident: the whole point
+of the architecture is that a dataset appears on the site the moment it is
+added to `datasets.js`, so between that edit and the next run of the builder
+a real page exists with no payload behind it. Before this it rendered two
+section headings — promising figures and a data dictionary — with nothing
+at all underneath them.
 
 ---
 
@@ -357,6 +448,14 @@ which is worth re-checking after any change to the builders.
 4. Run `python tools/build_dataset_details.py "<folder with the .xlsx files>"`.
 5. If it needs a colour that is not already a token, validate it (rule 4.5)
    in both themes before adding it.
+6. Read its generated headline in the build output. `narrate()` gives every
+   chart one for free, but a new chart **type** needs its own branch in
+   `headline()` — without one it falls to the leader template, which is
+   wrong for anything that is not a ranked list of counts.
+
+The script prints any label that fell back to Arabic for want of an `AR_EN`
+entry (rule 6.9), so a missing translation is a line of build output rather
+than something to be spotted on the page.
 
 Nothing in `dataset.html`, `assets/js/dataset-page.js` or the CSS changes for
 a new chart or a new dataset.

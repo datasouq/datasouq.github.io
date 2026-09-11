@@ -254,6 +254,151 @@ CHART_GROUPS = {
 }
 
 
+# The noun each dataset counts, for the sentence and the denominator:
+# (English plural, Arabic plural with the article, Arabic singular after a
+# number). Arabic counts a thing in the singular after a large number --
+# "17,304 sijill", not "17,304 sijillat" -- so the counted form is separate.
+NOUNS = {
+    "contractors": ("records", "السجلات", "سجل"),
+    "engineering": ("offices", "المكاتب", "مكتب"),
+    "healthcare": ("facilities", "المنشآت", "منشأة"),
+}
+
+# Labels that name the absence of a value. They are never the subject of a
+# headline: "Not recorded leads the file" is true and useless.
+ABSENT = ("Not recorded",)
+
+
+def pct(part, whole):
+    return round(100.0 * part / whole, 1) if whole else 0.0
+
+
+def as_pct(value):
+    """5.0 -> "5%", 62.4 -> "62.4%" -- no trailing .0 on a whole number."""
+    text = ("%.1f" % value).rstrip("0").rstrip(".")
+    return text + "%"
+
+
+def headline(chart, total, noun):
+    """The chart's finding, in one line, in both languages.
+
+    Every share is of the DATASET total, never of what the chart happens to
+    plot: "the ten biggest cities are 38% of the file" is a fact a buyer can
+    use, while "38% of the ten biggest cities" is a denominator nobody asked
+    about. The metric beside it says how much of the file the chart covers,
+    so the two together can never flatter the data.
+
+    The form is "subject: share", with a colon and no verb. A generated
+    sentence has to be grammatical for every label it will ever be handed,
+    and a verb is where that breaks -- "Primary health centres is 53.8%" in
+    English, and in Arabic an adjective that has to agree with a category
+    whose gender the script does not know. A colon agrees with nothing.
+
+    Source: Knaflic, Storytelling with Data -- a title carries the message,
+    it does not name the subject. The subject survives as the kicker above
+    the line and as the figure's accessible name.
+    """
+    en_plural, ar_plural, _ = noun
+    items = chart["items"]
+    if not items:
+        return None, None
+
+    if chart["type"] == "coverage":
+        ranked = sorted(items, key=lambda item: item["value"], reverse=True)
+        top, bottom = ranked[0], ranked[-1]
+        return (
+            "%s on %s of the %s, %s on only %s."
+            % (top["labelEn"], as_pct(top["value"]), en_plural,
+               bottom["labelEn"].lower(), as_pct(bottom["value"])),
+            "%s في %s من %s، و%s في %s فقط."
+            % (top["labelAr"], as_pct(top["value"]), ar_plural,
+               bottom["labelAr"], as_pct(bottom["value"])),
+        )
+
+    if chart["type"] == "map":
+        # How UNEVEN the file is, which is the one thing the ranked bar chart
+        # beside it cannot say -- and the reason the shading is by quantile
+        # rather than by equal interval. Both charts plot the same numbers
+        # (rule 1.7), so a headline that ranked them would repeat the bar.
+        values = sorted(item["value"] for item in items)
+        middle = len(values) // 2
+        median = (values[middle] if len(values) % 2
+                  else (values[middle - 1] + values[middle]) / 2.0)
+        top = max(items, key=lambda item: item["value"])
+        times = (top["value"] / median) if median else 0
+        return (
+            "%s holds %.0f times what the median region does."
+            % (top["labelEn"], times),
+            "نصيب %s %.0f ضعف نصيب المنطقة الوسيطة."
+            % (top["labelAr"], times),
+        )
+
+    ranked = sorted(
+        (item for item in items if item["labelEn"] not in ABSENT),
+        key=lambda item: item["value"],
+        reverse=True,
+    )
+    if not ranked:
+        return None, None
+
+    top = ranked[0]
+    share = pct(top["value"], total)
+
+    # An ordinal chart never names two steps. Its categories are a ladder,
+    # so the two biggest by COUNT come out in whatever order the counts fall
+    # -- "Sixth Classified and First Classified" -- which reads as a mistake
+    # even though it is true. One step, the biggest, and the ladder itself
+    # shows the rest.
+    if chart["type"] == "ordinal" or share >= 40 or len(ranked) == 1:
+        return (
+            "%s: %s of the %s." % (top["labelEn"], as_pct(share), en_plural),
+            "%s: %s من %s." % (top["labelAr"], as_pct(share), ar_plural),
+        )
+
+    second = ranked[1]
+    pair = pct(top["value"] + second["value"], total)
+    return (
+        "%s and %s together: %s of the %s."
+        % (top["labelEn"], second["labelEn"], as_pct(pair), en_plural),
+        "%s و%s معاً: %s من %s."
+        % (top["labelAr"], second["labelAr"], as_pct(pair), ar_plural),
+    )
+
+
+def metric(chart, total, noun):
+    """How much of the file this chart actually accounts for.
+
+    Rule 2.3 says every non-subset chart reconciles to the record count; this
+    puts that number on the card instead of leaving it to be checked. A
+    subset says so itself -- the ten biggest cities cover 38%, the grade
+    ladder 31% -- which is the honest reading of a chart that leaves records
+    out, and it is the one figure that differs from card to card.
+
+    Shape follows Supabase's ChartMetric: a value with a label under it.
+    """
+    en_plural, _, ar_counted = noun
+    if chart["type"] == "coverage":
+        covered = total          # every record is in the denominator already
+    else:
+        covered = sum(item["value"] for item in chart["items"])
+    return {
+        "value": pct(covered, total),
+        "labelEn": "of %s %s" % (format(total, ","), en_plural),
+        "labelAr": "من %s %s" % (format(total, ","), ar_counted),
+    }
+
+
+def narrate(charts, dataset_id, total):
+    """Stamp every chart with its headline and its coverage metric."""
+    noun = NOUNS.get(dataset_id, ("records", "السجلات", "سجل"))
+    for chart in charts:
+        head_en, head_ar = headline(chart, total, noun)
+        chart["headlineEn"] = head_en
+        chart["headlineAr"] = head_ar
+        chart["metric"] = metric(chart, total, noun)
+    return charts
+
+
 def grouped(charts):
     """Stamp each chart with its group and order the list by group, then rank.
 
@@ -677,7 +822,8 @@ def build_contractors(source):
     ]
 
     book.close()
-    return {"total": total, "dictionary": dictionary, "charts": grouped(charts)}
+    return {"total": total, "dictionary": dictionary,
+            "charts": grouped(narrate(charts, "contractors", total))}
 
 
 def build_engineering(source):
@@ -755,7 +901,8 @@ def build_engineering(source):
     ]
 
     book.close()
-    return {"total": total, "consulting": consulting, "dictionary": dictionary, "charts": grouped(charts)}
+    return {"total": total, "consulting": consulting, "dictionary": dictionary,
+            "charts": grouped(narrate(charts, "engineering", total))}
 
 
 # The healthcare workbook ships no Data_Dictionary sheet — it is a single
@@ -862,7 +1009,8 @@ def build_healthcare(source):
     ]
 
     book.close()
-    return {"total": total, "dictionary": dictionary, "charts": grouped(charts)}
+    return {"total": total, "dictionary": dictionary,
+            "charts": grouped(narrate(charts, "healthcare", total))}
 
 
 BUILDERS = {
