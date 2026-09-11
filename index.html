@@ -60,11 +60,16 @@
   })();
 </script>
 
-<!-- Structured data. Every figure here is one the page already shows, and the
-     field list stays deliberately short: the page asks buyers to get in touch
-     for the full one, so publishing all fifteen columns here would undo that.
-     The Dataset type is what Google Dataset Search reads. -->
-<script type="application/ld+json">
+<!-- Structured data. Organization and WebSite are the only entries authored
+     here \u2014 one Dataset entry per assets/js/datasets.js entry is appended to
+     this same @graph by renderDatasetStructuredData() in site.js at
+     startup, so a new dataset gets a JSON-LD entry for free the moment it is
+     added to that file, without this script tag changing. The field list
+     stays deliberately short in every generated entry: the page asks buyers
+     to get in touch for the full one, so publishing all fifteen columns
+     here would undo that. The Dataset type is what Google Dataset Search
+     reads. -->
+<script type="application/ld+json" id="ld-json">
 {
   "@context": "https://schema.org",
   "@graph": [
@@ -92,26 +97,6 @@
       "name": "DataSouq",
       "inLanguage": ["en", "ar"],
       "publisher": { "@id": "https://datasouq.github.io/#organization" }
-    },
-    {
-      "@type": "Dataset",
-      "@id": "https://datasouq.github.io/#contractors-saudi-arabia",
-      "name": "Contractors in Saudi Arabia",
-      "alternateName": "\u0627\u0644\u0645\u0642\u0627\u0648\u0644\u0648\u0646 \u0641\u064a \u0627\u0644\u0633\u0639\u0648\u062f\u064a\u0629",
-      "description": "A structured dataset of 17,304 contractors across Saudi Arabia, cleaned and deduplicated, covering 302 cities in 13 regions. 99.5% of records carry an email, 31% are classified across 6 grades, and 1,624 are non-Saudi contractors. Delivered in Arabic and English.",
-      "inLanguage": ["ar", "en"],
-      "isAccessibleForFree": false,
-      "creator": { "@id": "https://datasouq.github.io/#organization" },
-      "provider": { "@id": "https://datasouq.github.io/#organization" },
-      "spatialCoverage": { "@type": "Place", "name": "Saudi Arabia" },
-      "encodingFormat": ["application/vnd.ms-excel", "text/csv"],
-      "variableMeasured": [
-        "company name",
-        "region",
-        "city",
-        "contractor classification",
-        "membership type"
-      ]
     }
   ]
 }
@@ -180,82 +165,37 @@
       <div class="head">
         <div class="head__label" data-i18n="catalogueLabel">Catalogue</div>
         <h2 data-i18n="catalogueTitle">Datasets</h2>
-        <p data-i18n="catalogueLead">Structured datasets, cleaned and delivered in Arabic and English.</p>
+        <p data-i18n="catalogueLead">Structured datasets, cleaned and deduplicated before delivery.</p>
       </div>
 
-      <!-- A fixed span, not a full-width card. The second dataset lands beside
-           this one instead of this one stretching to fill the row. -->
-      <div class="cards cards--catalogue">
-        <article class="card card--dataset">
-          <!-- Icon and title on one line, as their product cards have it. -->
-          <div class="card__head">
-            <div class="card__icon">
-              <!-- Lucide: hard-hat -->
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                <path d="M10 10V5a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v5"/>
-                <path d="M14 6a6 6 0 0 1 6 6v3"/>
-                <path d="M4 15v-3a6 6 0 0 1 6-6"/>
-                <rect x="2" y="15" width="20" height="4" rx="1"/>
-              </svg>
-            </div>
-            <h3 data-i18n="datasetTitle">Contractors in Saudi Arabia</h3>
-          </div>
+      <!-- A fixed span, not a full-width card: each card holds to its own
+           width instead of stretching to fill the row. At the md breakpoint
+           that's span 6 of 12 — two cards per row, the third wrapping to its
+           own; at lg it's span 4 — three sit in one row, four wrap 3+1, and
+           so on as assets/js/datasets.js grows.
 
-          <!-- Their card body is one paragraph in two tones: the lead clause at
-               full contrast, the rest a step down. Theirs dims the base to
-               --foreground-lighter; ours cannot, because on --card that measures
-               4.27:1 in dark and fails AA (deviation 4), so the pair here is
-               --muted-foreground with the <strong> at --foreground. -->
-          <p class="card__body" data-i18n-html="datasetBody"><strong>A structured dataset of contractors across Saudi Arabia</strong>, cleaned and deduplicated, delivered in Arabic and English. Message us for the full field list and the price.</p>
+           The grid itself is empty markup: renderCatalogue() in site.js
+           fills it with one .card--dataset per assets/js/datasets.js entry,
+           on load and again on every language switch. Adding a dataset is a
+           one-file change — nothing here or in site.js's rendering code
+           needs to know how many cards exist. -->
+      <div class="cards cards--catalogue"></div>
 
-          <!-- Metrics, each paired with an icon per the Metric Card fragment.
-               Every figure is measured from the file itself. -->
-          <ul class="metrics" role="list">
-            <li>
-              <!-- Lucide: rows-3 -->
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                <rect width="18" height="18" x="3" y="3" rx="2"/><path d="M21 9H3"/><path d="M21 15H3"/>
-              </svg>
-              <span><strong data-i18n="m1Value">17,304</strong> <span data-i18n="m1Label">records</span></span>
-            </li>
-            <li>
-              <!-- Lucide: map-pin -->
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                <path d="M20 10c0 4.993-5.539 10.193-7.399 11.799a1 1 0 0 1-1.202 0C9.539 20.193 4 14.993 4 10a8 8 0 0 1 16 0"/><circle cx="12" cy="10" r="3"/>
-              </svg>
-              <span><strong data-i18n="m2Value">302</strong> <span data-i18n="m2Label">cities across 13 regions</span></span>
-            </li>
-            <li>
-              <!-- Lucide: layers -->
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                <path d="M12.83 2.18a2 2 0 0 0-1.66 0L2.6 6.08a1 1 0 0 0 0 1.83l8.58 3.91a2 2 0 0 0 1.66 0l8.58-3.9a1 1 0 0 0 0-1.83z"/>
-                <path d="M2 12a1 1 0 0 0 .58.91l8.6 3.91a2 2 0 0 0 1.65 0l8.58-3.9A1 1 0 0 0 22 12"/>
-                <path d="M2 17a1 1 0 0 0 .58.91l8.6 3.91a2 2 0 0 0 1.65 0l8.58-3.9A1 1 0 0 0 22 17"/>
-              </svg>
-              <span><strong data-i18n="m3Value">31%</strong> <span data-i18n="m3Label">classified, across 6 grades</span></span>
-            </li>
-            <li>
-              <!-- Lucide: mail -->
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                <path d="m22 7-8.991 5.727a2 2 0 0 1-2.009 0L2 7"/><rect x="2" y="4" width="20" height="16" rx="2"/>
-              </svg>
-              <span><strong data-i18n="m4Value">99.5%</strong> <span data-i18n="m4Label">carry an email</span></span>
-            </li>
-            <li>
-              <!-- Lucide: globe -->
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                <circle cx="12" cy="12" r="10"/><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"/><path d="M2 12h20"/>
-              </svg>
-              <span><strong data-i18n="m5Value">1,624</strong> <span data-i18n="m5Label">non-Saudi contractors</span></span>
-            </li>
-          </ul>
-
-          <div class="card__actions">
-            <a class="btn btn--default" data-wa-dataset href="https://wa.me/@mbi.group" target="_blank"
-               rel="noopener noreferrer" tabindex="0" data-i18n="datasetCta">Ask about this dataset</a>
-          </div>
-        </article>
-      </div>
+      <!-- Every dataset card, its WhatsApp link and the footer's dataset
+           list all depend on site.js running — there is no per-dataset
+           fallback markup to keep in step as assets/js/datasets.js grows.
+           This is the one thing a script-disabled visitor loses; everything
+           else on the page (nav, hero, "what we do", contact links) still
+           renders and works without it. The two links below are real,
+           static hrefs — same as the hero's — not JS-dependent, so this
+           block stands on its own rather than pointing elsewhere for one. -->
+      <noscript>
+        <p class="card__body">This page needs JavaScript to list our datasets. Message us and we'll tell you what's available.</p>
+        <div class="hero__cta">
+          <a class="btn btn--primary" href="https://wa.me/@mbi.group" target="_blank" rel="noopener noreferrer">Message us on WhatsApp</a>
+          <a class="btn btn--default" href="mailto:mbi.datasouq@gmail.com">Send an email</a>
+        </div>
+      </noscript>
     </div>
   </section>
 
@@ -480,15 +420,15 @@
 
       <div class="footer__nav">
         <div class="footer__cols">
-          <!-- The headings and links reuse the strings their own sections
-               already carry: catalogueTitle, datasetTitle and whatLabel. A
-               second copy of "Datasets" would be a second thing to keep in
-               step. footerCompany is the only new one. -->
+          <!-- The heading reuses catalogueTitle, so a second copy of
+               "Datasets" is not a second thing to keep in step; footerCompany
+               below is the only new string this footer needs. The links
+               themselves are rendered by renderCatalogue() in site.js, one
+               per assets/js/datasets.js entry — this list starts empty and
+               grows with that file, same as the catalogue's own cards. -->
           <div class="footer__col">
             <h2 data-i18n="catalogueTitle">Datasets</h2>
-            <ul role="list">
-              <li><a href="#datasets" tabindex="0" data-i18n="datasetTitle">Contractors in Saudi Arabia</a></li>
-            </ul>
+            <ul role="list" id="footer-dataset-links"></ul>
           </div>
 
           <div class="footer__col">
@@ -583,6 +523,12 @@
   </div>
 </footer>
 
+<!-- Load order matters: site.js reads the ICONS and DATASETS globals these
+     two declare, so they run first, as plain scripts, not modules — this is
+     a static host with no bundler, so a global is the simplest way to share
+     data between files. -->
+<script src="assets/js/icons.js"></script>
+<script src="assets/js/datasets.js"></script>
 <script src="assets/js/site.js"></script>
 </body>
 </html>
