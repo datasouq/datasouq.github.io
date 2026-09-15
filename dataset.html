@@ -289,7 +289,15 @@
     <div class="footer__bar">
       <!-- The source link opens this line: it points at the work the line
            claims ownership of, which is not a setting and does not belong
-           beside one. -->
+           beside one.
+
+           The line itself is pinned in English in both languages, at the
+           reader's request — no data-i18n on .footer__rights, and the year
+           is set as a plain number in site.js rather than run through
+           digits(). A copyright notice is the one sentence on the page
+           where the words are the trademark, not a translation of it; a
+           reader switching languages sees "© 2026 DataSouq · All rights
+           reserved." either way, never "جميع الحقوق محفوظة." nor "٢٠٢٦". -->
       <span class="footer__copy">
         <a class="social" href="https://github.com/datasouq" target="_blank"
            rel="noopener noreferrer" tabindex="0" aria-label="GitHub" title="GitHub">
@@ -299,7 +307,7 @@
           </svg>
         </a>
         <span>© <span id="year">2026</span> DataSouq ·
-          <span class="footer__rights" data-i18n="rights">All rights reserved.</span></span>
+          <span class="footer__rights">All rights reserved.</span></span>
       </span>
 
       <!-- The language picker is what is left at this end: the one control
