@@ -1028,10 +1028,31 @@ main:focus, main:focus-visible { outline: none; }
    edge to track here. */
 .langpicker { position: relative; display: inline-flex; }
 
-/* Wider than a .ctl icon button because it carries a word; the word is the
-   endonym — "English", "العربية" — so its width changes with the language and
-   the control is left to size itself rather than being pinned. */
+/* Wider than a .ctl icon button because it carries a word — the endonym,
+   "English" or "العربية". The BUTTON no longer sizes itself to that word: it
+   used to, and switching language visibly narrowed it, 103px to 90px
+   measured, because "العربية" (29px) is shorter than "English" (41px) in
+   this font at this size. That 13px jump moved the chevron and the edge of
+   the pill under a control the reader had just used — the one moment they
+   are looking straight at it.
+
+   Fixed by giving the WORD a fixed box instead of the button: see
+   .langpicker__label below. The globe and the chevron then never move,
+   whichever language is live. */
 .langpicker__trigger { cursor: pointer; }
+
+/* 42px, not measured-and-left: "English" is 41.27px in this font at 12px
+   (canvas measureText, cross-checked against the rendered box), and 42
+   rounds that up by less than a pixel of slack. "العربية" is 29px, so it
+   centres in the same box with room either side rather than filling it.
+   Re-measure this if a label ever changes or a third language is added —
+   the number is the point, not the formula. */
+.langpicker__label {
+  display: inline-block;
+  inline-size: 42px;
+  text-align: center;
+  flex-shrink: 0;
+}
 .langpicker__trigger[aria-expanded="true"] { border-color: var(--tertiary-foreground); }
 
 /* The chevron turns over when the menu is open, which is the only motion in
