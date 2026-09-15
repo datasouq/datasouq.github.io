@@ -2003,33 +2003,20 @@ main:focus, main:focus-visible { outline: none; }
   --chart-ramp-6: #236d4d;
 }
 
-/* Columns, not a grid. These cards run from four rows to twenty, and a grid
-   lays them in ROWS: every card stretches to the tallest of its pair, so a
-   four-row chart beside an eighteen-row one was padded to 670px with 400 of
-   them blank. align-items: start stops the stretching but leaves the hole,
-   because the next grid row still clears the taller card.
+/* One column, always. There was a two-column layout above 900px — this
+   used `column-count: 2` rather than grid specifically to avoid stretching
+   every card to the tallest in its row (a four-row chart beside an
+   eighteen-row one was padded to 670px, 400 of it blank). Two cards side by
+   side read as a comparison between them, which most adjacent pairs here do
+   not intend — "Records by region" beside "Top 10 cities" is two unrelated
+   answers, not two halves of one. **House** — reversed at the reader's
+   request; see rule 7.3.
 
-   Multi-column flows each card at its own height and packs the next one
-   directly beneath, which is what this content wants. DOM order is
-   unchanged, so the reading order a screen reader follows is still the
-   order the charts were written in; break-inside keeps a card whole.
-
-   The trade is track width: two columns give each bar about 310px to run in
-   rather than 700. Worth it here — the value is printed at the end of every
-   bar, so precision does not rest on the bar's length. */
+   `column-gap` stays: inert at one column, harmless to leave, and the
+   number to restore first if this is ever revisited. `break-inside: avoid`
+   on `.chart` (below) is what actually keeps a card whole; multi-column
+   layout itself no longer does anything a plain block stack would not. */
 .charts { column-gap: 12px; }
-@media (min-width: 900px) {
-  .charts { column-count: 2; }
-
-  /* A group of one takes the whole row. Left in a two-column flow it sat in
-     the left column with the right half empty, which reads as a card that
-     failed to load rather than as a group with one chart in it. Dropping the
-     Completeness tier made this the shape of Usability on all three datasets
-     at once, so it stopped being an edge case. The bars just get longer,
-     which costs nothing: rule 6.1 prints every value, so precision never
-     rested on the bar's length. */
-  .charts > .chart:only-child { column-span: all; }
-}
 
 /* Groups, because seven cards in one flow have no hierarchy and nothing to
    separate them.
@@ -2069,18 +2056,16 @@ main:focus, main:focus-visible { outline: none; }
   max-inline-size: 58ch;
 }
 
-/* The map spans both columns. It is the one chart whose subject is a shape
-   rather than a list, so area is what it converts into legibility — and
-   Carbon puts the same idea the other way round: "the most important data
-   should have the highest contrast and occupy the largest area".
-
-   The drawing is capped and centred inside that span rather than filling it.
-   Left to take the full width it came out 880px tall, which is not hierarchy
-   but a map eating the page — and the shape is legible long before that. The
-   span buys the card its own row; the cap keeps the row a sensible height. */
+/* The map no longer needs to span anything: every chart is already full
+   width (see .charts above), so the map has no more area than a bar chart
+   has by virtue of the column layout alone. Its size cap (620px, below)
+   carries the hierarchy on its own now — capped and centred rather than
+   filling the row, which is still what keeps the drawing at a sensible
+   height (left uncapped it comes out 880px tall) without it needing a
+   column count to be capped AGAINST. `column-span: all` was removed here:
+   spanning all columns of a one-column layout was already a no-op, and
+   leaving it in would have described a page that no longer exists. */
 @media (min-width: 900px) {
-  .chart--map { column-span: all; }
-
   /* Drawing and legend side by side. Stacked, the legend sat under a centred
      drawing with the span's width empty on both flanks — the card had asked
      for the full row and then used a third of it. Beside the drawing the
