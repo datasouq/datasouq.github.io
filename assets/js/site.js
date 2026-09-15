@@ -18,7 +18,7 @@ const CONFIG = {
   /* A WhatsApp username instead of a phone number, so the number is never
      published. wa.me/@handle redirects to type=username and carries the
      prefilled ?text= through unchanged — verified against wa.me. */
-  whatsappHandle: "mbi.group",
+  whatsappHandle: "datasouq",
   email: "mbi.datasouq@gmail.com",
   github: "https://github.com/datasouq",
 
@@ -338,7 +338,7 @@ const I18N = {
         <p class="card__body">${body}</p>
         <ul class="metrics" role="list">${metrics}</ul>
         <div class="card__actions">
-          <a class="btn btn--default" data-wa-dataset="${dataset.id}" href="https://wa.me/@mbi.group" target="_blank" rel="noopener noreferrer" tabindex="0">${t.datasetCta}</a>
+          <a class="btn btn--default" data-wa-dataset="${dataset.id}" href="https://wa.me/@datasouq" target="_blank" rel="noopener noreferrer" tabindex="0">${t.datasetCta}</a>
         </div>
       </article>`;
   }
