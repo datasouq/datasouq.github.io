@@ -74,7 +74,7 @@
         <p class="emptystate__title">${escapeHtml(t.detailEmptyTitle)}</p>
         <p class="emptystate__body">${escapeHtml(t.detailEmptyBody)}</p>
         <a class="btn btn--default" data-wa-dataset="${dataset.id}"
-           href="https://wa.me/@mbi.group" target="_blank" rel="noopener noreferrer"
+           href="https://wa.me/@datasouq" target="_blank" rel="noopener noreferrer"
            >${escapeHtml(t.detailEmptyCta)}</a>
       </div>`;
   }
@@ -543,7 +543,7 @@
     const host = $("detail-cta");
     if (!host) return;
     host.innerHTML = `
-      <a class="btn btn--primary" data-wa-dataset="${dataset.id}" href="https://wa.me/@mbi.group"
+      <a class="btn btn--primary" data-wa-dataset="${dataset.id}" href="https://wa.me/@datasouq"
          target="_blank" rel="noopener noreferrer" tabindex="0">${escapeHtml(t.datasetCta)}</a>`;
   }
 
