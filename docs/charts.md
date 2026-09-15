@@ -395,11 +395,22 @@ own height. **House** on the mechanism; the reason it matters is Carbon's:
 400px of padding inside a card is not white space doing work, it is a card
 claiming importance it does not have.
 
-**Rule 7.3 — Two columns on desktop, one under 900px.** The trade is track
-width: two columns give a bar ~310px to run in rather than ~700. Acceptable
-**only because** rule 6.1 prints the value — precision does not rest on the
-bar's length. **House.** If a chart ever needs the width more than the page
-needs the density, this is the rule to revisit.
+Since rule 7.3, there is only ever one card per row, so the specific defect
+this rule was written against cannot occur any more — a row with one card
+in it has nothing to stretch against. The mechanism is left in place anyway:
+harmless at one column, and `break-inside: avoid` still guards a tall card
+against ever being split, which is not conditional on column count.
+
+**Rule 7.3 — One column, at every width.** There was a two-column layout
+above 900px; it is gone, at the reader's explicit request — two cards side
+by side reads as a comparison between them, and most adjacent pairs here
+were never that. "Records by region" beside "Top 10 cities" is two separate
+answers, not two halves of one question, and the density that bought was
+not worth the misreading. **House**, and a reversal of the rule that stood
+here before: a chart's track goes from ~530px wide to the full card, which
+Rule 6.1 already made safe to give up — the value is printed regardless of
+how long the bar runs. If a page-width bar ever looks *too* generously
+sized for what it plots, that is the case for revisiting this, not density.
 
 **Rule 7.4 — Charts are grouped by the question they answer, and the groups
 run most important first.** Seven cards in one flow is a list, not a
@@ -433,11 +444,16 @@ label was simply absent from the document outline. `aria-labelledby` on the
 section")* One line, naming the question the group answers. "Coverage" on
 its own leaves the reader to work out what is being covered.
 
-**Rule 7.5 — The lead chart of the lead group gets the largest area.** The
-map spans both columns; every other card takes one. *(Carbon: "The most
-important data should have the highest contrast and occupy the largest
-area")* The span is a cap, not a stretch: a drawing left to fill the row came
-out 880px tall, which is a map eating the page rather than a hierarchy.
+**Rule 7.5 — The lead chart of the lead group gets the largest area.**
+*(Carbon: "The most important data should have the highest contrast and
+occupy the largest area")* Under rule 7.3 every card is now the same width,
+so this no longer means the map spans two columns and every other card
+takes one — that mechanism is gone. What is left of it: the map still leads
+its group (rule 7.4's ordering), and its drawing still carries more visual
+weight than a list of bars does, through colour and shape rather than
+through width. The cap below is a cap, not a stretch, for the same reason it
+always was: a drawing left to fill the row came out 880px tall, which is a
+map eating the page rather than a hierarchy.
 
 **Rule 7.5b — A drawing's size cap belongs outside the media query that
 widened it.** The map's cap lived inside `@media (min-width: 900px)`, so
@@ -447,13 +463,12 @@ viewport and 755×619 at 860px, both **taller** than the 657×539 it gets at
 1280px. A smaller screen was getting a bigger map. **House**, and a defect
 that shipped.
 
-**Rule 7.5c — A group of one takes the whole row.** Left in the two-column
-flow a lone card sat in the left column with the right half empty, which
-reads as a card that failed to load rather than as a group with one chart in
-it. The bars simply get longer, which costs nothing: rule 6.1 prints every
-value, so precision never rested on a bar's length. **House.** It stopped
-being an edge case when the Completeness tier was dropped from contractors
-and engineering, which made Usability a single card on all three datasets.
+**Rule 7.5c — Retired.** Was "a group of one takes the whole row" — special
+case CSS for a lone card in a two-column flow, so it would not sit in the
+left column with the right half empty. Rule 7.3 removed the two-column flow
+entirely, so every card in every group now takes the whole row by default;
+the special case is subsumed rather than needed. Left numbered rather than
+deleted, so the record shows a rule was retired and not simply forgotten.
 
 **Rule 7.6 — White space does the grouping: 40px between groups, 12px
 between cards inside one.** No rules, no boxes around groups — the gap is
