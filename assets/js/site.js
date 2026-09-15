@@ -140,9 +140,12 @@ const I18N = {
     /* Footer. The two column headings and their links reuse catalogueTitle
        and whatLabel, so only "Company" is new here — a second copy of
        "Datasets" would be a second thing to keep in step. The dataset links
-       themselves are rendered from assets/js/datasets.js, not listed here. */
+       themselves are rendered from assets/js/datasets.js, not listed here.
+
+       No "rights" key: "All rights reserved." is pinned in English in the
+       markup itself (index.html, dataset.html), not run through this
+       dictionary — see the comment on .footer__copy there. */
     footerCompany: "Company",
-    rights: "All rights reserved.",
     brandHome: "DataSouq — home",
     emailLabel: "Email",
 
@@ -259,7 +262,6 @@ const I18N = {
       "هل يمكنكم إرسال عيّنة والسعر؟",
 
     footerCompany: "الشركة",
-    rights: "جميع الحقوق محفوظة.",
     brandHome: "داتا سوق — الصفحة الرئيسية",
     emailLabel: "البريد الإلكتروني",
 
@@ -464,10 +466,13 @@ const I18N = {
       if (on && current) current.textContent = item.textContent.trim();
     });
 
-    /* The year is the one number on the page that is not a literal in this
-       file, so it is the one that needs converting at runtime. */
+    /* The year is computed, not a literal in this file, so it still has to
+       be written on every render — but NOT through digits(). The copyright
+       line it sits in is pinned in English in both languages (see the
+       comment on .footer__copy in index.html/dataset.html), so "2026" stays
+       Western numerals in Arabic too, the same as "DataSouq" stays Latin. */
     const year = $("year");
-    if (year) year.textContent = t.digits(new Date().getFullYear());
+    if (year) year.textContent = String(new Date().getFullYear());
 
     describeTheme();
     wireWhatsapp();
