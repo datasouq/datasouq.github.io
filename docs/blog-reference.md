@@ -71,16 +71,29 @@ measured, since narrowing this specific page was not tested this session.
    can be linked to directly; inline images between sections; inline code
    spans; external links styled distinctly; a pull-quote treatment for at
    least one standalone quoted sentence; ordered and nested bullet lists.
-7. **Utility row, right after the article** — "Copy as Markdown" (hands
-   the raw content to a clipboard, clearly aimed at someone about to paste
-   it into an LLM), "Ask ChatGPT" / "Ask Claude" (pre-filled prompt links
-   that open the assistant with a request to read the post from its URL),
-   and share links (X, LinkedIn, Hacker News). **This exact set — Copy as
-   Markdown plus direct "ask an assistant about this" links — also appears
-   a second time**, inside the sticky sidebar; the two are almost certainly
-   the same component rendered once for narrow viewports (inline, under
-   the article) and once for wide ones (in the sidebar), rather than two
-   different features.
+7. **Utility row, right after the article** — "Copy as Markdown" button,
+   immediately followed by an empty `status` element (a live region —
+   the accessible way to announce "Copied" after a clipboard action
+   without relying on a visual-only toast a screen reader would miss);
+   then "Ask ChatGPT" / "Ask Claude", then share links (X, LinkedIn,
+   Hacker News). **This exact set — Copy as Markdown plus direct "ask an
+   assistant about this" links — also appears a second time**, inside the
+   sticky sidebar; the two are almost certainly the same component
+   rendered once for narrow viewports (inline, under the article) and
+   once for wide ones (in the sidebar), rather than two different
+   features.
+
+   The "ask an assistant" links are a plain URL template, not a widget —
+   worth keeping verbatim since it is directly reusable on any page with
+   a stable canonical URL:
+
+   - ChatGPT: `https://chatgpt.com/?hint=search&q=<encoded prompt>`
+   - Claude: `https://claude.ai/new?q=<encoded prompt>`
+   - prompt, both cases: `Read from <this page's canonical URL> so I can
+     ask questions about its contents`
+
+   No API, no auth, no JS beyond building the query string — a `<a href>`
+   with the post's own URL folded into a fixed sentence.
 8. **Tags** — short pill links (e.g. `launch-week`, `reports`, `database`)
    to tag-archive pages, sitting at the top of the sticky sidebar, above
    the table of contents.
@@ -91,7 +104,13 @@ measured, since narrowing this specific page was not tested this session.
 10. **Previous / next post** — two cards after the article, each with the
     adjacent post's title and date, ordered by publish date rather than
     by relevance.
-11. **Sitewide CTA band** and **sitewide footer** — not blog-specific;
+11. **RSS.** The link lives in the sitewide footer, not on the post itself
+    (`/rss.xml`, under a "Developers" column) — but the feed it points to
+    is the blog. Noted here because a blog is the one content type where
+    a reader plausibly wants to subscribe outside the browser, which
+    nothing else on this site is; easy to forget precisely because the
+    link sits in generic chrome rather than beside the posts it feeds.
+12. **Sitewide CTA band** and **sitewide footer** — not blog-specific;
     the same "Build in a weekend, scale to millions" banner and footer
     every other Supabase page carries. Nothing here is a blog pattern.
 
