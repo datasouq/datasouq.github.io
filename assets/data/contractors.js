@@ -6,165 +6,141 @@ DATASET_DETAILS["contractors"] = {
   "dictionary": [
     {
       "column": "record_id",
-      "en": "Permanent identifier for this record, stable across editions",
-      "ar": "معرّف دائم للسجل، ثابت بين الإصدارات",
-      "notes": "DS-SA-CON-00001 … use it to match a later edition to this one"
+      "en": "Permanent identifier for this record, stable across editions.",
+      "ar": "‏معرّف دائم للسجل، ثابت بين الإصدارات.",
+      "notes": "DS-SA-CON-00001 … use it to match a later edition to this one. 17,259 of REV 05's 17,304 records keep the id they had; 45 could not be matched; 699 ids were minted for this edition. No id is ever reused."
     },
     {
-      "column": "row",
-      "en": "Sequential record number",
-      "ar": "رقم متسلسل للسجل",
-      "notes": ""
+      "column": "membership_number",
+      "en": "Membership number in the register.",
+      "ar": "‏رقم العضوية في السجل.",
+      "notes": "New in REV 06. Stored as text so leading zeros survive. 17,958 rows, 100.0%"
     },
     {
-      "column": "membership_type",
-      "en": "Contractor membership category",
-      "ar": "نوع عضوية المقاول",
-      "notes": "Saudi / Non-Saudi Contractor, Affiliate-Organization"
-    },
-    {
-      "column": "grade",
-      "en": "Classification grade 1-6, empty when unclassified",
-      "ar": "درجة التصنيف 1-6، فاضي للغير مصنّف",
-      "notes": "1 = highest"
-    },
-    {
-      "column": "contractor_classification",
-      "en": "Classification in words",
-      "ar": "التصنيف بالحروف",
-      "notes": "First..Sixth Classified / Unclassified"
+      "column": "commercial_registration",
+      "en": "Commercial registration (CR) number as the register records it.",
+      "ar": "‏رقم السجل التجاري كما هو مقيّد.",
+      "notes": "New in REV 06. Stored as text. 17,891 rows, 99.6%"
     },
     {
       "column": "company_name",
-      "en": "Company or establishment name",
-      "ar": "اسم الشركة أو المؤسسة",
-      "notes": "AR sheet carries the Arabic name"
+      "en": "Company or establishment name.",
+      "ar": "‏اسم الشركة أو المؤسسة.",
+      "notes": "17,768 rows, 98.9%. Blank on the 190 records that exist only in the profiles file — that file has no company name column at all, so no name exists for them in any source. Their record_flags says so, which is how to isolate them."
+    },
+    {
+      "column": "company_name_ar",
+      "en": "Arabic company name, now on both sheets.",
+      "ar": "‏اسم الشركة بالعربية، وأصبح في الورقتين.",
+      "notes": "New in REV 06 as a column of its own. 17,674 rows, 98.4%. On 4 records the register itself records a Latin-script name in this field; it is carried as received rather than transliterated."
+    },
+    {
+      "column": "membership_type",
+      "en": "Contractor membership category.",
+      "ar": "‏نوع عضوية المقاول.",
+      "notes": "Saudi Contractor = مقاول سعودي (16,167) | Non-Saudi Contractor = مقاول غير سعودي (1,705) | Affiliate-Organization = مهتم - منشأة (19) | blank on 67 rows"
+    },
+    {
+      "column": "member_since",
+      "en": "Date the membership began, as the register records it.",
+      "ar": "‏تاريخ بدء العضوية كما يسجّله السجل.",
+      "notes": "New in REV 06. Not derived. 17,891 rows, 99.6%"
+    },
+    {
+      "column": "contractor_classification",
+      "en": "Classification in words.",
+      "ar": "‏التصنيف بالحروف.",
+      "notes": "Unclassified = غير مصنف (12,284) | Sixth Classified = مصنف درجة سادسة (2,173) | First Classified = مصنف درجة أولى (1,212) | Second Classified = مصنف درجة ثانية (780) | Third Classified = مصنف درجة ثالثة (541) | Fifth Classified = مصنف درجة خامسة (450) | Fourth Classified = مصنف درجة رابعة (327) | blank on 191 rows"
+    },
+    {
+      "column": "grade",
+      "en": "Classification grade 1-6, empty when unclassified.",
+      "ar": "‏درجة التصنيف من 1 إلى 6، وتبقى فارغة لغير المصنّفين.",
+      "notes": "1 = highest. 1 (1,212) | 2 (780) | 3 (541) | 4 (327) | 5 (450) | 6 (2,173) | blank on 12,475 rows. The source column looks 47.3% filled, but 2,921 of its values are a literal 0 meaning Unclassified and one is 2147483647, a corrupt sentinel; both were cleared to blank."
+    },
+    {
+      "column": "company_size",
+      "en": "Establishment size band as the register records it.",
+      "ar": "‏فئة حجم المنشأة.",
+      "notes": "Very Small = منشأة متناهية الصغر (13,748) | Small = منشأة صغيرة (2,576) | Medium = منشأة متوسطة (1,090) | Big = منشأة كبيرة (544)"
     },
     {
       "column": "region",
-      "en": "Administrative region",
-      "ar": "المنطقة الإدارية",
-      "notes": "13 regions"
+      "en": "Administrative region.",
+      "ar": "‏المنطقة الإدارية.",
+      "notes": "13 regions. Taken from the profile first, then the listing. 16,412 rows, 91.4%"
     },
     {
       "column": "city",
-      "en": "City, spelling unified",
-      "ar": "المدينة، موحّدة الكتابة",
-      "notes": ""
+      "en": "City, spelling unified.",
+      "ar": "‏المدينة بكتابة موحّدة.",
+      "notes": "16,412 rows, 91.4%"
     },
     {
       "column": "organization_email",
-      "en": "Contact email, lowercase, typos corrected",
-      "ar": "إيميل التواصل، حروف صغيرة، الأخطاء مصحّحة",
-      "notes": ""
+      "en": "The contractor's primary email, lowercase.",
+      "ar": "‏البريد الأساسي للمقاول، بأحرف صغيرة.",
+      "notes": "17,891 rows, 99.6%. Every address, including the extra ones, is on the Email sheet."
     },
     {
       "column": "email_type",
-      "en": "Company own domain vs public provider",
-      "ar": "دومين الشركة أم مزود عام",
-      "notes": "Company domain / Generic-free / Generic-free (corrected) / Disposable"
+      "en": "Company own domain vs public provider.",
+      "ar": "‏هل الدومين خاص بالشركة أم لمزوّد عام.",
+      "notes": "Public = عام (12,514) | Corporate = مؤسسي (5,364) | Disposable = مؤقت (13) | blank on 67 rows"
     },
     {
       "column": "email_role",
-      "en": "Who sits behind the address",
-      "ar": "من يقف خلف العنوان",
-      "notes": "Decision maker / Generic inbox / Personal-other"
+      "en": "Who sits behind the address.",
+      "ar": "‏لمن يعود عنوان البريد.",
+      "notes": "Personal = شخصي (15,830) | Shared = مشترك (1,876) | Executive = تنفيذي (185) | blank on 67 rows — filter Decision maker to get the cut REV 05 shipped as a Decision_Makers sheet."
     },
     {
-      "column": "company_website",
-      "en": "Website derived from the email domain",
-      "ar": "الموقع المستخرَج من دومين الإيميل",
-      "notes": "Only when the domain actually resolves"
-    },
-    {
-      "column": "website_status",
-      "en": "Live DNS check of that domain",
-      "ar": "فحص DNS فعلي للدومين",
-      "notes": "Live (site+mail) / Mail only / Website only-mail undeliverable / Domain not resolving"
-    },
-    {
-      "column": "country_code",
-      "en": "Dialling code, valid numbers only",
-      "ar": "كود الاتصال، للأرقام السليمة فقط",
-      "notes": "966 = Saudi Arabia"
-    },
-    {
-      "column": "organization_mobile_number",
-      "en": "Saudi national format with the leading zero",
-      "ar": "الصيغة المحلية السعودية بالصفر",
-      "notes": "Text, 10 digits. Invalid values left as received"
+      "column": "emails_count",
+      "en": "How many addresses this contractor has on the Email sheet.",
+      "ar": "‏عدد عناوين البريد لهذا المقاول في ورقة Email.",
+      "notes": "New in REV 06. Blank means none."
     },
     {
       "column": "phone_e164",
-      "en": "International E.164 format",
-      "ar": "الصيغة الدولية E.164",
-      "notes": "Ready for WhatsApp and CRM import"
+      "en": "The same number in international E.164 form.",
+      "ar": "‏نفس الرقم بالصيغة الدولية.",
+      "notes": "Ready for WhatsApp and CRM import. Produced for mobile and landline only: 920 unified and 800 toll-free numbers are national-only. 5,462 rows, 30.4%"
     },
     {
       "column": "phone_type",
-      "en": "Line type",
-      "ar": "نوع الخط",
-      "notes": "Mobile / Landline / Unified number / Toll-free / Invalid"
+      "en": "Line type.",
+      "ar": "‏نوع الخط.",
+      "notes": "Mobile = موبايل (2,785) | Landline = أرضي (2,677) | Invalid = غير سليم (721) | Unified number = رقم موحّد (153) | Toll-free = رقم مجاني (5) | blank on 11,617 rows"
     },
     {
-      "column": "organization_address",
-      "en": "Street address where available",
-      "ar": "العنوان التفصيلي إن وُجد",
-      "notes": "Place-name-only values were cleared"
+      "column": "phones_count",
+      "en": "How many numbers this contractor has on the Phone sheet.",
+      "ar": "‏عدد الأرقام لهذا المقاول في ورقة Phone.",
+      "notes": "New in REV 06. Blank means none."
     },
     {
-      "column": "has_contact",
-      "en": "Any usable contact channel",
-      "ar": "هل يوجد وسيلة تواصل صالحة",
-      "notes": "Yes / No"
+      "column": "company_website",
+      "en": "Primary website.",
+      "ar": "‏الموقع الأساسي.",
+      "notes": "Meaning changed from REV 05, where it was the email domain and only when that domain resolved. Here a site matched on the web comes first, the email domain second. 5,504 rows, 30.6%. The Web_Presence sheet says which, per row."
     },
     {
-      "column": "completeness_score",
-      "en": "How complete the record is, 0-100",
-      "ar": "نسبة اكتمال السجل، 0-100",
-      "notes": "Weighted: email and phone count double"
-    },
-    {
-      "column": "quality_tier",
-      "en": "Completeness banding",
-      "ar": "تصنيف الاكتمال",
-      "notes": "A >=80, B 60-79, C 40-59, D <40"
-    },
-    {
-      "column": "group_id",
-      "en": "Records sharing a company domain or phone — branches or sister companies",
-      "ar": "سجلات تشترك في دومين أو رقم — فروع أو شركات شقيقة",
-      "notes": "Empty when the record stands alone"
-    },
-    {
-      "column": "duplicate_of",
-      "en": "Row number(s) holding an identical record",
-      "ar": "رقم/أرقام الصفوف المطابقة تماماً",
-      "notes": "No rows were removed"
-    },
-    {
-      "column": "similar_to",
-      "en": "Row number(s) with the same company name words",
-      "ar": "صفوف بنفس كلمات اسم الشركة",
-      "notes": "Likely the same company written differently"
-    },
-    {
-      "column": "name_search_key",
-      "en": "Normalised name for search and de-duplication",
-      "ar": "اسم موحّد للبحث وكشف التكرار",
-      "notes": "EN: sorted keywords. AR: unified orthography"
+      "column": "website_confidence",
+      "en": "How sure the match between this website and this contractor is.",
+      "ar": "‏درجة الثقة في أن الموقع يخص هذا المقاول.",
+      "notes": "Not found = لم يُعثر عليه (11,800) | Not checked = لم يُفحص (2,660) | Needs review = يحتاج مراجعة (1,912) | Probable = مرجَّح (1,037) | Verified = متحقَّق (549) — Not checked covers every row whose website came from the email domain and was never matched against a real site, plus the rows that received no web pass at all."
     },
     {
       "column": "outreach_priority",
-      "en": "Suggested outreach order, 1 = contact first, 5 = verify before use",
-      "ar": "ترتيب التواصل المقترح، 1 = تواصل أولاً، 5 = تحقق قبل الاستخدام",
-      "notes": "1 Contact first | 2 Strong | 3 Workable | 4 Bulk | 5 Verify first  —  method: points from email_role, email_type, website_status, phone_type and grade, banded 1-5 (>=7, 5-6, 2-4, 0-1, <0)"
+      "en": "Suggested outreach order, 1 = contact first.",
+      "ar": "‏ترتيب التواصل المقترح، 1 = تواصل أولاً.",
+      "notes": "1 = Contact first (125) | 2 = Strong (865) | 3 = Workable (5,929) | 4 = Bulk (10,959) | 5 = Verify first (80) — points from email_role, email_type, website_confidence, phone_type and grade, banded 1-5. The formula changed from REV 05 because website_status, a live DNS check, was retired; both formulas are printed on Changes."
     },
     {
       "column": "record_flags",
-      "en": "Review notes for this record. Empty means every check passed.",
-      "ar": "ملاحظات مراجعة على هذا السجل. الفراغ يعني أن كل الفحوصات نجحت.",
-      "notes": "Phone area code differs from region | Phone shared with another company | Phone pattern unusual — verify | Same name with a different grade | City recorded in another region elsewhere | English name is an abbreviation only | Email domain reserved for testing  —  no row was removed or overwritten; an empty cell means every check passed"
+      "en": "Review notes. Empty means every check passed.",
+      "ar": "‏ملاحظات مراجعة. الفراغ يعني أن كل الفحوصات نجحت.",
+      "notes": "Phone shared with another company = الرقم مشترك مع شركة أخرى (219) | Phone area code differs from region = كود الهاتف يخالف المنطقة (192) | No company name at source = لا يوجد اسم شركة في المصدر (190) | English name is an abbreviation only = الاسم الإنجليزي اختصار فقط (103) | Email domain was misspelled and was corrected = دومين البريد كان مكتوباً خطأً وتم تصحيحه (96) | Same name with a different grade = نفس الاسم بدرجة تصنيف مختلفة (68) | Commercial registration shared with another record = السجل التجاري مشترك مع سجل آخر (60) | Coordinates were a shared default pin and were cleared = إحداثيات نقطة افتراضية مشتركة وُأفرغت (41) | Register profile marked retired at source = ملف المقاول مُعلَّم منتهياً في السجل (14) | Membership number differs between sources = رقم العضوية مختلف بين المصدرين (14) | Region differs between register and profile = المنطقة مختلفة بين السجل والملف (5) | Phone pattern unusual — verify = نمط الرقم غير معتاد — يُستحسن التحقق (5) | City recorded in another region elsewhere = المدينة ترد بمنطقة أخرى في صفوف أخرى (5) | Coordinates were transposed at source = إحداثيات مقلوبة في المصدر وقُوّمت (2) | Coordinates fell outside Saudi Arabia and were cleared = إحداثيات خارج السعودية وُأفرغت (2) | Enriched with information supplied by the contractor = أُثريَ بمعلومات وردت من المقاول نفسه (1) | Contractor-supplied location differs from the register = الموقع الوارد من المقاول يخالف المسجّل في السجل (1) | City differs between register and profile = المدينة مختلفة بين السجل والملف (1) | Classification grade was recorded as an invalid value = درجة التصنيف كانت بقيمة غير صالحة (1) | Email domain reserved for testing = دومين الإيميل محجوز للاختبار (1) | empty on 17,030 rows. No row was removed or overwritten."
     }
   ],
   "charts": [
@@ -175,94 +151,94 @@ DATASET_DETAILS["contractors"] = {
       "geo": "sa-regions",
       "titleEn": "Where the records are",
       "titleAr": "أين تتركّز السجلات",
-      "noteEn": "Shading is by quantile: each band holds a similar number of regions rather than an equal slice of the range — otherwise Riyadh alone would set the scale and twelve regions would share one shade. The key names the regions in each band and what each one holds. Not on the map: Not recorded (1,649).",
-      "noteAr": "التظليل بالشرائح المئينية: كل شريحة تضمّ عدداً متقارباً من المناطق بدل أن تقتسم المدى بالتساوي، وإلا لانفردت الرياض بالمقياس وتشاركت اثنتا عشرة منطقة لوناً واحداً. والمفتاح يسمّي مناطق كل شريحة وما في كل منها. خارج الخريطة: غير مسجَّل (1,649).",
+      "noteEn": "Shading is by quantile: each band holds a similar number of regions rather than an equal slice of the range — otherwise Riyadh alone would set the scale and twelve regions would share one shade. The key names the regions in each band and what each one holds. Not on the map: Not recorded (1,546).",
+      "noteAr": "التظليل بالشرائح المئينية: كل شريحة تضمّ عدداً متقارباً من المناطق بدل أن تقتسم المدى بالتساوي، وإلا لانفردت الرياض بالمقياس وتشاركت اثنتا عشرة منطقة لوناً واحداً. والمفتاح يسمّي مناطق كل شريحة وما في كل منها. خارج الخريطة: غير مسجَّل (1,546).",
       "items": [
         {
           "iso": "SA-01",
           "labelEn": "Riyadh",
           "labelAr": "الرياض",
-          "value": 6269
+          "value": 6564
         },
         {
           "iso": "SA-02",
           "labelEn": "Makkah",
           "labelAr": "مكة المكرمة",
-          "value": 3780
+          "value": 4015
         },
         {
           "iso": "SA-04",
           "labelEn": "Eastern Province",
           "labelAr": "الشرقية",
-          "value": 2552
+          "value": 2657
         },
         {
           "iso": "SA-03",
           "labelEn": "Madinah",
           "labelAr": "المدينة المنورة",
-          "value": 729
+          "value": 779
         },
         {
           "iso": "SA-05",
           "labelEn": "Qassim",
           "labelAr": "القصيم",
-          "value": 525
+          "value": 541
         },
         {
           "iso": "SA-14",
           "labelEn": "Asir",
           "labelAr": "عسير",
-          "value": 505
+          "value": 515
         },
         {
           "iso": "SA-09",
           "labelEn": "Jizan",
           "labelAr": "جازان",
-          "value": 323
+          "value": 332
         },
         {
           "iso": "SA-07",
           "labelEn": "Tabuk",
           "labelAr": "تبوك",
-          "value": 277
+          "value": 288
         },
         {
           "iso": "SA-06",
           "labelEn": "Hail",
           "labelAr": "حائل",
-          "value": 178
+          "value": 187
         },
         {
           "iso": "SA-10",
           "labelEn": "Najran",
           "labelAr": "نجران",
-          "value": 154
+          "value": 158
         },
         {
           "iso": "SA-12",
           "labelEn": "Jawf",
           "labelAr": "الجوف",
-          "value": 151
+          "value": 156
         },
         {
           "iso": "SA-08",
           "labelEn": "Northern Borders",
           "labelAr": "الحدود الشمالية",
-          "value": 113
+          "value": 115
         },
         {
           "iso": "SA-11",
           "labelEn": "Bahah",
           "labelAr": "الباحة",
-          "value": 99
+          "value": 105
         }
       ],
-      "headlineEn": "Riyadh holds 19 times what the median region does.",
-      "headlineAr": "نصيب الرياض 19 ضعف نصيب المنطقة الوسيطة.",
+      "headlineEn": "Riyadh holds 20 times what the median region does.",
+      "headlineAr": "نصيب الرياض 20 ضعف نصيب المنطقة الوسيطة.",
       "metric": {
-        "value": 90.5,
-        "labelEn": "of 17,304 records",
-        "labelAr": "من 17,304 سجل"
+        "value": 91.4,
+        "labelEn": "of 17,958 records",
+        "labelAr": "من 17,958 سجل"
       },
       "group": "coverage"
     },
@@ -272,86 +248,86 @@ DATASET_DETAILS["contractors"] = {
       "unit": "count",
       "titleEn": "Records by region",
       "titleAr": "السجلات حسب المنطقة",
-      "noteEn": "All 13 administrative regions are represented; 1,649 records carry no region.",
-      "noteAr": "كل المناطق الإدارية الـ13 ممثَّلة، و1,649 سجل بلا منطقة مسجَّلة.",
+      "noteEn": "All 13 administrative regions are represented; 1,546 records carry no region.",
+      "noteAr": "كل المناطق الإدارية الـ13 ممثَّلة، و1,546 سجل بلا منطقة مسجَّلة.",
       "items": [
         {
           "labelEn": "Riyadh",
           "labelAr": "الرياض",
-          "value": 6269
+          "value": 6564
         },
         {
           "labelEn": "Makkah",
           "labelAr": "مكة المكرمة",
-          "value": 3780
+          "value": 4015
         },
         {
           "labelEn": "Eastern Province",
           "labelAr": "الشرقية",
-          "value": 2552
+          "value": 2657
         },
         {
           "labelEn": "Madinah",
           "labelAr": "المدينة المنورة",
-          "value": 729
+          "value": 779
         },
         {
           "labelEn": "Qassim",
           "labelAr": "القصيم",
-          "value": 525
+          "value": 541
         },
         {
           "labelEn": "Asir",
           "labelAr": "عسير",
-          "value": 505
+          "value": 515
         },
         {
           "labelEn": "Jizan",
           "labelAr": "جازان",
-          "value": 323
+          "value": 332
         },
         {
           "labelEn": "Tabuk",
           "labelAr": "تبوك",
-          "value": 277
+          "value": 288
         },
         {
           "labelEn": "Hail",
           "labelAr": "حائل",
-          "value": 178
+          "value": 187
         },
         {
           "labelEn": "Najran",
           "labelAr": "نجران",
-          "value": 154
+          "value": 158
         },
         {
           "labelEn": "Jawf",
           "labelAr": "الجوف",
-          "value": 151
+          "value": 156
         },
         {
           "labelEn": "Northern Borders",
           "labelAr": "الحدود الشمالية",
-          "value": 113
+          "value": 115
         },
         {
           "labelEn": "Bahah",
           "labelAr": "الباحة",
-          "value": 99
+          "value": 105
         },
         {
           "labelEn": "Not recorded",
           "labelAr": "غير مسجَّل",
-          "value": 1649
+          "value": 1546
         }
       ],
-      "headlineEn": "Riyadh and Makkah together: 58.1% of the records.",
-      "headlineAr": "الرياض ومكة المكرمة معاً: 58.1% من السجلات.",
+      "headlineEn": "Riyadh and Makkah together: 58.9% of the records.",
+      "headlineAr": "الرياض ومكة المكرمة معاً: 58.9% من السجلات.",
       "metric": {
         "value": 100.0,
-        "labelEn": "of 17,304 records",
-        "labelAr": "من 17,304 سجل"
+        "labelEn": "of 17,958 records",
+        "labelAr": "من 17,958 سجل"
       },
       "group": "coverage"
     },
@@ -361,66 +337,66 @@ DATASET_DETAILS["contractors"] = {
       "unit": "count",
       "titleEn": "Top 10 cities",
       "titleAr": "أكبر ١٠ مدن",
-      "noteEn": "Out of 301 cities in the file; 1,727 records carry no city.",
-      "noteAr": "من إجمالي ٣٠١ مدينة في الملف، و1,727 سجل بلا مدينة مسجَّلة.",
+      "noteEn": "Out of 311 cities in the file; 1,546 records carry no city.",
+      "noteAr": "من إجمالي ٣١١ مدينة في الملف، و1,546 سجل بلا مدينة مسجَّلة.",
       "items": [
         {
           "labelEn": "Riyadh",
           "labelAr": "الرياض",
-          "value": 5760
+          "value": 6059
         },
         {
           "labelEn": "Jeddah",
           "labelAr": "جدة",
-          "value": 2335
+          "value": 2485
         },
         {
           "labelEn": "Makkah Al Mukarramah",
           "labelAr": "مكة المكرمة",
-          "value": 931
+          "value": 997
         },
         {
           "labelEn": "Dammam",
           "labelAr": "الدمام",
-          "value": 903
+          "value": 947
         },
         {
           "labelEn": "Al Khobar",
           "labelAr": "الخبر",
-          "value": 708
+          "value": 742
         },
         {
           "labelEn": "Al Madinah Al Munawwarah",
           "labelAr": "المدينة المنورة",
-          "value": 614
+          "value": 656
         },
         {
           "labelEn": "At Taif",
           "labelAr": "الطائف",
-          "value": 305
+          "value": 332
         },
         {
           "labelEn": "Buraydah",
           "labelAr": "بريدة",
-          "value": 300
+          "value": 307
         },
         {
           "labelEn": "Tabuk",
           "labelAr": "تبوك",
-          "value": 234
+          "value": 239
         },
         {
           "labelEn": "Al Jubail",
           "labelAr": "الجبيل",
-          "value": 218
+          "value": 233
         }
       ],
-      "headlineEn": "Riyadh and Jeddah together: 46.8% of the records.",
-      "headlineAr": "الرياض وجدة معاً: 46.8% من السجلات.",
+      "headlineEn": "Riyadh and Jeddah together: 47.6% of the records.",
+      "headlineAr": "الرياض وجدة معاً: 47.6% من السجلات.",
       "metric": {
-        "value": 71.1,
-        "labelEn": "of 17,304 records",
-        "labelAr": "من 17,304 سجل"
+        "value": 72.4,
+        "labelEn": "of 17,958 records",
+        "labelAr": "من 17,958 سجل"
       },
       "group": "coverage"
     },
@@ -430,40 +406,40 @@ DATASET_DETAILS["contractors"] = {
       "unit": "percent",
       "titleEn": "Contact coverage",
       "titleAr": "تغطية وسائل التواصل",
-      "noteEn": "Share of the 17,304 records carrying each channel. Phone counts only numbers that parse as a real Saudi line.",
+      "noteEn": "Share of the 17,958 records carrying each channel. Phone counts only numbers that parse as a real Saudi line.",
       "noteAr": "نسبة السجلات التي تحمل كل وسيلة. الهاتف يحتسب فقط الأرقام السليمة فعلاً.",
       "items": [
         {
           "labelEn": "Email address",
           "labelAr": "بريد إلكتروني",
-          "value": 99.5,
-          "count": 17223
+          "value": 99.6,
+          "count": 17891
         },
         {
           "labelEn": "Dialable phone",
           "labelAr": "رقم هاتف صالح",
-          "value": 29.4,
-          "count": 5094
+          "value": 30.4,
+          "count": 5462
         },
         {
           "labelEn": "Company website",
           "labelAr": "موقع إلكتروني",
-          "value": 25.2,
-          "count": 4366
+          "value": 30.6,
+          "count": 5504
         },
         {
           "labelEn": "Street address",
           "labelAr": "عنوان تفصيلي",
-          "value": 7.2,
-          "count": 1244
+          "value": 7.9,
+          "count": 1416
         }
       ],
-      "headlineEn": "Email address on 99.5% of the records, street address on only 7.2%.",
-      "headlineAr": "بريد إلكتروني في 99.5% من السجلات، وعنوان تفصيلي في 7.2% فقط.",
+      "headlineEn": "Email address on 99.6% of the records, street address on only 7.9%.",
+      "headlineAr": "بريد إلكتروني في 99.6% من السجلات، وعنوان تفصيلي في 7.9% فقط.",
       "metric": {
         "value": 100.0,
-        "labelEn": "of 17,304 records",
-        "labelAr": "من 17,304 سجل"
+        "labelEn": "of 17,958 records",
+        "labelAr": "من 17,958 سجل"
       },
       "group": "usability"
     },
@@ -473,52 +449,52 @@ DATASET_DETAILS["contractors"] = {
       "unit": "count",
       "titleEn": "Classification grades",
       "titleAr": "درجات التصنيف",
-      "noteEn": "Unclassified is a value in the source register, not a gap in the data. Charted here are the 5,398 records on the scale, 31% of the file; 11,905 unclassified, 1 not recorded sit outside it.",
-      "noteAr": "«غير مصنّف» قيمة في السجل المصدر، وليست نقصاً في البيانات. المرسوم هنا هو 5,398 سجل على السلّم، أي 31% من الملف؛ وخارجه 11,905 غير مصنف و1 غير مسجَّل.",
+      "noteEn": "Unclassified is a value in the source register, not a gap in the data. Charted here are the 5,483 records on the scale, 31% of the file; 12,284 unclassified, 191 not recorded sit outside it.",
+      "noteAr": "«غير مصنّف» قيمة في السجل المصدر، وليست نقصاً في البيانات. المرسوم هنا هو 5,483 سجل على السلّم، أي 31% من الملف؛ وخارجه 12,284 غير مصنف و191 غير مسجَّل.",
       "items": [
         {
           "labelEn": "First Classified",
           "labelAr": "مصنف درجة أولى",
-          "value": 1197,
+          "value": 1212,
           "step": 0
         },
         {
           "labelEn": "Second Classified",
           "labelAr": "مصنف درجة ثانية",
-          "value": 764,
+          "value": 780,
           "step": 1
         },
         {
           "labelEn": "Third Classified",
           "labelAr": "مصنف درجة ثالثة",
-          "value": 535,
+          "value": 541,
           "step": 2
         },
         {
           "labelEn": "Fourth Classified",
           "labelAr": "مصنف درجة رابعة",
-          "value": 323,
+          "value": 327,
           "step": 3
         },
         {
           "labelEn": "Fifth Classified",
           "labelAr": "مصنف درجة خامسة",
-          "value": 445,
+          "value": 450,
           "step": 4
         },
         {
           "labelEn": "Sixth Classified",
           "labelAr": "مصنف درجة سادسة",
-          "value": 2134,
+          "value": 2173,
           "step": 5
         }
       ],
-      "headlineEn": "Sixth Classified: 12.3% of the records.",
-      "headlineAr": "مصنف درجة سادسة: 12.3% من السجلات.",
+      "headlineEn": "Sixth Classified: 12.1% of the records.",
+      "headlineAr": "مصنف درجة سادسة: 12.1% من السجلات.",
       "metric": {
-        "value": 31.2,
-        "labelEn": "of 17,304 records",
-        "labelAr": "من 17,304 سجل"
+        "value": 30.5,
+        "labelEn": "of 17,958 records",
+        "labelAr": "من 17,958 سجل"
       },
       "group": "composition"
     },
@@ -534,34 +510,34 @@ DATASET_DETAILS["contractors"] = {
         {
           "labelEn": "Saudi Contractor",
           "labelAr": "مقاول سعودي",
-          "value": 15581,
+          "value": 16167,
           "share": 90.0
         },
         {
           "labelEn": "Non-Saudi Contractor",
           "labelAr": "مقاول غير سعودي",
-          "value": 1624,
-          "share": 9.4
+          "value": 1705,
+          "share": 9.5
         },
         {
           "labelEn": "Affiliate-Organization",
           "labelAr": "مهتم - منشأة",
-          "value": 18,
+          "value": 19,
           "share": 0.1
         },
         {
           "labelEn": "Not recorded",
           "labelAr": "غير مسجَّل",
-          "value": 81,
-          "share": 0.5
+          "value": 67,
+          "share": 0.4
         }
       ],
       "headlineEn": "Saudi Contractor: 90% of the records.",
       "headlineAr": "مقاول سعودي: 90% من السجلات.",
       "metric": {
         "value": 100.0,
-        "labelEn": "of 17,304 records",
-        "labelAr": "من 17,304 سجل"
+        "labelEn": "of 17,958 records",
+        "labelAr": "من 17,958 سجل"
       },
       "group": "composition"
     }

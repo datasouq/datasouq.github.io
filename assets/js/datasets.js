@@ -56,33 +56,35 @@ const DATASETS = [
        stale without anything on the page looking wrong.
 
        The fifth metric counts membership_type = "Non-Saudi Contractor":
-       1,624 rows, 9.39%. Saudi Contractor is 15,581, and 18 rows are
-       Affiliate-Organization.
+       1,705 rows, 9.49%. Saudi Contractor is 16,167, 19 rows are
+       Affiliate-Organization, and 67 carry no membership type.
 
        The classification metric says 31%, not 7. The column does hold seven
-       distinct values, but "Unclassified" is one of them and covers 68.80%
-       of the file. "7 classification grades" was true as a count of values
+       distinct values, but "Unclassified" is one of them and covers most of
+       the file. "7 classification grades" was true as a count of values
        and false as a description of the data: it reads as though every
        record carries a grade when two in three carry none. What is real is
-       5,398 classified contractors (1,197 + 764 + 535 + 323 + 445 + 2,134
-       across the six grades), 31.20%, spread over six grades.
+       5,483 classified contractors across the six grades, 30.53%.
 
-       2026-09 edition: cities dropped from 302 to 301, everything else held
-       — same 17,304 records, same 1,624 non-Saudi contractors, same 31.20%
-       and 99.53% rounding to the figures already on the page. */
+       2026-09-12 edition: 17,958 records, up from 17,304. The classified
+       share did NOT move with it — 5,483 against 5,398, on a bigger file,
+       so the percentage fell from 31.20% to 30.53%. The source column looks
+       fuller than that because 2,921 of its values are a literal 0 meaning
+       Unclassified; counting those would have read as a 47% jump that never
+       happened. Cities rose from 301 to 311. */
     metrics: [
-      { icon: ICONS.rows3,  value: "17,304", labelEn: "records", labelAr: "سجل" },
-      { icon: ICONS.mapPin, value: "301",    labelEn: "cities across 13 regions", labelAr: "مدينة في ١٣ منطقة" },
+      { icon: ICONS.rows3,  value: "17,958", labelEn: "records", labelAr: "سجل" },
+      { icon: ICONS.mapPin, value: "311",    labelEn: "cities across 13 regions", labelAr: "مدينة في ١٣ منطقة" },
       { icon: ICONS.layers, value: "31%",    labelEn: "classified, across 6 grades", labelAr: "مصنّفون على ٦ درجات" },
-      { icon: ICONS.mail,   value: "99.5%",  labelEn: "carry an email", labelAr: "منهم ببريد إلكتروني" },
-      { icon: ICONS.globe,  value: "1,624",  labelEn: "non-Saudi contractors", labelAr: "مقاول غير سعودي" },
+      { icon: ICONS.mail,   value: "99.6%",  labelEn: "carry an email", labelAr: "منهم ببريد إلكتروني" },
+      { icon: ICONS.globe,  value: "1,705",  labelEn: "non-Saudi contractors", labelAr: "مقاول غير سعودي" },
     ],
 
     seo: {
       anchor: "contractors-saudi-arabia",
       alternateName: "المقاولون في السعودية",
       description:
-        "A structured dataset of 17,304 contractors across Saudi Arabia, cleaned and deduplicated, covering 301 cities in 13 regions. 99.5% of records carry an email, 31% are classified across 6 grades, and 1,624 are non-Saudi contractors. Delivered in Arabic and English.",
+        "A structured dataset of 17,958 contractors across Saudi Arabia, cleaned and deduplicated, covering 311 cities in 13 regions. 99.6% of records carry an email, 31% are classified across 6 grades, and 1,705 are non-Saudi contractors. Delivered in Arabic and English.",
       inLanguage: ["ar", "en"],
       spatialCoverage: "Saudi Arabia",
       encodingFormat: ["application/vnd.ms-excel", "text/csv"],

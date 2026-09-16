@@ -749,15 +749,58 @@ def counted(counter, translate=True, drop_blank=True):
     return out
 
 
+# The contractors workbook lives in its own revision folder, not the flat source folder the
+# other datasets use. The environment variable wins, so moving the folder needs no code change.
+CONTRACTORS_FILE = "DataSouq - Saudi Contractors Database - 2026-09-12.xlsx"
+CONTRACTORS_DIR = os.environ.get(
+    "DATASOUQ_CONTRACTORS",
+    os.path.join(os.path.expanduser("~"), "Desktop", "DATASOUQ", "_ORGANIZED", "contractors",
+                 "1 - CURRENT REV 06 - 2026-09-12", "1 - SEND TO CLIENTS"),
+)
+
+
+def workbook(path):
+    """Open a delivered workbook, failing with the path rather than a stack trace."""
+    if not os.path.isfile(path):
+        sys.exit("Workbook not found: %s\nPass the folder as an argument, or set the matching "
+                 "environment variable." % path)
+    return openpyxl.load_workbook(path, read_only=True, data_only=True)
+
+
+def arabic_digits(value):
+    """Western digits rendered Arabic-Indic, the way the site renders every other number."""
+    return str(value).translate(str.maketrans("0123456789", "٠١٢٣٤٥٦٧٨٩"))
+
+
 def read_dictionary(ws):
-    """The workbook's own Data_Dictionary sheet, verbatim."""
+    """The workbook's own Data_Dictionary sheet, verbatim.
+
+    From REV 06 the sheet carries more than one block: the main-sheet columns, then the child
+    sheets, then a "withheld" block naming the source columns that do NOT ship. Only the first
+    block describes the columns a reader of this page will see, so the rest is skipped. The two
+    signals are structural rather than cosmetic: a heading is not a bare identifier, and a
+    child-sheet column is written indented.
+    """
     entries = []
     for row in ws.iter_rows(min_row=2, values_only=True):
         if row is None or row[0] in (None, ""):
             continue
+        raw = str(row[0])
+        column = raw.strip()
+        first = column.split()[0] if column.split() else ""
+        if first.isupper() and len(first) > 2:
+            # A shouted heading opens a block. The contractors dictionary is written in blocks:
+            # the main-sheet columns first, then the child sheets, then the columns that do not
+            # ship at all. So a heading before any column is the opening one, and a heading after
+            # them ends the run. The other datasets carry no headings and are read whole.
+            if entries:
+                break
+            continue
+        if raw != raw.lstrip():
+            continue        # indented: belongs to a child sheet, not the main one
         entries.append(
             {
-                "column": str(row[0]).strip(),
+                "column": column,
                 "en": (row[1] or "").strip(),
                 "ar": (row[2] or "").strip(),
                 "notes": (row[3] or "").strip(),
@@ -772,16 +815,21 @@ def read_dictionary(ws):
 
 
 def build_contractors(source):
-    path = os.path.join(source, "DataSouq - Saudi Contractors Database - 2026-09.xlsx")
-    book = openpyxl.load_workbook(path, read_only=True, data_only=True)
+    book = workbook(os.path.join(CONTRACTORS_DIR, CONTRACTORS_FILE))
 
     dictionary = read_dictionary(book["Data_Dictionary"])
 
-    # The EN and AR sheets are the same records in two languages, same order,
-    # so reading both gives a bilingual label for every region and city
-    # without a translation table.
-    english = list(rows_of(book["EN"], "record_id"))
-    arabic = {row["record_id"]: row for row in rows_of(book["AR"], "record_id")}
+    # The two main sheets are the same records in two languages, same order, so reading both gives
+    # a bilingual label for every region and city without a translation table. They are named
+    # after the database itself.
+    english = list(rows_of(book["DataSouq - Saudi Contractors"], "record_id"))
+    arabic = {row["record_id"]: row
+              for row in rows_of(book["داتاسوق - مقاولو السعودية"], "record_id")}
+
+    # The street address can repeat, so it lives on the Location sheet, one row per address,
+    # rather than on the main sheet.
+    addressed = {row["record_id"] for row in rows_of(book["Location"], "record_id")
+                 if str(row.get("address") or "").strip()}
 
     total = len(english)
     regions, cities, classes, members, email_types, priorities = (
@@ -809,7 +857,7 @@ def build_contractors(source):
             filled["phone"] += 1
         if row["company_website"]:
             filled["website"] += 1
-        if row["organization_address"]:
+        if row["record_id"] in addressed:
             filled["address"] += 1
 
     def paired(counter, limit=None, drop_blank=True):
@@ -834,6 +882,7 @@ def build_contractors(source):
             out.append(("Not recorded", "غير مسجَّل", blank))
         return out
 
+    distinct_cities = sum(1 for (label_en, _) in cities if label_en not in (None, ""))
     blank_region = sum(v for (label_en, _), v in regions.items() if label_en in (None, ""))
     blank_city = sum(v for (label_en, _), v in cities.items() if label_en in (None, ""))
 
@@ -870,8 +919,10 @@ def build_contractors(source):
             "Top 10 cities",
             "أكبر ١٠ مدن",
             paired(cities, limit=10),
-            note_en="Out of 301 cities in the file; %s records carry no city." % format(blank_city, ","),
-            note_ar="من إجمالي ٣٠١ مدينة في الملف، و%s سجل بلا مدينة مسجَّلة." % format(blank_city, ","),
+            note_en="Out of %s cities in the file; %s records carry no city."
+            % (format(distinct_cities, ","), format(blank_city, ",")),
+            note_ar="من إجمالي %s مدينة في الملف، و%s سجل بلا مدينة مسجَّلة."
+            % (arabic_digits(distinct_cities), format(blank_city, ",")),
         ),
         split(
             "membership",
@@ -892,7 +943,8 @@ def build_contractors(source):
                 ("Street address", "عنوان تفصيلي", filled["address"]),
             ],
             total,
-            note_en="Share of the 17,304 records carrying each channel. Phone counts only numbers that parse as a real Saudi line.",
+            note_en="Share of the %s records carrying each channel. Phone counts only numbers that parse as a real Saudi line."
+            % format(total, ","),
             note_ar="نسبة السجلات التي تحمل كل وسيلة. الهاتف يحتسب فقط الأرقام السليمة فعلاً.",
         ),
     ]
