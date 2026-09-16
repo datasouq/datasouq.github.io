@@ -103,8 +103,8 @@
         (metric) => `
         <li>
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${metric.icon}</svg>
-          <span><strong>${t.digits(metric.value)}</strong> <span>${escapeHtml(
-          lang === "ar" ? metric.labelAr : metric.labelEn
+          <span><strong>${t.digits(window.DATASOUQ_METRIC.value(dataset, metric))}</strong> <span>${escapeHtml(
+          t.digits(window.DATASOUQ_METRIC.label(dataset, lang === "ar" ? metric.labelAr : metric.labelEn))
         )}</span></span>
         </li>`
       )

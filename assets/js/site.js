@@ -311,6 +311,29 @@ const I18N = {
      patched in place — there is no per-node state worth preserving, and a
      fresh render can never drift out of sync with a stale data-i18n node the
      way the old hand-authored cards could. */
+  /* A card's figures come from assets/data/metrics.js, which the build measures from the
+     delivered file. A metric names the figure it wants rather than carrying a copy of it, so a
+     new edition updates the page by being built, not by anyone editing this file. A metric that
+     names nothing keeps its literal value — that is how a dataset whose workbook this pipeline
+     does not build yet still renders. Labels may carry {placeholders} for the same reason. */
+  function figure(datasetId, name) {
+    const set = (typeof DATASET_METRICS !== "undefined" && DATASET_METRICS[datasetId]) || {};
+    return set[name];
+  }
+
+  function metricValue(dataset, m) {
+    return (m.metric && figure(dataset.id, m.metric)) || m.value || "";
+  }
+
+  function metricLabel(dataset, text) {
+    return String(text || "").replace(/\{(\w+)\}/g, (whole, name) =>
+      figure(dataset.id, name) || whole);
+  }
+
+  /* The detail page renders the same five metrics from the same catalogue entry, so it resolves
+     them the same way rather than keeping a second copy of the rule. */
+  window.DATASOUQ_METRIC = { value: metricValue, label: metricLabel };
+
   function renderDatasetCard(dataset, t) {
     const title = lang === "ar" ? dataset.titleAr : dataset.titleEn;
     const body = lang === "ar" ? dataset.bodyAr : dataset.bodyEn;
@@ -319,7 +342,7 @@ const I18N = {
         (m) => `
         <li>
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${m.icon}</svg>
-          <span><strong>${t.digits(m.value)}</strong> <span>${lang === "ar" ? m.labelAr : m.labelEn}</span></span>
+          <span><strong>${t.digits(metricValue(dataset, m))}</strong> <span>${t.digits(metricLabel(dataset, lang === "ar" ? m.labelAr : m.labelEn))}</span></span>
         </li>`
       )
       .join("");

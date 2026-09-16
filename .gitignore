@@ -2,7 +2,8 @@
 __pycache__/
 *.pyc
 
-# Claude Code's per-machine settings. It carries an absolute path from
-# whoever's machine wrote it, Claude Code writes it without being asked, and
-# it lands untracked exactly where `git add -A` would sweep it up.
-.claude/settings.local.json
+# Claude Code's own directory. None of it is site content: settings.local.json
+# carries an absolute path from whoever's machine wrote it, launch.json is a
+# local dev-server port, and worktrees/ holds whole checkouts. All of it is
+# written without being asked, and lands exactly where `git add -A` sweeps.
+.claude/
