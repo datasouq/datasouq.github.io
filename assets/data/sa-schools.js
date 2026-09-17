@@ -2,7 +2,7 @@
    Every figure here is measured from the delivered Excel file.
    Re-run the script after any change to that file. */
 
-DATASET_DETAILS["schools"] = {
+DATASET_DETAILS["sa-schools"] = {
   "dictionary": [
     {
       "column": "datasouq_key",
@@ -261,8 +261,8 @@ DATASET_DETAILS["schools"] = {
       "headlineAr": "نصيب الرياض 10 ضعف نصيب المنطقة الوسيطة.",
       "metric": {
         "value": 100.0,
-        "labelEn": "of 2,354 records",
-        "labelAr": "من 2,354 سجل"
+        "labelEn": "of 2,354 schools",
+        "labelAr": "من 2,354 مدرسة"
       },
       "group": "coverage"
     },
@@ -326,12 +326,12 @@ DATASET_DETAILS["schools"] = {
           "value": 51
         }
       ],
-      "headlineEn": "Riyadh and Jeddah together: 40.9% of the records.",
-      "headlineAr": "‏الرياض و‏جدة معاً: 40.9% من السجلات.",
+      "headlineEn": "Riyadh and Jeddah together: 40.9% of the schools.",
+      "headlineAr": "‏الرياض و‏جدة معاً: 40.9% من المدارس.",
       "metric": {
         "value": 64.9,
-        "labelEn": "of 2,354 records",
-        "labelAr": "من 2,354 سجل"
+        "labelEn": "of 2,354 schools",
+        "labelAr": "من 2,354 مدرسة"
       },
       "group": "coverage"
     },
@@ -381,12 +381,12 @@ DATASET_DETAILS["schools"] = {
           "count": 863
         }
       ],
-      "headlineEn": "Email address on 100% of the records, landline on only 30.3%.",
-      "headlineAr": "بريد إلكتروني في 100% من السجلات، وهاتف أرضي في 30.3% فقط.",
+      "headlineEn": "Email address on 100% of the schools, landline on only 30.3%.",
+      "headlineAr": "بريد إلكتروني في 100% من المدارس، وهاتف أرضي في 30.3% فقط.",
       "metric": {
         "value": 100.0,
-        "labelEn": "of 2,354 records",
-        "labelAr": "من 2,354 سجل"
+        "labelEn": "of 2,354 schools",
+        "labelAr": "من 2,354 مدرسة"
       },
       "group": "usability"
     },
@@ -418,12 +418,12 @@ DATASET_DETAILS["schools"] = {
           "share": 2.2
         }
       ],
-      "headlineEn": "National: 78.3% of the records.",
-      "headlineAr": "أهلي: 78.3% من السجلات.",
+      "headlineEn": "National: 78.3% of the schools.",
+      "headlineAr": "أهلي: 78.3% من المدارس.",
       "metric": {
         "value": 113.3,
-        "labelEn": "of 2,354 records",
-        "labelAr": "من 2,354 سجل"
+        "labelEn": "of 2,354 schools",
+        "labelAr": "من 2,354 مدرسة"
       },
       "group": "composition"
     },
@@ -517,12 +517,12 @@ DATASET_DETAILS["schools"] = {
           "value": 15
         }
       ],
-      "headlineEn": "Riyadh and Jeddah together: 47.8% of the records.",
-      "headlineAr": "‏الرياض و‏جدة معاً: 47.8% من السجلات.",
+      "headlineEn": "Riyadh and Jeddah together: 47.8% of the schools.",
+      "headlineAr": "‏الرياض و‏جدة معاً: 47.8% من المدارس.",
       "metric": {
         "value": 100.0,
-        "labelEn": "of 2,354 records",
-        "labelAr": "من 2,354 سجل"
+        "labelEn": "of 2,354 schools",
+        "labelAr": "من 2,354 مدرسة"
       },
       "group": "composition"
     },
@@ -560,12 +560,12 @@ DATASET_DETAILS["schools"] = {
           "step": 3
         }
       ],
-      "headlineEn": "Primary: 71.9% of the records.",
-      "headlineAr": "الابتدائية: 71.9% من السجلات.",
+      "headlineEn": "Primary: 71.9% of the schools.",
+      "headlineAr": "الابتدائية: 71.9% من المدارس.",
       "metric": {
         "value": 225.4,
-        "labelEn": "of 2,354 records",
-        "labelAr": "من 2,354 سجل"
+        "labelEn": "of 2,354 schools",
+        "labelAr": "من 2,354 مدرسة"
       },
       "group": "composition"
     },
@@ -629,12 +629,12 @@ DATASET_DETAILS["schools"] = {
           "value": 24
         }
       ],
-      "headlineEn": "National Saudi: 73.5% of the records.",
-      "headlineAr": "أهلي وطني: 73.5% من السجلات.",
+      "headlineEn": "National Saudi: 73.5% of the schools.",
+      "headlineAr": "أهلي وطني: 73.5% من المدارس.",
       "metric": {
         "value": 159.2,
-        "labelEn": "of 2,354 records",
-        "labelAr": "من 2,354 سجل"
+        "labelEn": "of 2,354 schools",
+        "labelAr": "من 2,354 مدرسة"
       },
       "group": "composition"
     }

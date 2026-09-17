@@ -433,6 +433,34 @@ const I18N = {
     script.textContent = JSON.stringify(graph);
   }
 
+  /* The language a link carries.
+
+     A ?lang= in the address is an instruction from whoever sent the link, so it wins over the
+     visitor's stored preference and is stored in turn — otherwise a link shared in Arabic would
+     flip back to English on the next click, halfway through reading. One use of the picker
+     overrides it again, and that is stored too.
+
+     applyLang writes the language back into the address bar on every switch, so a URL copied
+     from there always says which language it opens in. That is the whole point: a link sent to
+     a client should not open in whichever language that client's browser happens to remember. */
+  function langFromUrl() {
+    try {
+      const value = new URLSearchParams(window.location.search).get("lang");
+      return I18N[value] ? value : null;
+    } catch (e) {
+      return null;
+    }
+  }
+
+  function writeLangToUrl(value) {
+    try {
+      const url = new URL(window.location.href);
+      if (url.searchParams.get("lang") === value) return;
+      url.searchParams.set("lang", value);
+      window.history.replaceState(null, "", url.toString());
+    } catch (e) { /* no history API, or a file:// page */ }
+  }
+
   function applyLang(next) {
     lang = I18N[next] ? next : "en";
     const t = I18N[lang];
@@ -501,6 +529,7 @@ const I18N = {
     wireWhatsapp();
 
     store("datasouq-lang", lang);
+    writeLangToUrl(lang);
 
     /* The dataset page renders itself from the same DATASETS array and has
        to follow a language switch the way the catalogue does. It registers
@@ -564,7 +593,7 @@ const I18N = {
 
   function init() {
     renderDatasetStructuredData();
-    applyLang(store("datasouq-lang") || CONFIG.defaultLang);
+    applyLang(langFromUrl() || store("datasouq-lang") || CONFIG.defaultLang);
 
     /* The language picker: a menu button, following the keyboard contract a
        menu owes — Enter/Space/Down opens onto the first option, Up opens onto

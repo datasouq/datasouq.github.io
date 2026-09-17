@@ -29,11 +29,21 @@
    how a dataset whose workbook the pipeline does not build yet keeps working.
    Those figures ARE hand-kept, and the comment above each such entry records
    what was measured and what was deliberately left out.
+
+   An id carries the country it covers, as its ISO 3166-1 alpha-2 code: `sa-schools`,
+   `eg-…`, and `global` where a dataset spans more than one country or none. It is the same
+   code the workbook's own datasouq_key carries (DS-SA-SCH-00001), so one dataset is named the
+   same way wherever it appears.
+
+   `previousIds` lists what the dataset used to be called. Those URLs were sent to people and
+   are in search indexes, so dataset.html still answers to them and corrects the address bar to
+   the current id — a link never dies just because we renamed something.
    ========================================================================== */
 
 const DATASETS = [
   {
-    id: "contractors",
+    id: "sa-contractors",
+    previousIds: ["contractors"],
     icon: ICONS.hardHat,
 
     /* Named generically on purpose. The dataset is ours; it is not the
@@ -98,7 +108,8 @@ const DATASETS = [
   },
 
   {
-    id: "schools",
+    id: "sa-schools",
+    previousIds: ["schools"],
     icon: ICONS.graduationCap,
 
     titleEn: "Schools in Saudi Arabia",
@@ -157,7 +168,8 @@ const DATASETS = [
   },
 
   {
-    id: "engineering",
+    id: "sa-engineering",
+    previousIds: ["engineering"],
     icon: ICONS.draftingCompass,
 
     titleEn: "Engineering Offices in Saudi Arabia",
@@ -202,7 +214,8 @@ const DATASETS = [
   },
 
   {
-    id: "healthcare",
+    id: "sa-healthcare",
+    previousIds: ["healthcare"],
     icon: ICONS.hospital,
 
     titleEn: "Healthcare Facilities in Saudi Arabia",
