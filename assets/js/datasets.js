@@ -19,11 +19,16 @@
    second metric below, "cities across 13 regions" against "مدينة في ١٣ منطقة":
    city count and region count swap sides between the two languages.
 
-   Every figure in every dataset here is measured from the delivered file
-   itself, never estimated. Re-measure and update the relevant entry
-   whenever that file changes — the comment above each dataset's metrics
-   records what was measured and what was deliberately left out, so the next
-   re-measurement can follow the same method instead of re-deriving it.
+   A metric names the figure it wants (`metric: "records"`) rather than
+   carrying a copy of it; the value comes from assets/data/metrics.js, which
+   the build measures from the delivered file. So a new edition updates these
+   cards by being built, not by anyone editing this file. Labels may carry
+   {placeholders} resolved the same way.
+
+   A metric with a literal `value:` and no `metric:` still renders — that is
+   how a dataset whose workbook the pipeline does not build yet keeps working.
+   Those figures ARE hand-kept, and the comment above each such entry records
+   what was measured and what was deliberately left out.
    ========================================================================== */
 
 const DATASETS = [
@@ -73,11 +78,11 @@ const DATASETS = [
        Unclassified; counting those would have read as a 47% jump that never
        happened. Cities rose from 301 to 311. */
     metrics: [
-      { icon: ICONS.rows3,  value: "17,958", labelEn: "records", labelAr: "سجل" },
-      { icon: ICONS.mapPin, value: "311",    labelEn: "cities across 13 regions", labelAr: "مدينة في ١٣ منطقة" },
-      { icon: ICONS.layers, value: "31%",    labelEn: "classified, across 6 grades", labelAr: "مصنّفون على ٦ درجات" },
-      { icon: ICONS.mail,   value: "99.6%",  labelEn: "carry an email", labelAr: "منهم ببريد إلكتروني" },
-      { icon: ICONS.globe,  value: "1,705",  labelEn: "non-Saudi contractors", labelAr: "مقاول غير سعودي" },
+      { icon: ICONS.rows3,  metric: "records",       labelEn: "records", labelAr: "سجل" },
+      { icon: ICONS.mapPin, metric: "cities",        labelEn: "cities across {regions} regions", labelAr: "مدينة في {regions} منطقة" },
+      { icon: ICONS.layers, metric: "classifiedPct", labelEn: "classified, across 6 grades", labelAr: "مصنّفون على ٦ درجات" },
+      { icon: ICONS.mail,   metric: "emailPct",      labelEn: "carry an email", labelAr: "منهم ببريد إلكتروني" },
+      { icon: ICONS.globe,  metric: "nonSaudi",      labelEn: "non-Saudi contractors", labelAr: "مقاول غير سعودي" },
     ],
 
     seo: {

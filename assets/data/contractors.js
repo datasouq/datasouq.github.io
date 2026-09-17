@@ -5,7 +5,7 @@
 DATASET_DETAILS["contractors"] = {
   "dictionary": [
     {
-      "column": "record_id",
+      "column": "datasouq_key",
       "en": "Permanent identifier for this record, stable across editions.",
       "ar": "‏معرّف دائم للسجل، ثابت بين الإصدارات.",
       "notes": "DS-SA-CON-00001 … use it to match a later edition to this one. 17,259 of REV 05's 17,304 records keep the id they had; 45 could not be matched; 699 ids were minted for this edition. No id is ever reused."
