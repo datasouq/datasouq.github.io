@@ -257,10 +257,13 @@ CHART_GROUPS = {
 # (English plural, Arabic plural with the article, Arabic singular after a
 # number). Arabic counts a thing in the singular after a large number --
 # "17,304 sijill", not "17,304 sijillat" -- so the counted form is separate.
+# Keyed on the dataset id, which carries the country (rule 18). A dataset with no entry falls
+# back to "records", which is how the schools page came out counting سجل instead of مدرسة.
 NOUNS = {
-    "contractors": ("records", "السجلات", "سجل"),
-    "engineering": ("offices", "المكاتب", "مكتب"),
-    "healthcare": ("facilities", "المنشآت", "منشأة"),
+    "sa-contractors": ("records", "السجلات", "سجل"),
+    "sa-schools": ("schools", "المدارس", "مدرسة"),
+    "sa-engineering": ("offices", "المكاتب", "مكتب"),
+    "sa-healthcare": ("facilities", "المنشآت", "منشأة"),
 }
 
 # Labels that name the absence of a value. They are never the subject of a
@@ -964,7 +967,7 @@ def build_contractors(source):
                 "emailPct": "%.1f%%" % (100.0 * filled["email"] / total),
                 "nonSaudi": format(non_saudi, ","),
             },
-            "charts": grouped(narrate(charts, "contractors", total))}
+            "charts": grouped(narrate(charts, "sa-contractors", total))}
 
 
 def build_engineering(source):
@@ -1037,7 +1040,7 @@ def build_engineering(source):
 
     book.close()
     return {"total": total, "consulting": consulting, "dictionary": dictionary,
-            "charts": grouped(narrate(charts, "engineering", total))}
+            "charts": grouped(narrate(charts, "sa-engineering", total))}
 
 
 # The healthcare workbook ships no Data_Dictionary sheet — it is a single
@@ -1173,7 +1176,7 @@ def build_healthcare(source):
 
     book.close()
     return {"total": total, "dictionary": dictionary,
-            "charts": grouped(narrate(charts, "healthcare", total))}
+            "charts": grouped(narrate(charts, "sa-healthcare", total))}
 
 
 SCHOOLS_FILE = "DataSouq - Saudi Schools Database - 2026-09-13.xlsx"
@@ -1410,14 +1413,14 @@ def build_schools(source):
                 "emailPct": "%.1f%%" % (100.0 * filled["email"] / total),
                 "international": format(international, ","),
             },
-            "charts": grouped(narrate(charts, "schools", total))}
+            "charts": grouped(narrate(charts, "sa-schools", total))}
 
 
 BUILDERS = {
-    "contractors": build_contractors,
-    "schools": build_schools,
-    "engineering": build_engineering,
-    "healthcare": build_healthcare,
+    "sa-contractors": build_contractors,
+    "sa-schools": build_schools,
+    "sa-engineering": build_engineering,
+    "sa-healthcare": build_healthcare,
 }
 
 

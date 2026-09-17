@@ -2,7 +2,7 @@
    Every figure here is measured from the delivered Excel file.
    Re-run the script after any change to that file. */
 
-DATASET_DETAILS["contractors"] = {
+DATASET_DETAILS["sa-contractors"] = {
   "dictionary": [
     {
       "column": "datasouq_key",

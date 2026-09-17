@@ -2,7 +2,7 @@
    Every figure here is measured from the delivered Excel file.
    Re-run the script after any change to that file. */
 
-DATASET_DETAILS["healthcare"] = {
+DATASET_DETAILS["sa-healthcare"] = {
   "dictionary": [
     {
       "column": "التسلسل",

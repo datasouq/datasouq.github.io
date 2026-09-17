@@ -22,7 +22,22 @@
   const BASE = "https://datasouq.github.io/";
   const params = new URLSearchParams(window.location.search);
   const requested = params.get("id");
-  const dataset = DATASETS.find((entry) => entry.id === requested);
+
+  /* An id carries its country now — sa-schools, not schools — and the older links were sent to
+     people and are in search indexes. `previousIds` on each entry keeps them answering, and the
+     address bar is corrected to the current id so the copy someone makes from it is the one we
+     want indexed. The language stays exactly as the visitor found it. */
+  const dataset =
+    DATASETS.find((entry) => entry.id === requested) ||
+    DATASETS.find((entry) => (entry.previousIds || []).indexOf(requested) !== -1);
+
+  if (dataset && dataset.id !== requested) {
+    try {
+      const url = new URL(window.location.href);
+      url.searchParams.set("id", dataset.id);
+      window.history.replaceState(null, "", url.toString());
+    } catch (e) { /* no history API */ }
+  }
 
   const $ = (id) => document.getElementById(id);
 
