@@ -1176,8 +1176,246 @@ def build_healthcare(source):
             "charts": grouped(narrate(charts, "healthcare", total))}
 
 
+SCHOOLS_FILE = "DataSouq - Saudi Schools Database - 2026-09-13.xlsx"
+SCHOOLS_DIR = os.environ.get(
+    "DATASOUQ_SCHOOLS",
+    os.path.join(os.path.expanduser("~"), "Desktop", "DATASOUQ", "_ORGANIZED", "schools",
+                 "1 - CURRENT REV 01 - 2026-09-13", "1 - SEND TO CLIENTS"),
+)
+
+# The schools file records a school under one of sixteen areas, and the Kingdom has thirteen
+# administrative regions: Jeddah and Taif sit inside Makkah, and Al-Ahsa inside the Eastern
+# Province. The bars keep the sixteen the file actually uses; only the map folds them, because a
+# choropleth is drawn on administrative geometry and has nowhere to put the other three. The rest
+# of the table is spelling: the file writes Aseer, the geometry is keyed on Asir.
+# The schools file records a school under one of sixteen areas, and the Kingdom has thirteen
+# administrative regions: Jeddah and Taif sit inside Makkah, and Al-Ahsa inside the Eastern
+# Province. The bars keep the sixteen the file actually uses; only the map folds them, because a
+# choropleth is drawn on administrative geometry and has nowhere to put the other three.
+#
+# Every one of the sixteen is listed, not only the three that move, because the Arabic label has
+# to come from here too. Keyed on the pair the file supplies, Makkah arrived twice - once from
+# Jeddah carrying this table's Arabic and once as itself carrying the file's, which differ by a
+# right-to-left mark - and the map drew two Makkahs. The English name is the key; the Arabic is
+# whatever this table says.
+SCHOOL_AREA_TO_REGION = {
+    "Riyadh": ("Riyadh", "الرياض"),
+    "Makkah": ("Makkah", "مكة المكرمة"),
+    "Jeddah": ("Makkah", "مكة المكرمة"),
+    "Taif": ("Makkah", "مكة المكرمة"),
+    "Eastern Province": ("Eastern Province", "المنطقة الشرقية"),
+    "Al-Ahsa": ("Eastern Province", "المنطقة الشرقية"),
+    "Al Madinah": ("Madinah", "المدينة المنورة"),
+    "Aseer": ("Asir", "عسير"),
+    "Al Qassim": ("Qassim", "القصيم"),
+    "Tabuk": ("Tabuk", "تبوك"),
+    "Jazan": ("Jizan", "جازان"),
+    "Aljawf": ("Al-Jouf", "الجوف"),
+    "Hail": ("Hail", "حائل"),
+    "Najran": ("Najran", "نجران"),
+    "Northern Border": ("Northern Borders", "الحدود الشمالية"),
+    "Albaha": ("Al-Bahah", "الباحة"),
+}
+
+LEVEL_ORDER = ["Kindergarten", "Primary", "Intermediate", "Secondary"]
+
+
+def read_schools_dictionary(ws):
+    """The main-sheet block of the schools dictionary.
+
+    That sheet writes its section breaks with the text in the second column and the first left
+    empty, which read_dictionary skips as a blank row — so it would run straight on into the child
+    sheets and the vocabulary and present all of it as main-sheet columns. The child block names
+    its fields Sheet.column, and nothing in the main block contains a dot, so the first dotted
+    name is where the main block ends.
+    """
+    entries = []
+    for row in ws.iter_rows(min_row=2, values_only=True):
+        if row is None or row[0] in (None, ""):
+            continue
+        column = str(row[0]).strip()
+        if "." in column:
+            break
+        entries.append({"column": column, "en": (row[1] or "").strip(),
+                        "ar": (row[2] or "").strip(), "notes": ""})
+    return entries
+
+
+def build_schools(source):
+    book = workbook(os.path.join(SCHOOLS_DIR, SCHOOLS_FILE))
+
+    dictionary = read_schools_dictionary(book["Data_Dictionary"])
+
+    english = list(rows_of(book["DataSouq - Saudi Schools"], "datasouq_key"))
+    arabic = {row["datasouq_key"]: row
+              for row in rows_of(book["داتاسوق - المدارس السعودية"], "datasouq_key")}
+    programs = list(rows_of(book["Stages"], "datasouq_key"))
+    phones = list(rows_of(book["Phone"], "datasouq_key"))
+    book.close()
+
+    total = len(english)
+    areas, cities = Counter(), Counter()
+    filled = Counter()
+
+    for row in english:
+        arabic_row = arabic.get(row["datasouq_key"], {})
+        areas[(row["region"], arabic_row.get("region_ar"))] += 1
+        cities[(row["city"], arabic_row.get("city_ar"))] += 1
+        if row["organization_email"]:
+            filled["email"] += 1
+        if row["website"]:
+            filled["website"] += 1
+        if row["street_address"]:
+            filled["address"] += 1
+        if row["min_annual_fee"] not in (None, ""):
+            filled["fee"] += 1
+
+    # A school is counted once per level it teaches, not once per program: a school running two
+    # Primary programs teaches Primary once. The same for a curriculum and for the education type.
+    levels, types, curricula = Counter(), Counter(), Counter()
+    seen = set()
+    for row in programs:
+        key = row["datasouq_key"]
+        for field, ar_field, counter in (("stage", "stage_ar", levels),
+                                         ("education_type", "education_type_ar", types),
+                                         ("curriculum", "curriculum_ar", curricula)):
+            value = row.get(field)
+            if not value:
+                continue
+            mark = (key, field, value)
+            if mark in seen:
+                continue
+            seen.add(mark)
+            counter[(value, row.get(ar_field))] += 1
+
+    mobile = len({row["datasouq_key"] for row in phones
+                  if str(row.get("phone_type") or "").strip() == "Mobile"})
+    landline = len({row["datasouq_key"] for row in phones
+                    if str(row.get("phone_type") or "").strip() == "Landline"})
+
+    def paired(counter, limit=None, drop_blank=True):
+        out, blank = [], 0
+        for (label_en, label_ar), value in counter.most_common():
+            if label_en in (None, ""):
+                blank += value
+                continue
+            out.append((cased(label_en), str(label_ar or label_en).strip(), value))
+        out = out[:limit] if limit else out
+        if blank and not drop_blank:
+            out.append(("Not recorded", "غير مسجَّل", blank))
+        return out
+
+    mapped = Counter()
+    unmapped = []
+    for (label_en, _label_ar), value in areas.items():
+        if label_en in (None, ""):
+            continue
+        if label_en not in SCHOOL_AREA_TO_REGION:
+            unmapped.append(label_en)
+            continue
+        mapped[SCHOOL_AREA_TO_REGION[label_en]] += value
+    if unmapped:
+        # A later edition adding an area would otherwise drop it from the map in silence, and a
+        # map that quietly omits a region is worse than no map.
+        sys.exit("schools: no administrative region for %s - add it to SCHOOL_AREA_TO_REGION"
+                 % ", ".join(sorted(unmapped)))
+
+    distinct_cities = sum(1 for (label_en, _) in cities if label_en not in (None, ""))
+    distinct_areas = sum(1 for (label_en, _) in areas if label_en not in (None, ""))
+
+    charts = [
+        bar(
+            "areas",
+            "Schools by area",
+            "المدارس حسب المنطقة",
+            paired(areas, drop_blank=False),
+            note_en="These are the %d areas the file itself uses, not the Kingdom's 13 administrative regions: Jeddah, Taif and Al-Ahsa are listed separately here although they sit inside Makkah and the Eastern Province."
+            % distinct_areas,
+            note_ar="هذه المناطق كما يصنّفها الملف نفسه، وليست المناطق الإدارية الثلاث عشرة: جدة والطائف والأحساء مفردة هنا رغم وقوعها داخل مكة والمنطقة الشرقية.",
+        ),
+        region_map(
+            "map",
+            "Where the schools are",
+            "أين تتركّز المدارس",
+            paired(mapped),
+            note_en="Drawn on the 13 administrative regions, so the three areas the file lists separately are shown inside the region they belong to. The bars above keep the file's own sixteen.",
+            note_ar="مرسومة على المناطق الإدارية الثلاث عشرة، فالمناطق الثلاث المفردة تظهر داخل مناطقها. والأعمدة أعلاه تُبقي الستّ عشرة كما في الملف.",
+        ),
+        ordinal(
+            "levels",
+            "Levels taught",
+            "المراحل المُدرَّسة",
+            paired(levels),
+            LEVEL_ORDER,
+            note_en="A school is counted once per level, however many programs it runs at that level. Most teach more than one, so these add up past %s."
+            % format(total, ","),
+            note_ar="تُحتسب المدرسة مرة واحدة لكل مرحلة، مهما بلغ عدد برامجها فيها. وأغلبها يُدرّس أكثر من مرحلة، فالمجموع يتجاوز العدد الكلي.",
+        ),
+        split(
+            "types",
+            "National or international",
+            "تعليم وطني أم دولي",
+            paired(types),
+            note_en="A school running both is counted in both, so these add up past %s."
+            % format(total, ","),
+            note_ar="المدرسة التي تجمع بينهما محسوبة في الاثنتين، فالمجموع يتجاوز العدد الكلي.",
+        ),
+        bar(
+            "curricula",
+            "Curricula taught",
+            "المناهج المُدرَّسة",
+            paired(curricula, limit=10),
+            note_en="Top 10 of %d. A school teaching more than one is counted in each."
+            % len(curricula),
+            note_ar="أكبر عشرة من %s منهجاً، والمدرسة تُحتسب في كل منهج تُدرّسه."
+            % arabic_digits(len(curricula)),
+        ),
+        bar(
+            "cities",
+            "Top 10 cities",
+            "أكبر ١٠ مدن",
+            paired(cities, limit=10),
+            note_en="Out of %s cities in the file." % format(distinct_cities, ","),
+            note_ar="من إجمالي %s مدينة في الملف." % arabic_digits(distinct_cities),
+        ),
+        coverage(
+            "coverage",
+            "Contact coverage",
+            "تغطية وسائل التواصل",
+            [
+                ("Email address", "بريد إلكتروني", filled["email"]),
+                ("Mobile number", "رقم جوال", mobile),
+                ("Landline", "هاتف أرضي", landline),
+                ("Street address", "عنوان تفصيلي", filled["address"]),
+                ("Published fee", "رسوم معلنة", filled["fee"]),
+                ("Website", "موقع إلكتروني", filled["website"]),
+            ],
+            total,
+            note_en="Share of the %s schools carrying each channel. The line type is derived from the number itself, not from the column it arrived in — the source's landline column holds mobiles and 920 numbers too."
+            % format(total, ","),
+            note_ar="نسبة المدارس التي تحمل كل وسيلة. ونوع الخط مستنتج من الرقم نفسه لا من العمود الذي ورد فيه.",
+        ),
+    ]
+
+    international = sum(v for (label_en, _), v in types.items() if label_en == "International")
+    return {"total": total, "dictionary": dictionary,
+            # What the catalogue card and the SEO description show. Measured here so neither can
+            # go stale while the file underneath it changes.
+            "measured": {
+                "records": format(total, ","),
+                "cities": format(distinct_cities, ","),
+                "areas": format(distinct_areas, ","),
+                "programs": format(len(programs), ","),
+                "mobilePct": "%.1f%%" % (100.0 * mobile / total),
+                "emailPct": "%.1f%%" % (100.0 * filled["email"] / total),
+                "international": format(international, ","),
+            },
+            "charts": grouped(narrate(charts, "schools", total))}
+
+
 BUILDERS = {
     "contractors": build_contractors,
+    "schools": build_schools,
     "engineering": build_engineering,
     "healthcare": build_healthcare,
 }
