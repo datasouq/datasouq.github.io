@@ -30,6 +30,14 @@ import openpyxl
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
+# The gap report quotes Arabic labels. A Windows console defaulting to cp1252 raises on
+# them, and the traceback lands after every file has already been written, so a finished
+# run reads as a crash.
+try:
+    sys.stdout.reconfigure(encoding="utf-8", errors="replace")
+except Exception:
+    pass
+
 # Where the delivered Excel files sit. Pass the folder as an argument, or set
 # DATASOUQ_SOURCE; the fallback is a path relative to the home directory, so
 # this file — which is public — never carries a machine's own layout or the
@@ -48,6 +56,16 @@ OUT_DIR = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__)
 # ---------------------------------------------------------------------------
 
 AR_EN = {
+    # Provider categories, from the medical providers dataset.
+    "مجمع أو مركز طبي": "Polyclinic or medical centre",
+    "بصريات": "Optical centre",
+    "مستشفى": "Hospital",
+    "أسنان": "Dental",
+    "إسعاف": "Ambulance",
+    "علاج طبيعي": "Physiotherapy",
+    "جراحة يوم واحد": "Day surgery",
+    "أشعة": "Radiology",
+    "مختبر": "Laboratory",
     # Administrative regions
     "الرياض": "Riyadh",
     "مكة المكرمة": "Makkah",
@@ -263,7 +281,9 @@ NOUNS = {
     "sa-contractors": ("records", "السجلات", "سجل"),
     "sa-schools": ("schools", "المدارس", "مدرسة"),
     "sa-engineering": ("offices", "المكاتب", "مكتب"),
-    "sa-healthcare": ("facilities", "المنشآت", "منشأة"),
+    "sa-health-facilities": ("facilities", "المنشآت", "منشأة"),
+    "sa-medical-providers": ("providers", "مقدمو الخدمة", "مقدم خدمة"),
+    "sa-health-links": ("links", "الروابط", "رابط"),
 }
 
 # Labels that name the absence of a value. They are never the subject of a
@@ -1083,137 +1103,288 @@ def build_engineering(source):
 # The healthcare workbook ships no Data_Dictionary sheet — it is a single
 # facility-registry export. This is that sheet's eleven columns, described
 # from the data itself, with the fill rate each one measured.
-HEALTHCARE_DICTIONARY = [
-    ("التسلسل", "Sequential record number", "رقم متسلسل للسجل", ""),
-    ("اسم المنشأة", "Facility name in Arabic, as registered", "اسم المنشأة بالعربي كما هو مسجَّل", ""),
-    ("الاسم الإنجليزي", "Facility name in English", "اسم المنشأة بالإنجليزي", ""),
-    ("نوع المنشأة", "Facility type", "نوع المنشأة",
-     "18 values — MOH / private / military / university / seasonal / specialised hospitals, primary health centres, clinics, laboratories, medical cities, pharmacies"),
-    ("المنطقة", "MOH health directorate, not one of the Kingdom's 13 administrative regions",
-     "المديرية الصحية، وليست إحدى مناطق المملكة الإدارية الـ13",
-     "20 values — Jeddah and Makkah, for one example, are separate directorates"),
-    ("المدينة", "City", "المدينة", ""),
-    ("الهاتف", "Phone number as registered", "رقم الهاتف كما هو مسجَّل", ""),
-    ("الفاكس", "Fax number", "رقم الفاكس", ""),
-    ("Column1", "Line type of the phone column — header left as exported by the source",
-     "نوع خط الهاتف — العنوان كما صدّره المصدر",
-     "Landline / Mobile / Unified-toll-free / Not specified"),
-    ("البريد الإلكتروني", "Contact email", "البريد الإلكتروني للتواصل", ""),
-    ("رابط الموقع على الخريطة", "Map link to the facility location", "رابط موقع المنشأة على الخريطة", ""),
-]
+HEALTH_DIR = os.environ.get(
+    "DATASOUQ_HEALTH_FACILITIES",
+    os.path.join(os.path.expanduser("~"), "Desktop", "DATASOUQ", "_ORGANIZED",
+                 "health-facilities", "1 - CURRENT REV 01 - 2026-09-17", "1 - SEND TO CLIENTS"),
+)
+HEALTH_FILE = "DataSouq - Saudi Health Facilities Database - 2026-09-17.xlsx"
+HEALTH_SHEET = "DataSouq - Saudi Health Facilities"
+HEALTH_SHEET_AR = "داتاسوق - المنشآت الصحية"
+
+PROVIDERS_DIR = os.environ.get(
+    "DATASOUQ_MEDICAL_PROVIDERS",
+    os.path.join(os.path.expanduser("~"), "Desktop", "DATASOUQ", "_ORGANIZED",
+                 "medical-providers", "1 - CURRENT REV 02 - 2026-09-17", "1 - SEND TO CLIENTS"),
+)
+PROVIDERS_FILE = "DataSouq - Saudi Medical Providers Database - 2026-09-17.xlsx"
+PROVIDERS_SHEET = "DataSouq - Saudi Medical Providers"
+
+LINKS_DIR = os.environ.get(
+    "DATASOUQ_HEALTH_LINKS",
+    os.path.join(os.path.expanduser("~"), "Desktop", "DATASOUQ", "_ORGANIZED",
+                 "health-insurance-links", "1 - CURRENT REV 01 - 2026-09-17",
+                 "1 - SEND TO CLIENTS"),
+)
+LINKS_FILE = "DataSouq - Saudi Health Facility Insurance Links - 2026-09-17.xlsx"
+LINKS_SHEET = "DataSouq - Facility Insurance Links"
+
+# The facility file records a facility under one of twenty health directorates, and the Kingdom
+# has thirteen administrative regions. Jeddah, Taif and Al-Qunfudhah sit inside Makkah; Al-Ahsa
+# and Hafar Al-Batin inside the Eastern Province; Bishah inside Asir; Al-Qurayyat inside Al-Jouf.
+# The bars keep the twenty the file actually uses; only the map folds them, because a choropleth
+# is drawn on administrative geometry and has nowhere to put the other seven.
+DIRECTORATE_TO_REGION = {
+    "الرياض": "الرياض",
+    "مكة المكرمة": "مكة المكرمة",
+    "جدة": "مكة المكرمة",
+    "الطائف": "مكة المكرمة",
+    "القنفذة": "مكة المكرمة",
+    "المنطقة الشرقية": "المنطقة الشرقية",
+    "الأحساء": "المنطقة الشرقية",
+    "حفر الباطن": "المنطقة الشرقية",
+    "عسير": "عسير",
+    "بيشة": "عسير",
+    "الجوف": "الجوف",
+    "القريات": "الجوف",
+    "المدينة المنورة": "المدينة المنورة",
+    "جازان": "جازان",
+    "القصيم": "القصيم",
+    "حائل": "حائل",
+    "تبوك": "تبوك",
+    "الباحة": "الباحة",
+    "نجران": "نجران",
+    "الحدود الشمالية": "الحدود الشمالية",
+}
 
 
-def build_healthcare(source):
-    path = os.path.join(source, "DATASOUQ-SA HOSPITALS.xlsx")
-    book = openpyxl.load_workbook(path, read_only=True, data_only=True)
-    sheet = book["المنشآت"]
+def build_health_facilities(source):
+    book = workbook(os.path.join(HEALTH_DIR, HEALTH_FILE))
+    dictionary = read_block_dictionary(book["Data_Dictionary"])
+    records = list(rows_of(book[HEALTH_SHEET], "datasouq_key"))
+    arabic = {row["datasouq_key"]: row
+              for row in rows_of(book[HEALTH_SHEET_AR], "datasouq_key")}
+    phones = list(rows_of(book["Phone"], "datasouq_key"))
+    book.close()
 
-    records = list(rows_of(sheet, "التسلسل"))
     total = len(records)
-
-    types, directorates, cities, lines = Counter(), Counter(), Counter(), Counter()
+    types, directorates, cities = Counter(), Counter(), Counter()
     filled = Counter()
-    map_links = []
-
-    hospital_types = {
-        "المستشفيات الخاصة",
-        "مستشفيات وزارة الصحة",
-        "المستشفيات العسكرية",
-        "مستشفيات موسمية",
-        "المستشفيات الجامعية",
-        "المستشفيات التخصصية",
-    }
-    hospitals = Counter()
 
     for row in records:
-        facility_type = row["نوع المنشأة"]
-        types[facility_type] += 1
-        directorates[row["المنطقة"]] += 1
-        cities[row["المدينة"]] += 1
-        lines[row["Column1"]] += 1
-        if facility_type in hospital_types:
-            hospitals[facility_type] += 1
-        if row["الهاتف"]:
-            filled["phone"] += 1
-        if row["البريد الإلكتروني"]:
+        types[row["facility_type_ar"]] += 1
+        directorates[row["health_directorate_ar"]] += 1
+        cities[row["city_ar"]] += 1
+        if row["organization_email"]:
             filled["email"] += 1
-        if row["الفاكس"]:
-            filled["fax"] += 1
-        map_links.append(row["رابط الموقع على الخريطة"])
-        if row["رابط الموقع على الخريطة"]:
-            filled["map"] += 1
+        if str(row.get("has_coordinates") or "").strip():
+            filled["coordinates"] += 1
+        if str(row.get("cchi_no") or "").strip():
+            filled["insurance"] += 1
 
-    dictionary = [
-        {"column": column, "en": description_en, "ar": description_ar, "notes": notes}
-        for column, description_en, description_ar, notes in HEALTHCARE_DICTIONARY
-    ]
+    MOBILE, LANDLINE = "جوال", "هاتف أرضي"
+    dialable = len({r["datasouq_key"] for r in phones
+                    if str(r.get("phone_e164") or "").startswith("+966")})
+    mobile = len({r["datasouq_key"] for r in phones if str(r.get("phone_type")) == MOBILE})
+    landline = len({r["datasouq_key"] for r in phones if str(r.get("phone_type")) == LANDLINE})
+    any_number = len({r["datasouq_key"] for r in phones})
 
-    folded_types, folded_rest = fold_tail(counted(types), 8)
+    mapped = Counter()
+    unmapped = []
+    for label, value in directorates.items():
+        if label in (None, ""):
+            continue
+        if label not in DIRECTORATE_TO_REGION:
+            unmapped.append(label)
+            continue
+        mapped[DIRECTORATE_TO_REGION[label]] += value
+    if unmapped:
+        sys.exit("health facilities: no administrative region for %s" % ", ".join(unmapped))
 
-    placed_map = dots(
-        "map",
-        "Where the facilities are",
-        "أين تقع المنشآت",
-        map_links,
-        total,
-    )
-    # The note is written after the chart, because it has to report the
-    # numbers the chart itself arrived at rather than a figure typed here.
-    placed_map["noteEn"] = (
-        "One dot per facility that carries a map link, at its own position rather "
-        "than inside an administrative area. Positions are rounded to ~2 km, which "
-        "merges %s facilities into %s dots; a bigger dot holds more. Off the map: "
-        "%s facilities with no map link."
-        % (format(placed_map["placed"], ","), format(placed_map["cells"], ","),
-           format(placed_map["missing"], ","))
-    )
-    placed_map["noteAr"] = (
-        "نقطة لكل منشأة تحمل رابطاً على الخريطة، في موضعها هي لا داخل منطقة إدارية. "
-        "المواضع مُقرّبة إلى نحو ٢ كم، فاندمجت %s منشأة في %s نقطة؛ والنقطة الأكبر تضمّ أكثر. "
-        "خارج الخريطة: %s منشأة بلا رابط."
-        % (format(placed_map["placed"], ","), format(placed_map["cells"], ","),
-           format(placed_map["missing"], ","))
-    )
+    distinct_cities = sum(1 for k in cities if k not in (None, ""))
 
     charts = [
-        placed_map,
-        bar("types", "Facilities by type", "المنشآت حسب النوع", folded_types,
-            note_en="The 8 largest of 18 facility types; the remaining %d are summed as Other." % folded_rest,
-            note_ar="أكبر ٨ أنواع من ١٨ نوعاً في الملف، والباقي (%d) مجموع تحت «أنواع أخرى»." % folded_rest),
-        bar("hospitals", "Hospitals by network", "المستشفيات حسب الجهة", counted(hospitals),
-            note_en="The 916 hospital-labelled records, out of 4,563 facilities in total.",
-            note_ar="سجلات المستشفيات الـ٩١٦ من إجمالي ٤٬٥٦٣ منشأة."),
-        bar("directorates", "Facilities by health directorate", "المنشآت حسب المديرية الصحية",
-            counted(directorates),
-            note_en="MOH directorates, not the Kingdom's 13 administrative regions.",
-            note_ar="مديريات وزارة الصحة، وليست مناطق المملكة الإدارية الـ13."),
+        bar("types", "Facility types", "أنواع المنشآت", counted(types, drop_blank=False),
+            note_en="%d kinds in one file — hospitals of several sorts, primary health centres, clinics, laboratories and more. The type is the source's own wording."
+            % len([k for k in types if k not in (None, "")]),
+            note_ar="%s نوعاً في ملف واحد، والنوع بصياغة المصدر نفسه."
+            % arabic_digits(len([k for k in types if k not in (None, "")]))),
+        bar("directorates", "Facilities by health directorate", "المنشآت حسب المنطقة الصحية",
+            counted(directorates, drop_blank=False),
+            note_en="These are health directorates, NOT the Kingdom's 13 administrative regions: there are 20, and Jeddah, Taif and Al-Ahsa are listed separately although they sit inside Makkah and the Eastern Province.",
+            note_ar="هذه مناطق صحية وليست المناطق الإدارية الثلاث عشرة: عددها ٢٠، وجدة والطائف والأحساء مفردة رغم وقوعها داخل مكة والمنطقة الشرقية."),
+        region_map("map", "Where the facilities are", "أين تتركّز المنشآت",
+            counted(mapped, drop_blank=False),
+            note_en="Drawn on the 13 administrative regions, so the seven directorates the file lists separately are shown inside the region they belong to. The bars above keep the file's own twenty.",
+            note_ar="مرسومة على المناطق الإدارية الثلاث عشرة، فالمناطق الصحية السبع المفردة تظهر داخل مناطقها."),
         bar("cities", "Top 10 cities", "أكبر ١٠ مدن", counted(cities)[:10],
-            note_en="Out of 328 cities in the file; %s facilities carry no city."
-            % format(sum(v for k, v in cities.items() if k in (None, "")), ","),
-            note_ar="من إجمالي ٣٢٨ مدينة في الملف، و%s منشأة بلا مدينة مسجَّلة."
-            % format(sum(v for k, v in cities.items() if k in (None, "")), ",")),
-        split("lines", "Phone line type", "نوع خط الهاتف", counted(lines, drop_blank=False),
-            note_en="Of the facilities that carry a number at all.",
-            note_ar="من المنشآت التي تحمل رقماً أصلاً."),
+            note_en="Out of %s cities in the file." % format(distinct_cities, ","),
+            note_ar="من إجمالي %s مدينة في الملف." % arabic_digits(distinct_cities)),
         coverage(
-            "coverage",
-            "Contact coverage",
-            "تغطية وسائل التواصل",
+            "coverage", "Contact coverage", "تغطية وسائل التواصل",
             [
-                ("Phone number", "رقم هاتف", filled["phone"]),
-                ("Map link", "رابط على الخريطة", filled["map"]),
+                ("Number that parses as a Saudi line", "رقم سليم", dialable),
+                ("Landline", "هاتف أرضي", landline),
+                ("Mobile", "رقم جوال", mobile),
                 ("Email address", "بريد إلكتروني", filled["email"]),
-                ("Fax number", "رقم فاكس", filled["fax"]),
+                ("Map coordinates", "إحداثيات على الخريطة", filled["coordinates"]),
             ],
             total,
-            note_en="Share of the 4,563 facilities carrying each channel.",
-            note_ar="نسبة المنشآت التي تحمل كل وسيلة.",
+            note_en="A number counts only where it parses as a real Saudi line. %s facilities carry something in the phone column and %s of those are dialable — the source writes an absent value four different ways, including the literal string NULL."
+            % (format(any_number, ","), format(dialable, ",")),
+            note_ar="الرقم يُحتسب فقط إن كان خطاً سعودياً سليماً. والمصدر يكتب القيمة الغائبة بأربع طرق مختلفة.",
         ),
     ]
 
-    book.close()
     return {"total": total, "dictionary": dictionary,
-            "charts": grouped(narrate(charts, "sa-healthcare", total))}
+            "measured": {
+                "records": format(total, ","),
+                "types": str(len([k for k in types if k not in (None, "")])),
+                "directorates": str(len([k for k in directorates if k not in (None, "")])),
+                "cities": format(distinct_cities, ","),
+                "dialablePct": "%.1f%%" % (100.0 * dialable / total),
+                "coordinates": format(filled["coordinates"], ","),
+                "insured": format(filled["insurance"], ","),
+            },
+            "charts": grouped(narrate(charts, "sa-health-facilities", total))}
+
+
+def build_medical_providers(source):
+    book = workbook(os.path.join(PROVIDERS_DIR, PROVIDERS_FILE))
+    dictionary = read_block_dictionary(book["Data_Dictionary"])
+    records = list(rows_of(book[PROVIDERS_SHEET], "datasouq_key"))
+    phones = list(rows_of(book["Phone"], "datasouq_key"))
+    book.close()
+
+    total = len(records)
+    categories, cities, regions, chains = Counter(), Counter(), Counter(), Counter()
+    filled = Counter()
+    for row in records:
+        categories[row["provider_category"]] += 1
+        cities[row["city"]] += 1
+        regions[row["region_ar"]] += 1
+        if row["chain_group"]:
+            chains[row["chain_group"]] += 1
+        if str(row.get("cchi_no") or "").strip():
+            filled["cchi"] += 1
+        if str(row.get("facility_key") or "").strip():
+            filled["linked"] += 1
+
+    dialable = len({r["datasouq_key"] for r in phones
+                    if str(r.get("phone_e164") or "").startswith("+966")})
+    MOBILE = "جوال"
+    mobile = len({r["datasouq_key"] for r in phones if str(r.get("phone_type")) == MOBILE})
+
+    PHARMACY, OPTICAL = "صيدلية", "بصريات"
+    distinct_cities = sum(1 for k in cities if k not in (None, ""))
+
+    charts = [
+        split("categories", "What kind of provider", "نوع مقدم الخدمة",
+              counted(categories, drop_blank=False),
+              note_en="Two thirds of the file is retail: %s pharmacies and %s optical centres. That is what an insurance network mostly contains, and it is why this dataset is not a list of hospitals."
+              % (format(categories.get(PHARMACY, 0), ","), format(categories.get(OPTICAL, 0), ",")),
+              note_ar="ثلثا الملف تجزئة: صيدليات وبصريات. وهذا ما تحتويه شبكة التأمين غالباً."),
+        bar("regions", "Providers by region", "مقدمو الخدمة حسب المنطقة",
+            counted(regions, drop_blank=False),
+            note_en="All 13 administrative regions are represented.",
+            note_ar="كل المناطق الإدارية الـ13 ممثَّلة."),
+        region_map("map", "Where the providers are", "أين يتركّز مقدمو الخدمة",
+            counted(regions, drop_blank=False),
+            note_en="Shading is by quantile: each band holds a similar number of regions rather than an equal slice of the range.",
+            note_ar="التظليل بالشرائح المئينية: كل شريحة تضمّ عدداً متقارباً من المناطق."),
+        bar("cities", "Top 10 cities", "أكبر ١٠ مدن", counted(cities)[:10],
+            note_en="Out of %s cities in the file." % format(distinct_cities, ","),
+            note_ar="من إجمالي %s مدينة في الملف." % arabic_digits(distinct_cities)),
+        bar("chains", "Largest chains", "أكبر السلاسل", counted(chains)[:10],
+            note_en="%s chains in the file, covering %s of the %s providers. A chain's branches often publish one switchboard between them, and the file says so on the rows that do."
+            % (format(len(chains), ","), format(sum(chains.values()), ","), format(total, ",")),
+            note_ar="%s سلسلة في الملف. وفروع السلسلة تنشر رقماً واحداً بينها غالباً، والملف يقول ذلك في الصفوف المعنية."
+            % arabic_digits(len(chains))),
+        coverage(
+            "coverage", "What each provider carries", "ما يحمله كل مقدم خدمة",
+            [
+                ("An insurance number", "رقم ضمان صحي", filled["cchi"]),
+                ("A dialable number", "رقم سليم", dialable),
+                ("A mobile", "رقم جوال", mobile),
+                ("A link to a facility record", "ارتباط بسجل منشأة", filled["linked"]),
+            ],
+            total,
+            note_en="The insurance number is what makes this a network list rather than a directory. The link to a facility record exists on %s rows — see the links dataset for what that number can and cannot be read to mean."
+            % format(filled["linked"], ","),
+            note_ar="رقم الضمان هو ما يجعل هذا ملف شبكة تأمين لا دليلاً عاماً.",
+        ),
+    ]
+
+    return {"total": total, "dictionary": dictionary,
+            "measured": {
+                "records": format(total, ","),
+                "categories": str(len([k for k in categories if k not in (None, "")])),
+                "cities": format(distinct_cities, ","),
+                "cchiPct": "%.1f%%" % (100.0 * filled["cchi"] / total),
+                "pharmacies": format(categories.get(PHARMACY, 0), ","),
+                "chains": format(len(chains), ","),
+                "linked": format(filled["linked"], ","),
+            },
+            "charts": grouped(narrate(charts, "sa-medical-providers", total))}
+
+
+def build_health_links(source):
+    book = workbook(os.path.join(LINKS_DIR, LINKS_FILE))
+    dictionary = read_block_dictionary(book["Data_Dictionary"])
+    records = list(rows_of(book[LINKS_SHEET], "datasouq_key"))
+    book.close()
+
+    total = len(records)
+    evidence, types, categories, regions = Counter(), Counter(), Counter(), Counter()
+    filled = Counter()
+    EVIDENCE = {"both": ("Telephone and name", "هاتف واسم"),
+                "phone": ("Telephone alone", "هاتف فقط"),
+                "name": ("Name alone", "اسم فقط")}
+    for row in records:
+        evidence[str(row.get("evidence") or "")] += 1
+        types[row["facility_type_ar"]] += 1
+        categories[row["provider_category"]] += 1
+        regions[row["region_ar"]] += 1
+        if row["google_maps_url"]:
+            filled["map"] += 1
+
+    charts = [
+        split("evidence", "How each link was made", "كيف رُبط كل سجل",
+              [EVIDENCE[k] + (v,) for k, v in evidence.most_common() if k in EVIDENCE],
+              note_en="A telephone match is only accepted where the number is unique on BOTH sides — a chain switchboard reaches hundreds of providers and identifies no branch. A link made both ways is the strongest thing in the file.",
+              note_ar="الهاتف لا يُقبل إلا إذا كان فريداً على الجهتين. والرابط الذي تحقق بالطريقتين هو الأقوى في الملف."),
+        bar("types", "What kind of facility was linked", "نوع المنشأة المرتبطة",
+            counted(types, drop_blank=False),
+            note_en="No pharmacy and no optical centre appears here at all: the facility list does not contain them, so they cannot be linked to anything.",
+            note_ar="لا توجد صيدلية ولا بصريات هنا إطلاقاً: قائمة المنشآت لا تحتويها أصلاً."),
+        bar("regions", "Links by region", "الروابط حسب المنطقة",
+            counted(regions, drop_blank=False),
+            note_en="A link requires both records to agree on the region, so this is also a map of where the two files describe the same places.",
+            note_ar="الرابط يشترط اتفاق السجلين على المنطقة."),
+        coverage(
+            "coverage", "What a link carries", "ما يحمله الرابط",
+            [
+                ("An insurance number", "رقم ضمان صحي", total),
+                ("Map coordinates", "إحداثيات على الخريطة", filled["map"]),
+                ("Confirmed by telephone", "مؤكد بالهاتف",
+                 evidence["both"] + evidence["phone"]),
+            ],
+            total,
+            note_en="Every link carries an insurance number by construction — that is what a link is for. %s also carry a map pin from the facility side."
+            % format(filled["map"], ","),
+            note_ar="كل رابط يحمل رقم ضمان صحي بحكم بنائه.",
+        ),
+    ]
+
+    return {"total": total, "dictionary": dictionary,
+            "measured": {
+                "records": format(total, ","),
+                "byPhone": format(evidence["both"] + evidence["phone"], ","),
+                "withMap": format(filled["map"], ","),
+                "facilityTypes": str(len([k for k in types if k not in (None, "")])),
+            },
+            "charts": grouped(narrate(charts, "sa-health-links", total))}
+
 
 
 SCHOOLS_FILE = "DataSouq - Saudi Schools Database - 2026-09-13.xlsx"
@@ -1458,7 +1629,9 @@ BUILDERS = {
     "sa-contractors": build_contractors,
     "sa-schools": build_schools,
     "sa-engineering": build_engineering,
-    "sa-healthcare": build_healthcare,
+    "sa-health-facilities": build_health_facilities,
+    "sa-medical-providers": build_medical_providers,
+    "sa-health-links": build_health_links,
 }
 
 
