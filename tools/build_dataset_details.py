@@ -1692,18 +1692,31 @@ def write_sitemap(dataset_ids, today):
     return path
 
 
-def catalogue_ids():
-    """Dataset ids, read from assets/js/datasets.js — the one list of them.
+def catalogue_ids(listed_only=False):
+    """Dataset ids, read from assets/js/datasets.js - the one list of them.
 
-    A regex rather than a parser because that file is hand-written JS with
-    one `id: "…"` per entry and nothing else shaped like it; a second copy
-    of the id list here is exactly what this script exists to avoid.
+    The file is hand-written JS with one object per dataset, so the entries are split on the
+    object boundary and each one read for its own id and its own hidden flag. A second copy of
+    the id list in this script is exactly what it exists to avoid.
+
+    listed_only drops the entries marked `hidden: true`. A hidden dataset is built and its page
+    answers, but nothing advertises it - so it must not be in the sitemap either, which is the
+    one place this script does the advertising.
     """
     root = OUT_DIR.rsplit(os.sep + "assets", 1)[0]
     path = os.path.join(root, "assets", "js", "datasets.js")
     with io.open(path, encoding="utf-8") as handle:
         source = handle.read()
-    return re.findall(r'^\s*id:\s*"([^"]+)"', source, re.MULTILINE)
+
+    out = []
+    for entry in source.split("\n  {"):
+        found = re.search(r'^\s*id:\s*"([^"]+)"', entry, re.MULTILINE)
+        if not found:
+            continue
+        if listed_only and re.search(r"^\s*hidden:\s*true", entry, re.MULTILINE):
+            continue
+        out.append(found.group(1))
+    return out
 
 
 def write(dataset_id, payload):
@@ -1795,9 +1808,13 @@ def main():
     print("metrics      %d datasets  %d figures  ->  %s"
           % (len(measured), sum(len(v) for v in measured.values()), os.path.relpath(path)))
 
-    ids = catalogue_ids()
+    # The sitemap is where this script advertises a page, so a hidden dataset stays out of it.
+    ids = catalogue_ids(listed_only=True)
+    hidden = len(catalogue_ids()) - len(ids)
     sitemap = write_sitemap(ids, datetime.date.today().isoformat())
-    print("sitemap      %d dataset pages + the landing page  ->  %s" % (len(ids), os.path.relpath(sitemap)))
+    print("sitemap      %d dataset pages + the landing page%s  ->  %s"
+          % (len(ids), ("  (%d hidden)" % hidden) if hidden else "",
+             os.path.relpath(sitemap)))
 
     if gaps:
         print("\nNOTE: %d label(s) have no English in AR_EN and fell back to"
