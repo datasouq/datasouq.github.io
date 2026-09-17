@@ -970,15 +970,28 @@ def build_contractors(source):
             "charts": grouped(narrate(charts, "sa-contractors", total))}
 
 
+ENGINEERING_FILE = "DataSouq - Saudi Engineering Offices Database - 2026-09-17.xlsx"
+ENGINEERING_DIR = os.environ.get(
+    "DATASOUQ_ENGINEERING",
+    os.path.join(os.path.expanduser("~"), "Desktop", "DATASOUQ", "_ORGANIZED", "engineering",
+                 "1 - CURRENT REV 02 - 2026-09-17", "1 - SEND TO CLIENTS"),
+)
+ENGINEERING_SHEET = "داتاسوق - المكاتب الهندسية"
+ENGINEERING_FIRMS = "داتاسوق - الشركات الاستشارية"
+
+
 def build_engineering(source):
-    path = os.path.join(source, "DataSouq - Saudi Engineering Offices Database - 2026-09.xlsx")
-    book = openpyxl.load_workbook(path, read_only=True, data_only=True)
+    book = workbook(os.path.join(ENGINEERING_DIR, ENGINEERING_FILE))
 
-    dictionary = read_dictionary(book["Data_Dictionary"])
+    dictionary = read_block_dictionary(book["Data_Dictionary"])
 
-    records = list(rows_of(book["AR"], "record_id"))
+    records = list(rows_of(book[ENGINEERING_SHEET], "datasouq_key"))
+    phones = list(rows_of(book["Phone"], "datasouq_key"))
+    firms = list(rows_of(book[ENGINEERING_FIRMS], "datasouq_key"))
+    whatsapp = list(rows_of(book["WhatsApp"], "datasouq_key"))
+    book.close()
+
     total = len(records)
-
     regions, cities, classes, types = Counter(), Counter(), Counter(), Counter()
     filled = Counter()
 
@@ -989,17 +1002,24 @@ def build_engineering(source):
         types[row["office_type"]] += 1
         if row["organization_email"]:
             filled["email"] += 1
-        if row["organization_mobile_number"]:
-            filled["mobile"] += 1
-        if row["organization_phone_number"]:
-            filled["landline"] += 1
         if row["company_website"]:
             filled["website"] += 1
+        if row["organization_address"]:
+            filled["address"] += 1
 
-    consulting = sum(1 for _ in rows_of(book["Consulting_Firms"], "record_id"))
+    # The line type is derived from the number itself in this edition, so the honest coverage
+    # figure counts numbers that parse as a real Saudi line rather than cells that are not empty.
+    MOBILE, LANDLINE = "جوال", "هاتف أرضي"
+    mobile = len({r["datasouq_key"] for r in phones if str(r.get("phone_type") or "") == MOBILE})
+    landline = len({r["datasouq_key"] for r in phones
+                    if str(r.get("phone_type") or "") == LANDLINE})
+    reachable = len({r["datasouq_key"] for r in whatsapp})
 
     blank_region = sum(v for k, v in regions.items() if k in (None, ""))
     blank_city = sum(v for k, v in cities.items() if k in (None, ""))
+    distinct_cities = sum(1 for k in cities if k not in (None, ""))
+    UNCLASSIFIED = "غير مصنف"
+    classified = sum(v for k, v in classes.items() if k not in (None, "", UNCLASSIFIED))
 
     charts = [
         bar("regions", "Offices by region", "المكاتب حسب المنطقة",
@@ -1014,32 +1034,49 @@ def build_engineering(source):
             note_ar="التظليل بالشرائح المئينية: كل شريحة تضمّ عدداً متقارباً من المناطق بدل أن تقتسم المدى بالتساوي. والمفتاح يسمّي مناطق كل شريحة وما في كل منها."),
         ordinal("classification", "Classification grades", "درجات التصنيف",
             counted(classes, drop_blank=False), GRADE_ORDER,
-            note_en="Unclassified is a value in the source register, not a gap in the data.",
-            note_ar="«غير مصنّف» قيمة في السجل المصدر، وليست نقصاً في البيانات."),
+            note_en="Unclassified is a value in the source, not a gap in the data: %s of the %s offices carry it."
+            % (format(classes.get(UNCLASSIFIED, 0), ","), format(total, ",")),
+            note_ar="«غير مصنّف» قيمة في المصدر وليست نقصاً في البيانات، وتحملها %s من أصل %s مكتب."
+            % (format(classes.get(UNCLASSIFIED, 0), ","), format(total, ","))),
         bar("types", "Office type", "نوع المكتب", counted(types, drop_blank=False),
-            note_en="Office type comes from the regional engineering directory, so records sourced elsewhere carry none.",
-            note_ar="نوع المكتب يأتي من دليل المكاتب بالمناطق، فالسجلات من مصادر أخرى بلا نوع."),
+            note_en="%s offices carry no type: the field is filled where the record came with one and left empty rather than guessed."
+            % format(sum(v for k, v in types.items() if k in (None, "")), ","),
+            note_ar="%s مكتباً بلا نوع مسجَّل: الحقل يُملأ حين يرد، ولا يُخمَّن."
+            % format(sum(v for k, v in types.items() if k in (None, "")), ",")),
         bar("cities", "Top 10 cities", "أكبر ١٠ مدن", counted(cities)[:10],
-            note_en="Out of 133 cities in the file; %s offices carry no city." % format(blank_city, ","),
-            note_ar="من إجمالي ١٣٣ مدينة في الملف، و%s مكتباً بلا مدينة مسجَّلة." % format(blank_city, ",")),
+            note_en="Out of %s cities in the file; %s offices carry no city."
+            % (format(distinct_cities, ","), format(blank_city, ",")),
+            note_ar="من إجمالي %s مدينة في الملف، و%s مكتباً بلا مدينة مسجَّلة."
+            % (arabic_digits(distinct_cities), format(blank_city, ","))),
         coverage(
             "coverage",
             "Contact coverage",
             "تغطية وسائل التواصل",
             [
                 ("Email address", "بريد إلكتروني", filled["email"]),
-                ("Mobile number", "رقم جوال", filled["mobile"]),
-                ("Landline", "هاتف أرضي", filled["landline"]),
+                ("Mobile number", "رقم جوال", mobile),
+                ("Landline", "هاتف أرضي", landline),
+                ("Street address", "عنوان تفصيلي", filled["address"]),
                 ("Website", "موقع إلكتروني", filled["website"]),
             ],
             total,
-            note_en="Share of the 6,808 engineering offices carrying each channel. The 290 consulting firms sit on their own sheet and are counted separately.",
-            note_ar="نسبة المكاتب الهندسية التي تحمل كل وسيلة. الشركات الاستشارية الـ٢٩٠ في شيت منفصل وتُحسب على حدة.",
+            note_en="Share of the %s engineering offices carrying each channel. A number counts only where it parses as a real Saudi line — the previous edition counted %s numbers made of one repeated digit as working ones. The %s consulting firms sit on their own sheet and are counted separately."
+            % (format(total, ","), "176", format(len(firms), ",")),
+            note_ar="نسبة المكاتب التي تحمل كل وسيلة. والرقم يُحتسب فقط إن كان خطاً سعودياً سليماً. والشركات الاستشارية في شيت منفصل وتُحسب على حدة.",
         ),
     ]
 
-    book.close()
-    return {"total": total, "consulting": consulting, "dictionary": dictionary,
+    return {"total": total, "consulting": len(firms), "dictionary": dictionary,
+            "measured": {
+                "records": format(total, ","),
+                "cities": format(distinct_cities, ","),
+                "regions": format(sum(1 for k in regions if k not in (None, "")), ","),
+                "classifiedPct": "%d%%" % round(100.0 * classified / total),
+                "emailPct": "%.1f%%" % (100.0 * filled["email"] / total),
+                "mobilePct": "%.1f%%" % (100.0 * mobile / total),
+                "consulting": format(len(firms), ","),
+                "whatsappReady": format(reachable, ","),
+            },
             "charts": grouped(narrate(charts, "sa-engineering", total))}
 
 
@@ -1223,14 +1260,15 @@ SCHOOL_AREA_TO_REGION = {
 LEVEL_ORDER = ["Kindergarten", "Primary", "Intermediate", "Secondary"]
 
 
-def read_schools_dictionary(ws):
-    """The main-sheet block of the schools dictionary.
+def read_block_dictionary(ws):
+    """The main-sheet block of a dictionary written in this pipeline's layout.
 
-    That sheet writes its section breaks with the text in the second column and the first left
+    Those sheets write their section breaks with the text in the second column and the first left
     empty, which read_dictionary skips as a blank row — so it would run straight on into the child
     sheets and the vocabulary and present all of it as main-sheet columns. The child block names
     its fields Sheet.column, and nothing in the main block contains a dot, so the first dotted
-    name is where the main block ends.
+    name is where the main block ends. The contractors workbook predates this layout and still
+    uses read_dictionary.
     """
     entries = []
     for row in ws.iter_rows(min_row=2, values_only=True):
@@ -1247,7 +1285,7 @@ def read_schools_dictionary(ws):
 def build_schools(source):
     book = workbook(os.path.join(SCHOOLS_DIR, SCHOOLS_FILE))
 
-    dictionary = read_schools_dictionary(book["Data_Dictionary"])
+    dictionary = read_block_dictionary(book["Data_Dictionary"])
 
     english = list(rows_of(book["DataSouq - Saudi Schools"], "datasouq_key"))
     arabic = {row["datasouq_key"]: row

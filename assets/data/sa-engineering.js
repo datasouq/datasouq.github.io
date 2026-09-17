@@ -5,196 +5,130 @@
 DATASET_DETAILS["sa-engineering"] = {
   "dictionary": [
     {
-      "column": "record_id",
-      "en": "Permanent identifier, stable across editions",
-      "ar": "معرّف دائم للسجل، ثابت بين الإصدارات",
-      "notes": "DS-SA-ENG-00001 … للمكاتب · DS-SA-CNS-00001 … للشركات الاستشارية"
-    },
-    {
-      "column": "row",
-      "en": "Sequential record number",
-      "ar": "رقم متسلسل للسجل",
+      "column": "datasouq_key",
+      "en": "Permanent identifier for this office, stable across editions. In the previous edition this column was called record_id; the values are unchanged.",
+      "ar": "‏معرّف دائم للمكتب، ثابت بين الإصدارات.",
       "notes": ""
     },
     {
-      "column": "office_code",
-      "en": "Office code as registered in the source",
-      "ar": "كود المكتب كما ورد في المصدر",
-      "notes": "فاضي للسجلات المضافة من دليل المكاتب بالمناطق (لا يحمل أكواداً)"
-    },
-    {
-      "column": "grade",
-      "en": "Classification grade 1-6, empty when unclassified",
-      "ar": "درجة التصنيف 1-6، فاضي للغير مصنّف",
-      "notes": "1 = highest"
+      "column": "office_name_ar",
+      "en": "The office name, in Arabic - the only language the source carries.",
+      "ar": "‏اسم المكتب بالعربية.",
+      "notes": ""
     },
     {
       "column": "office_classification",
-      "en": "Classification in words",
-      "ar": "التصنيف بالحروف",
-      "notes": "مصنف درجة أولى .. سادسة / غير مصنف"
+      "en": "The classification as the source records it, including غير مصنف - a value, not a gap.",
+      "ar": "‏التصنيف كما ورد، و«غير مصنف» قيمة وليست نقصاً.",
+      "notes": ""
+    },
+    {
+      "column": "grade",
+      "en": "The numeric grade behind the classification.",
+      "ar": "‏الدرجة الرقمية.",
+      "notes": ""
     },
     {
       "column": "office_type",
-      "en": "Office type from the regional engineering directory",
-      "ar": "نوع المكتب من دليل المكاتب بالمناطق",
-      "notes": "مكاتب استشارات هندسية · مكاتب مهندسين استشاريين · مكاتب مهندسين · شركات مهنية سعودية/مختلطة · فحص التربة والأساسات والخرسانة والمساحة"
-    },
-    {
-      "column": "office_name_ar",
-      "en": "Engineering office name, Arabic, as received",
-      "ar": "اسم المكتب الهندسي بالعربي كما ورد",
-      "notes": "171 اسماً وصل مقطوعاً عند 30 حرفاً في المصدر الأساسي، ومُعلَّم"
+      "en": "What kind of office it is.",
+      "ar": "‏نوع المكتب.",
+      "notes": ""
     },
     {
       "column": "region_ar",
-      "en": "Administrative region",
-      "ar": "المنطقة الإدارية",
-      "notes": "13 منطقة — مستنتجة من المدينة في المصدر الأساسي، ومن شيت المنطقة في السجلات المضافة"
+      "en": "Administrative region.",
+      "ar": "‏المنطقة الإدارية.",
+      "notes": ""
     },
     {
       "column": "city_ar",
-      "en": "City, spelling unified",
-      "ar": "المدينة، موحّدة الكتابة",
+      "en": "City.",
+      "ar": "‏المدينة.",
+      "notes": ""
+    },
+    {
+      "column": "organization_address",
+      "en": "Street address where the source records one.",
+      "ar": "‏العنوان إن وُجد.",
+      "notes": ""
+    },
+    {
+      "column": "organization_phone",
+      "en": "The office's primary number - a mobile where there is one.",
+      "ar": "‏الرقم الأساسي.",
+      "notes": ""
+    },
+    {
+      "column": "phone_type",
+      "en": "Derived from the number itself, not from the column it arrived in.",
+      "ar": "‏نوع الخط، مستنتج من الرقم نفسه.",
       "notes": ""
     },
     {
       "column": "organization_email",
-      "en": "Contact email, lowercase, typos corrected",
-      "ar": "إيميل التواصل، حروف صغيرة، الأخطاء مصحّحة",
+      "en": "Primary address, with a mistyped public domain corrected.",
+      "ar": "‏البريد الأساسي بعد تصحيح النطاق.",
       "notes": ""
     },
     {
       "column": "email_type",
-      "en": "Company own domain vs public provider",
-      "ar": "دومين الشركة أم مزود عام",
-      "notes": "دومين شركة / مزود عام / مزود عام (مصحّح) / مؤقت"
+      "en": "Corporate, public or disposable - the same three words every DataSouq dataset uses.",
+      "ar": "‏مؤسسي أو عام أو مؤقت.",
+      "notes": ""
     },
     {
       "column": "email_role",
-      "en": "Who sits behind the address",
-      "ar": "من يقف خلف العنوان",
-      "notes": "صاحب قرار / بريد عام / شخصي / غير محدد"
+      "en": "Who the address belongs to as far as its local part shows.",
+      "ar": "‏لمن يعود العنوان بحسب ما يظهر.",
+      "notes": ""
     },
     {
       "column": "company_website",
-      "en": "Website from the source or derived from a company mail domain",
-      "ar": "الموقع من المصدر أو مستخرَج من دومين إيميل الشركة",
-      "notes": "يُكتب فقط حين يستجيب الدومين فعلاً"
-    },
-    {
-      "column": "website_status",
-      "en": "Live DNS check (A and MX records)",
-      "ar": "فحص DNS فعلي (سجلات A و MX)",
-      "notes": "شغّال (موقع + بريد) / بريد فقط / موقع فقط — البريد لا يستقبل / دومين لا يستجيب"
-    },
-    {
-      "column": "country_code",
-      "en": "Dialling code, valid numbers only",
-      "ar": "كود الاتصال، للأرقام السليمة فقط",
-      "notes": "966"
-    },
-    {
-      "column": "organization_mobile_number",
-      "en": "Mobile in Saudi national format",
-      "ar": "الجوال بالصيغة المحلية بالصفر",
-      "notes": "نص، 10 خانات. القيم غير السليمة والوهمية تبقى كما وردت ويُعلَّم السجل"
-    },
-    {
-      "column": "organization_phone_number",
-      "en": "Landline in Saudi national format",
-      "ar": "الأرضي بالصيغة المحلية",
-      "notes": "نص، 10 خانات"
-    },
-    {
-      "column": "organization_fax_number",
-      "en": "Fax as received",
-      "ar": "رقم الفاكس كما ورد",
-      "notes": "يتكرر من رقم الهاتف في 2,095 سجل"
-    },
-    {
-      "column": "phone_e164",
-      "en": "Primary contact number in E.164",
-      "ar": "رقم التواصل الأساسي بالصيغة الدولية",
-      "notes": "الجوال أولاً ثم الأرضي. جاهز للواتساب و CRM. فاضي للأرقام الوهمية أو غير السليمة"
-    },
-    {
-      "column": "phone_type",
-      "en": "Line type of phone_e164",
-      "ar": "نوع خط رقم التواصل الأساسي",
-      "notes": "موبايل / أرضي / غير سليم — فاضي حين لا يوجد رقم إطلاقاً"
-    },
-    {
-      "column": "organization_address",
-      "en": "Street address where available",
-      "ar": "العنوان التفصيلي إن وُجد",
+      "en": "Website where the source records one.",
+      "ar": "‏الموقع إن وُجد.",
       "notes": ""
     },
     {
-      "column": "has_contact",
-      "en": "Any usable contact channel",
-      "ar": "هل يوجد وسيلة تواصل صالحة",
-      "notes": "نعم / لا"
-    },
-    {
-      "column": "completeness_score",
-      "en": "How complete the record is, 0-100",
-      "ar": "نسبة اكتمال السجل، 0-100",
-      "notes": "من 9 نقاط: التصنيف + الاسم + المنطقة + المدينة + الإيميل + الموقع + العنوان + ضعف الهاتف السليم"
-    },
-    {
-      "column": "quality_tier",
-      "en": "Completeness banding",
-      "ar": "تصنيف الاكتمال",
-      "notes": "A >=80 · B 60-79 · C 40-59 · D <40"
-    },
-    {
-      "column": "group_id",
-      "en": "Records sharing a company domain or a phone",
-      "ar": "سجلات تشترك في دومين أو رقم",
-      "notes": "فروع أو مكاتب شقيقة — فاضي حين يكون السجل مستقلاً"
-    },
-    {
-      "column": "duplicate_of",
-      "en": "Row number(s) holding an identical record",
-      "ar": "أرقام الصفوف المطابقة تماماً",
-      "notes": "لم يُحذف أي صف"
-    },
-    {
-      "column": "similar_to",
-      "en": "Row number(s) with the same office name words",
-      "ar": "صفوف بنفس كلمات اسم المكتب",
+      "column": "phones_count",
+      "en": "How many numbers this office has on the Phone sheet.",
+      "ar": "‏عدد الأرقام في ورقة Phone.",
       "notes": ""
-    },
-    {
-      "column": "name_search_key",
-      "en": "Normalised name for search and de-duplication",
-      "ar": "اسم موحّد للبحث وكشف التكرار",
-      "notes": ""
-    },
-    {
-      "column": "outreach_priority",
-      "en": "Suggested outreach order, 1 = contact first, 5 = verify before use",
-      "ar": "ترتيب التواصل المقترح، 1 = تواصل أولاً، 5 = تحقق قبل الاستخدام",
-      "notes": "نقاط من email_role و email_type و website_status و phone_type و grade، مقسّمة 1-5 (>=7 · 5-6 · 2-4 · 0-1 · <0)"
-    },
-    {
-      "column": "source_file",
-      "en": "Which source the record came from",
-      "ar": "المصدر الذي جاء منه السجل",
-      "notes": "الشيت الأساسي (4,961) · دليل المكاتب بالمناطق (1,847) · دليل الشركات الاستشارية (290، شيت منفصل)"
     },
     {
       "column": "record_flags",
-      "en": "Review notes. Empty means every check passed.",
-      "ar": "ملاحظات مراجعة. الفراغ يعني أن كل الفحوصات نجحت.",
-      "notes": "قيمة رقم وهمية | الرقم مشترك مع مكتب آخر | كود الهاتف يخالف المنطقة | الاسم مقطوع عند 30 حرفاً | سجل مضاف من دليل المناطق بلا أرقام | بلا أي وسيلة تواصل | دومين الإيميل لا يستجيب — لم يُحذف ولم يُعدَّل أي صف"
+      "en": "What to know before trusting the row.",
+      "ar": "‏ما يجب معرفته قبل الاعتماد على الصف.",
+      "notes": ""
     },
     {
-      "column": "— شيت Consulting_Firms —",
-      "en": "A separate sheet: 290 management / IT / HR consulting firms, not engineering offices",
-      "ar": "شيت منفصل: 290 شركة استشارات إدارية وتقنية وموارد بشرية — ليست مكاتب هندسية",
-      "notes": "أعمدته: classification (محلية / عالمية-إقليمية) · sector · location · linkedin_url · source_page"
+      "column": "company_name",
+      "en": "The consulting firm's name.",
+      "ar": "‏اسم الشركة.",
+      "notes": ""
+    },
+    {
+      "column": "classification",
+      "en": "How the source classifies the firm.",
+      "ar": "‏تصنيف الشركة.",
+      "notes": ""
+    },
+    {
+      "column": "sector",
+      "en": "The sector it works in.",
+      "ar": "‏القطاع.",
+      "notes": ""
+    },
+    {
+      "column": "location",
+      "en": "Where it is.",
+      "ar": "‏الموقع.",
+      "notes": ""
+    },
+    {
+      "column": "linkedin_url",
+      "en": "Its LinkedIn page where one is recorded.",
+      "ar": "‏صفحة لينكدإن إن وُجدت.",
+      "notes": ""
     }
   ],
   "charts": [
@@ -205,26 +139,26 @@ DATASET_DETAILS["sa-engineering"] = {
       "geo": "sa-regions",
       "titleEn": "Where the offices are",
       "titleAr": "أين تتركّز المكاتب",
-      "noteEn": "Shading is by quantile: each band holds a similar number of regions rather than an equal slice of the range. The key names the regions in each band and what each one holds. Not on the map: Not recorded (467).",
-      "noteAr": "التظليل بالشرائح المئينية: كل شريحة تضمّ عدداً متقارباً من المناطق بدل أن تقتسم المدى بالتساوي. والمفتاح يسمّي مناطق كل شريحة وما في كل منها. خارج الخريطة: غير مسجَّل (467).",
+      "noteEn": "Shading is by quantile: each band holds a similar number of regions rather than an equal slice of the range. The key names the regions in each band and what each one holds. Not on the map: Not recorded (308).",
+      "noteAr": "التظليل بالشرائح المئينية: كل شريحة تضمّ عدداً متقارباً من المناطق بدل أن تقتسم المدى بالتساوي. والمفتاح يسمّي مناطق كل شريحة وما في كل منها. خارج الخريطة: غير مسجَّل (308).",
       "items": [
         {
           "iso": "SA-01",
           "labelEn": "Riyadh",
           "labelAr": "الرياض",
-          "value": 2158
+          "value": 2203
         },
         {
           "iso": "SA-02",
           "labelEn": "Makkah",
           "labelAr": "مكة المكرمة",
-          "value": 1653
+          "value": 1735
         },
         {
           "iso": "SA-04",
           "labelEn": "Eastern Province",
           "labelAr": "الشرقية",
-          "value": 1016
+          "value": 1038
         },
         {
           "iso": "SA-14",
@@ -236,25 +170,25 @@ DATASET_DETAILS["sa-engineering"] = {
           "iso": "SA-03",
           "labelEn": "Madinah",
           "labelAr": "المدينة المنورة",
-          "value": 287
+          "value": 289
         },
         {
           "iso": "SA-05",
           "labelEn": "Qassim",
           "labelAr": "القصيم",
-          "value": 242
+          "value": 244
         },
         {
           "iso": "SA-09",
           "labelEn": "Jazan",
           "labelAr": "جازان",
-          "value": 168
+          "value": 170
         },
         {
           "iso": "SA-06",
           "labelEn": "Hail",
           "labelAr": "حائل",
-          "value": 129
+          "value": 133
         },
         {
           "iso": "SA-12",
@@ -290,7 +224,7 @@ DATASET_DETAILS["sa-engineering"] = {
       "headlineEn": "Riyadh holds 13 times what the median region does.",
       "headlineAr": "نصيب الرياض 13 ضعف نصيب المنطقة الوسيطة.",
       "metric": {
-        "value": 93.1,
+        "value": 95.5,
         "labelEn": "of 6,808 offices",
         "labelAr": "من 6,808 مكتب"
       },
@@ -302,28 +236,23 @@ DATASET_DETAILS["sa-engineering"] = {
       "unit": "count",
       "titleEn": "Offices by region",
       "titleAr": "المكاتب حسب المنطقة",
-      "noteEn": "All 13 administrative regions are represented; 467 offices carry no region.",
-      "noteAr": "كل المناطق الإدارية الـ13 ممثَّلة، و467 مكتباً بلا منطقة مسجَّلة.",
+      "noteEn": "All 13 administrative regions are represented; 308 offices carry no region.",
+      "noteAr": "كل المناطق الإدارية الـ13 ممثَّلة، و308 مكتباً بلا منطقة مسجَّلة.",
       "items": [
         {
           "labelEn": "Riyadh",
           "labelAr": "الرياض",
-          "value": 2158
+          "value": 2203
         },
         {
           "labelEn": "Makkah",
           "labelAr": "مكة المكرمة",
-          "value": 1653
+          "value": 1735
         },
         {
           "labelEn": "Eastern Province",
           "labelAr": "الشرقية",
-          "value": 1016
-        },
-        {
-          "labelEn": "Not recorded",
-          "labelAr": "غير مسجَّل",
-          "value": 467
+          "value": 1038
         },
         {
           "labelEn": "Asir",
@@ -331,24 +260,29 @@ DATASET_DETAILS["sa-engineering"] = {
           "value": 327
         },
         {
+          "labelEn": "Not recorded",
+          "labelAr": "غير مسجَّل",
+          "value": 308
+        },
+        {
           "labelEn": "Madinah",
           "labelAr": "المدينة المنورة",
-          "value": 287
+          "value": 289
         },
         {
           "labelEn": "Qassim",
           "labelAr": "القصيم",
-          "value": 242
+          "value": 244
         },
         {
           "labelEn": "Jazan",
           "labelAr": "جازان",
-          "value": 168
+          "value": 170
         },
         {
           "labelEn": "Hail",
           "labelAr": "حائل",
-          "value": 129
+          "value": 133
         },
         {
           "labelEn": "Al-Jouf",
@@ -376,8 +310,8 @@ DATASET_DETAILS["sa-engineering"] = {
           "value": 47
         }
       ],
-      "headlineEn": "Riyadh and Makkah together: 56% of the offices.",
-      "headlineAr": "الرياض ومكة المكرمة معاً: 56% من المكاتب.",
+      "headlineEn": "Riyadh and Makkah together: 57.8% of the offices.",
+      "headlineAr": "الرياض ومكة المكرمة معاً: 57.8% من المكاتب.",
       "metric": {
         "value": 100.0,
         "labelEn": "of 6,808 offices",
@@ -391,64 +325,64 @@ DATASET_DETAILS["sa-engineering"] = {
       "unit": "count",
       "titleEn": "Top 10 cities",
       "titleAr": "أكبر ١٠ مدن",
-      "noteEn": "Out of 133 cities in the file; 466 offices carry no city.",
-      "noteAr": "من إجمالي ١٣٣ مدينة في الملف، و466 مكتباً بلا مدينة مسجَّلة.",
+      "noteEn": "Out of 134 cities in the file; 307 offices carry no city.",
+      "noteAr": "من إجمالي ١٣٤ مدينة في الملف، و307 مكتباً بلا مدينة مسجَّلة.",
       "items": [
         {
           "labelEn": "Riyadh",
           "labelAr": "الرياض",
-          "value": 2041
+          "value": 2085
         },
         {
           "labelEn": "Jeddah",
           "labelAr": "جدة",
-          "value": 1033
+          "value": 1067
         },
         {
           "labelEn": "Makkah",
           "labelAr": "مكة المكرمة",
-          "value": 398
+          "value": 445
         },
         {
           "labelEn": "Dammam",
           "labelAr": "الدمام",
-          "value": 368
+          "value": 378
         },
         {
           "labelEn": "Khobar",
           "labelAr": "الخبر",
-          "value": 345
+          "value": 352
         },
         {
           "labelEn": "Madinah",
           "labelAr": "المدينة المنورة",
-          "value": 259
+          "value": 261
         },
         {
           "labelEn": "Taif",
           "labelAr": "الطائف",
-          "value": 160
+          "value": 161
         },
         {
           "labelEn": "Buraydah",
           "labelAr": "بريدة",
-          "value": 145
+          "value": 146
+        },
+        {
+          "labelEn": "Hail",
+          "labelAr": "حائل",
+          "value": 130
         },
         {
           "labelEn": "Abha",
           "labelAr": "ابها",
           "value": 128
-        },
-        {
-          "labelEn": "Hail",
-          "labelAr": "حائل",
-          "value": 126
         }
       ],
-      "headlineEn": "Riyadh and Jeddah together: 45.2% of the offices.",
-      "headlineAr": "الرياض وجدة معاً: 45.2% من المكاتب.",
+      "headlineEn": "Riyadh and Jeddah together: 46.3% of the offices.",
+      "headlineAr": "الرياض وجدة معاً: 46.3% من المكاتب.",
       "metric": {
-        "value": 73.5,
+        "value": 75.7,
         "labelEn": "of 6,808 offices",
         "labelAr": "من 6,808 مكتب"
       },
@@ -460,8 +394,8 @@ DATASET_DETAILS["sa-engineering"] = {
       "unit": "percent",
       "titleEn": "Contact coverage",
       "titleAr": "تغطية وسائل التواصل",
-      "noteEn": "Share of the 6,808 engineering offices carrying each channel. The 290 consulting firms sit on their own sheet and are counted separately.",
-      "noteAr": "نسبة المكاتب الهندسية التي تحمل كل وسيلة. الشركات الاستشارية الـ٢٩٠ في شيت منفصل وتُحسب على حدة.",
+      "noteEn": "Share of the 6,808 engineering offices carrying each channel. A number counts only where it parses as a real Saudi line — the previous edition counted 176 numbers made of one repeated digit as working ones. The 290 consulting firms sit on their own sheet and are counted separately.",
+      "noteAr": "نسبة المكاتب التي تحمل كل وسيلة. والرقم يُحتسب فقط إن كان خطاً سعودياً سليماً. والشركات الاستشارية في شيت منفصل وتُحسب على حدة.",
       "items": [
         {
           "labelEn": "Email address",
@@ -472,24 +406,30 @@ DATASET_DETAILS["sa-engineering"] = {
         {
           "labelEn": "Mobile number",
           "labelAr": "رقم جوال",
-          "value": 70.5,
-          "count": 4801
+          "value": 70.3,
+          "count": 4787
         },
         {
           "labelEn": "Landline",
           "labelAr": "هاتف أرضي",
-          "value": 43.1,
-          "count": 2937
+          "value": 40.0,
+          "count": 2724
+        },
+        {
+          "labelEn": "Street address",
+          "labelAr": "عنوان تفصيلي",
+          "value": 40.1,
+          "count": 2732
         },
         {
           "labelEn": "Website",
           "labelAr": "موقع إلكتروني",
-          "value": 37.9,
-          "count": 2581
+          "value": 26.7,
+          "count": 1819
         }
       ],
-      "headlineEn": "Mobile number on 70.5% of the offices, website on only 37.9%.",
-      "headlineAr": "رقم جوال في 70.5% من المكاتب، وموقع إلكتروني في 37.9% فقط.",
+      "headlineEn": "Mobile number on 70.3% of the offices, website on only 26.7%.",
+      "headlineAr": "رقم جوال في 70.3% من المكاتب، وموقع إلكتروني في 26.7% فقط.",
       "metric": {
         "value": 100.0,
         "labelEn": "of 6,808 offices",
@@ -503,8 +443,8 @@ DATASET_DETAILS["sa-engineering"] = {
       "unit": "count",
       "titleEn": "Classification grades",
       "titleAr": "درجات التصنيف",
-      "noteEn": "Unclassified is a value in the source register, not a gap in the data. Charted here are the 4,259 records on the scale, 63% of the file; 2,549 unclassified sit outside it.",
-      "noteAr": "«غير مصنّف» قيمة في السجل المصدر، وليست نقصاً في البيانات. المرسوم هنا هو 4,259 سجل على السلّم، أي 63% من الملف؛ وخارجه 2,549 غير مصنف.",
+      "noteEn": "Unclassified is a value in the source, not a gap in the data: 2,549 of the 6,808 offices carry it. Charted here are the 4,259 records on the scale, 63% of the file; 2,549 unclassified sit outside it.",
+      "noteAr": "«غير مصنّف» قيمة في المصدر وليست نقصاً في البيانات، وتحملها 2,549 من أصل 6,808 مكتب. المرسوم هنا هو 4,259 سجل على السلّم، أي 63% من الملف؛ وخارجه 2,549 غير مصنف.",
       "items": [
         {
           "labelEn": "First Classified",
@@ -558,43 +498,43 @@ DATASET_DETAILS["sa-engineering"] = {
       "unit": "count",
       "titleEn": "Office type",
       "titleAr": "نوع المكتب",
-      "noteEn": "Office type comes from the regional engineering directory, so records sourced elsewhere carry none.",
-      "noteAr": "نوع المكتب يأتي من دليل المكاتب بالمناطق، فالسجلات من مصادر أخرى بلا نوع.",
+      "noteEn": "4,059 offices carry no type: the field is filled where the record came with one and left empty rather than guessed.",
+      "noteAr": "4,059 مكتباً بلا نوع مسجَّل: الحقل يُملأ حين يرد، ولا يُخمَّن.",
       "items": [
         {
           "labelEn": "Not recorded",
           "labelAr": "غير مسجَّل",
-          "value": 4150
+          "value": 4059
         },
         {
           "labelEn": "Engineering consultancy offices",
           "labelAr": "مكاتب استشارات هندسية",
-          "value": 851
+          "value": 860
         },
         {
           "labelEn": "Mixed professional companies",
           "labelAr": "شركات مهنية مختلطة",
-          "value": 629
+          "value": 639
         },
         {
           "labelEn": "Consulting engineer offices",
           "labelAr": "مكاتب مهندسين استشاريين",
-          "value": 522
+          "value": 581
         },
         {
           "labelEn": "Engineer offices",
           "labelAr": "مكاتب مهندسين",
-          "value": 352
+          "value": 357
         },
         {
           "labelEn": "Saudi professional companies",
           "labelAr": "شركات مهنية سعودية",
-          "value": 168
+          "value": 172
         },
         {
           "labelEn": "Soil, foundation, concrete and survey testing",
           "labelAr": "مكاتب فحص التربة والأساسات والخرسانة والمساحة",
-          "value": 134
+          "value": 138
         },
         {
           "labelEn": "Land survey offices",
@@ -602,8 +542,8 @@ DATASET_DETAILS["sa-engineering"] = {
           "value": 2
         }
       ],
-      "headlineEn": "Engineering consultancy offices and Mixed professional companies together: 21.7% of the offices.",
-      "headlineAr": "مكاتب استشارات هندسية وشركات مهنية مختلطة معاً: 21.7% من المكاتب.",
+      "headlineEn": "Engineering consultancy offices and Mixed professional companies together: 22% of the offices.",
+      "headlineAr": "مكاتب استشارات هندسية وشركات مهنية مختلطة معاً: 22% من المكاتب.",
       "metric": {
         "value": 100.0,
         "labelEn": "of 6,808 offices",
