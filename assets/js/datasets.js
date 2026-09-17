@@ -98,6 +98,65 @@ const DATASETS = [
   },
 
   {
+    id: "schools",
+    icon: ICONS.graduationCap,
+
+    titleEn: "Schools in Saudi Arabia",
+    titleAr: "المدارس في السعودية",
+    bodyEn:
+      "<strong>A structured dataset of schools across Saudi Arabia</strong>, with their programs, tuition by grade and facilities, delivered in Arabic and English. Message us for the price.",
+    bodyAr:
+      "<strong>قاعدة بيانات منظّمة للمدارس في المملكة</strong>، ببرامجها ورسومها لكل صف ومرافقها، تُسلَّم بالعربية والإنجليزية. تواصل معنا لمعرفة السعر.",
+
+    /* The source delivers 9,032 rows and 2,354 schools: a row is a school-and-
+       program, so the headline counts the school. The gap is not the seven
+       stage levels it looks like — the largest group holds 144 programs at one
+       address, because the source keys on the registered name and files a
+       company's branches under it. 2,143 groups hold eight programs or fewer.
+
+       The second metric says "areas", never "regions". The column holds 16
+       values and the Kingdom has 13 administrative regions: Jeddah, Taif and
+       Al-Ahsa are listed separately here although they sit inside Makkah and
+       the Eastern Province. The same trap the healthcare card avoids by saying
+       health directorates.
+
+       Two things are deliberately not stated. Websites: 51% of source rows
+       carry one but only 36.7% of schools do, because the schools with more
+       rows are likelier to have a site — the row figure would flatter it, and
+       the school figure is too thin to lead with. Students and fees are the
+       source's own numbers, carried across unchanged and never confirmed with
+       the schools, so they are in the file but not on the card.
+
+       The fifth metric counts schools running at least one International
+       program: 765. National is 1,844 and Tahfeez 59; a school teaching both
+       is counted in both, so they add up past 2,354.
+
+       One pairing comes from the source and is carried as it stands: the
+       English "National" sits against the Arabic "أهلي", which means private.
+       They are not translations of each other. Both are what the source
+       supplies for that column, and replacing either would be writing a value
+       we were not given. */
+    metrics: [
+      { icon: ICONS.rows3,         metric: "records",    labelEn: "schools", labelAr: "مدرسة" },
+      { icon: ICONS.mapPin,        metric: "cities",     labelEn: "cities across {areas} areas", labelAr: "مدينة في {areas} منطقة" },
+      { icon: ICONS.bookOpen,      metric: "programs",   labelEn: "programs across 4 levels", labelAr: "برنامج على ٤ مراحل" },
+      { icon: ICONS.phone,         metric: "mobilePct",  labelEn: "carry a mobile number", labelAr: "منها برقم جوال" },
+      { icon: ICONS.globe,         metric: "international", labelEn: "teach an international curriculum", labelAr: "مدرسة بمنهج دولي" },
+    ],
+
+    seo: {
+      anchor: "schools-saudi-arabia",
+      alternateName: "المدارس في السعودية",
+      description:
+        "A structured dataset of 2,354 schools across Saudi Arabia, cleaned and deduplicated, covering 110 cities and 9,032 programs across four stage levels. Every school carries an email and 99.4% carry a mobile number, with tuition by grade, facilities and services on their own sheets. Delivered in Arabic and English.",
+      inLanguage: ["ar", "en"],
+      spatialCoverage: "Saudi Arabia",
+      encodingFormat: ["application/vnd.ms-excel", "text/csv"],
+      variableMeasured: ["school name", "area", "city", "stage level", "curriculum", "annual tuition"],
+    },
+  },
+
+  {
     id: "engineering",
     icon: ICONS.draftingCompass,
 

@@ -7,3 +7,8 @@ __pycache__/
 # local dev-server port, and worktrees/ holds whole checkouts. All of it is
 # written without being asked, and lands exactly where `git add -A` sweeps.
 .claude/
+
+# A byte-identical copy of CLAUDE.md that tooling writes without being asked. Two files saying
+# the same thing drift; if the AGENTS.md convention is wanted here it should replace CLAUDE.md
+# rather than sit beside it.
+AGENTS.md

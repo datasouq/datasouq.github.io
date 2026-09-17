@@ -8,5 +8,14 @@ const DATASET_METRICS = {
     "nonSaudi": "1,705",
     "records": "17,958",
     "regions": "13"
+  },
+  "schools": {
+    "areas": "16",
+    "cities": "110",
+    "emailPct": "100.0%",
+    "international": "765",
+    "mobilePct": "99.4%",
+    "programs": "9,032",
+    "records": "2,354"
   }
 };
