@@ -315,6 +315,13 @@ const DATASETS = [
 
   {
     id: "sa-health-links",
+
+    /* Not advertised yet, pending review. It is built, measured and its page
+       answers on dataset.html?id=sa-health-links — it is simply not in the
+       catalogue, the footer, the structured data or the sitemap. Remove this
+       one line to publish it. */
+    hidden: true,
+
     icon: ICONS.bookOpen,
 
     titleEn: "Facility to Insurance Links",

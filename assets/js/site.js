@@ -368,6 +368,14 @@ const I18N = {
       </article>`;
   }
 
+  /* A dataset marked `hidden` is built and measured like any other but is not
+     advertised: it stays out of the catalogue, out of the footer and out of the
+     structured data, and the build leaves it out of the sitemap. Its page still
+     answers, so a link to it can be sent to someone for review before anyone
+     else is told it exists. Deleting the entry instead would take the card, its
+     comment and its measured figures with it. */
+  const LISTED = DATASETS.filter((d) => !d.hidden);
+
   /* The catalogue grid and the footer's "Datasets" links both come from the
      same DATASETS array, so a new dataset appears in both the moment it is
      added to assets/js/datasets.js — neither this function nor its caller
@@ -376,7 +384,7 @@ const I18N = {
     const t = I18N[lang];
 
     const grid = document.querySelector(".cards--catalogue");
-    if (grid) grid.innerHTML = DATASETS.map((d) => renderDatasetCard(d, t)).join("");
+    if (grid) grid.innerHTML = LISTED.map((d) => renderDatasetCard(d, t)).join("");
 
     /* The footer links point at each dataset's own page rather than at the
        catalogue anchor: from the dataset page, a link back to #datasets on
@@ -384,7 +392,7 @@ const I18N = {
        the page itself. */
     const footerLinks = $("footer-dataset-links");
     if (footerLinks) {
-      footerLinks.innerHTML = DATASETS.map(
+      footerLinks.innerHTML = LISTED.map(
         (d) =>
           `<li><a href="dataset.html?id=${d.id}" tabindex="0">${
             lang === "ar" ? d.titleAr : d.titleEn
@@ -414,7 +422,7 @@ const I18N = {
     graph["@graph"] = graph["@graph"]
       .filter((node) => node["@type"] !== "Dataset")
       .concat(
-        DATASETS.map((d) => ({
+        LISTED.map((d) => ({
           "@type": "Dataset",
           "@id": base + "#" + d.seo.anchor,
           name: d.titleEn,
