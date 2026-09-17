@@ -26,7 +26,19 @@
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://datasouq.github.io/dataset.html?id=sa-healthcare</loc>
+    <loc>https://datasouq.github.io/dataset.html?id=sa-health-facilities</loc>
+    <lastmod>2026-09-17</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://datasouq.github.io/dataset.html?id=sa-medical-providers</loc>
+    <lastmod>2026-09-17</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://datasouq.github.io/dataset.html?id=sa-health-links</loc>
     <lastmod>2026-09-17</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>

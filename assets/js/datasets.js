@@ -223,55 +223,144 @@ const DATASETS = [
   },
 
   {
-    id: "sa-healthcare",
-    previousIds: ["healthcare"],
+    id: "sa-health-facilities",
+    previousIds: ["healthcare", "sa-healthcare"],
     icon: ICONS.hospital,
 
-    titleEn: "Healthcare Facilities in Saudi Arabia",
+    titleEn: "Health Facilities in Saudi Arabia",
     titleAr: "المنشآت الصحية في السعودية",
     bodyEn:
-      "<strong>A structured dataset of healthcare facilities across Saudi Arabia</strong>, spanning hospitals, clinics and health centers, cleaned and deduplicated. Message us for the price.",
+      "<strong>A structured dataset of health facilities across Saudi Arabia</strong>, from hospitals to primary centres, clinics and laboratories, with map coordinates. Message us for the price.",
     bodyAr:
-      "<strong>قاعدة بيانات منظّمة للمنشآت الصحية في المملكة</strong>، تشمل المستشفيات والعيادات والمراكز الصحية، منقّحة وخالية من التكرار. تواصل معنا لمعرفة السعر.",
+      "<strong>قاعدة بيانات منظّمة للمنشآت الصحية في المملكة</strong>، من المستشفيات إلى المراكز الأولية والعيادات والمختبرات، بإحداثيات على الخريطة. تواصل معنا لمعرفة السعر.",
 
-    /* The source sheet is titled المنشآت (Facilities), not مستشفيات
-       (Hospitals): only 916 of its 4,563 rows, 20.07%, are one of the six
-       hospital-labelled facility_type values (MOH, private, military,
-       seasonal, university, specialised). The rest are primary health
-       centres, clinics, labs, pharmacies and more across 18 distinct types
-       — so the card is titled and described for what the file actually
-       holds, with the hospital count called out as its own metric rather
-       than standing in for the whole dataset.
+    /* This card used to be called "healthcare" and described these same 4,563
+       facilities. The id changed twice — once for the country code, once when
+       this became one of three healthcare datasets — and previousIds keeps both
+       old links working.
 
-       region holds MOH health-directorate names, not the Kingdom's 13
-       administrative regions — Jeddah and Makkah are two separate entries
-       here, for one example — so the label says "health directorates",
-       never "regions", to avoid reading as the same geography the other
-       two datasets measure.
+       The second metric says "health directorates", never "regions". There are
+       20 of them against the Kingdom's 13, and Jeddah, Taif and Al-Ahsa are
+       listed separately although they sit inside Makkah and the Eastern
+       Province. The same trap the schools card avoids by saying "areas".
 
-       organization_email is filled on only 27.44% of rows, which the
-       contractors dataset's own precedent says not to state; phone at
-       74.51% is the honest contact-rate figure to lead with instead.
-       الاسم الإنجليزي (English facility name) is filled on all 4,563 rows,
-       but region and city are Arabic-only, so the body promises English
-       facility names rather than a full bilingual delivery. */
+       Phone is stated as the share that PARSES as a Saudi line, not the share
+       of non-empty cells. The two are far apart here: 3,019 facilities have
+       something in that column and 2,297 of those can be dialled, because the
+       source writes an absent value four different ways and 366 cells hold the
+       literal string NULL.
+
+       Email is deliberately not a metric: 27.4%. The contractors card set the
+       precedent for not leading with a figure that thin. */
     metrics: [
-      { icon: ICONS.rows3,       value: "4,563", labelEn: "records", labelAr: "سجل" },
-      { icon: ICONS.mapPin,      value: "328",   labelEn: "cities across 20 health directorates", labelAr: "مدينة في ٢٠ منطقة صحية" },
-      { icon: ICONS.layers,      value: "18",    labelEn: "facility types, from hospitals to clinics", labelAr: "نوع منشأة، من المستشفيات إلى العيادات" },
-      { icon: ICONS.phone,       value: "74.5%", labelEn: "carry a phone number", labelAr: "منها برقم هاتف" },
-      { icon: ICONS.buildingTwo, value: "916",   labelEn: "hospitals included", labelAr: "مستشفى ضمن القاعدة" },
+      { icon: ICONS.rows3,  metric: "records",     labelEn: "facilities", labelAr: "منشأة" },
+      { icon: ICONS.mapPin, metric: "cities",      labelEn: "cities across {directorates} health directorates", labelAr: "مدينة في {directorates} منطقة صحية" },
+      { icon: ICONS.layers, metric: "types",       labelEn: "facility types, from hospitals to clinics", labelAr: "نوع منشأة، من المستشفيات إلى العيادات" },
+      { icon: ICONS.phone,  metric: "dialablePct", labelEn: "carry a dialable number", labelAr: "منها برقم صالح للاتصال" },
+      { icon: ICONS.globe,  metric: "coordinates", labelEn: "carry map coordinates", labelAr: "منشأة بإحداثيات على الخريطة" },
     ],
 
     seo: {
-      anchor: "healthcare-facilities-saudi-arabia",
+      anchor: "health-facilities-saudi-arabia",
       alternateName: "المنشآت الصحية في السعودية",
       description:
-        "A structured dataset of 4,563 healthcare facilities across Saudi Arabia, cleaned and deduplicated, covering 328 cities in 20 health directorates and 18 facility types, including 916 hospitals. 74.5% of records carry a phone number. Delivered in Arabic, with English facility names.",
+        "A structured dataset of 4,563 health facilities across Saudi Arabia, cleaned and deduplicated, covering 328 cities in 20 health directorates and 18 facility types. 3,731 carry map coordinates and 2,297 carry a number that parses as a real Saudi line. Delivered in Arabic, with English facility names.",
       inLanguage: ["ar", "en"],
       spatialCoverage: "Saudi Arabia",
       encodingFormat: ["application/vnd.ms-excel", "text/csv"],
-      variableMeasured: ["facility name", "facility type", "region", "city", "phone number"],
+      variableMeasured: ["facility name", "facility type", "health directorate", "city", "phone number", "coordinates"],
+    },
+  },
+
+  {
+    id: "sa-medical-providers",
+    icon: ICONS.buildingTwo,
+
+    titleEn: "Medical Providers in Saudi Arabia",
+    titleAr: "مقدمو الخدمة الطبية في السعودية",
+    bodyEn:
+      "<strong>A structured dataset of medical providers appointed to a health-insurance network</strong>, each with its insurance number — hospitals, polyclinics, pharmacies and optical centres. Message us for the price.",
+    bodyAr:
+      "<strong>قاعدة بيانات منظّمة لمقدمي الخدمة الطبية المعتمدين في شبكة تأمين صحي</strong>، لكل منهم رقم الضمان الصحي — مستشفيات ومجمعات وصيدليات وبصريات. تواصل معنا لمعرفة السعر.",
+
+    /* This is not a second view of the facilities dataset and the card must not
+       read like one. Two thirds of it — 2,250 pharmacies and 444 optical
+       centres — do not appear in the facility list at all. What makes it its
+       own thing is the insurance number: 4,001 of 4,004 rows carry one.
+
+       Not stated: the number a provider publishes is often a chain switchboard.
+       The most-shared one reaches 578 providers, so "carries a phone" would
+       overstate how many distinct places you can actually reach. The workbook
+       flags those rows; the dataset page's coverage chart carries the figure
+       next to the sentence that explains it. */
+    metrics: [
+      { icon: ICONS.rows3,       metric: "records",    labelEn: "providers", labelAr: "مقدم خدمة" },
+      { icon: ICONS.layers,      metric: "categories", labelEn: "provider categories", labelAr: "تصنيف مقدم خدمة" },
+      { icon: ICONS.mapPin,      metric: "cities",     labelEn: "cities", labelAr: "مدينة" },
+      { icon: ICONS.briefcase,   metric: "cchiPct",    labelEn: "carry an insurance number", labelAr: "منهم برقم ضمان صحي" },
+      { icon: ICONS.buildingTwo, metric: "pharmacies", labelEn: "pharmacies included", labelAr: "صيدلية ضمن القاعدة" },
+    ],
+
+    seo: {
+      anchor: "medical-providers-saudi-arabia",
+      alternateName: "مقدمو الخدمة الطبية في السعودية",
+      description:
+        "A structured dataset of 4,004 medical providers appointed to a health-insurance network across Saudi Arabia, covering 160 cities and 11 provider categories. 4,001 carry an insurance number, and 2,250 are pharmacies. Delivered in Arabic and English.",
+      inLanguage: ["ar", "en"],
+      spatialCoverage: "Saudi Arabia",
+      encodingFormat: ["application/vnd.ms-excel", "text/csv"],
+      variableMeasured: ["provider name", "provider category", "insurance number", "city", "region", "phone number"],
+    },
+  },
+
+  {
+    id: "sa-health-links",
+    icon: ICONS.bookOpen,
+
+    titleEn: "Facility to Insurance Links",
+    titleAr: "ربط المنشآت بالتأمين",
+    bodyEn:
+      "<strong>Verified links between a health facility and the insurance-network provider that is the same place</strong>, each carrying both keys, the insurance number and, on most, a map pin. Message us for the price.",
+    bodyAr:
+      "<strong>روابط موثّقة بين منشأة صحية ومقدم الخدمة المؤمَّن الذي يصفه نفس المكان</strong>، كل رابط يحمل المفتاحين ورقم الضمان الصحي، وأغلبها بإحداثيات. تواصل معنا لمعرفة السعر.",
+
+    /* The smallest thing in the catalogue and the easiest to oversell, so the
+       card states the count and nothing that could be read as coverage.
+
+       It is NOT the overlap of two four-thousand-row datasets. It is about 5%
+       of each, and that ceiling is structural rather than a tuning failure:
+       2,694 providers are pharmacies and opticians the facility list does not
+       contain at all, and 2,453 facilities are government primary health
+       centres the network does not contract. A facility with no link was not
+       tested and found to be outside a network — it simply could not be
+       matched.
+
+       A telephone match is only accepted where the number is unique on both
+       sides, because a chain switchboard reaches up to 578 providers and
+       identifies no branch.
+
+       55 links were inspected by hand at random: 53 the same place, 0 wrong,
+       2 undecided. Zero errors in 55 bounds the error rate at about 5%, so the
+       workbook says "no false match found in 55" and never "99% accurate".
+       That sentence is not on the card because a card has no room to qualify
+       it, and an unqualified accuracy claim is the one thing this dataset must
+       not make. */
+    metrics: [
+      { icon: ICONS.rows3,  metric: "records",       labelEn: "verified links", labelAr: "رابط موثّق" },
+      { icon: ICONS.phone,  metric: "byPhone",       labelEn: "confirmed by a matching phone number", labelAr: "مؤكد برقم هاتف مطابق" },
+      { icon: ICONS.mapPin, metric: "withMap",       labelEn: "carry map coordinates", labelAr: "بإحداثيات على الخريطة" },
+      { icon: ICONS.layers, metric: "facilityTypes", labelEn: "kinds of facility linked", labelAr: "نوع منشأة مرتبطة" },
+    ],
+
+    seo: {
+      anchor: "facility-insurance-links-saudi-arabia",
+      alternateName: "ربط المنشآت بالتأمين",
+      description:
+        "223 verified links between a Saudi health facility and the insurance-network provider that describes the same place, each carrying both dataset keys, the insurance number and, on 148, map coordinates. Matched on telephone identity and on name within a town, with 55 inspected by hand and no false match found.",
+      inLanguage: ["ar", "en"],
+      spatialCoverage: "Saudi Arabia",
+      encodingFormat: ["application/vnd.ms-excel", "text/csv"],
+      variableMeasured: ["facility name", "provider name", "insurance number", "city", "evidence"],
     },
   },
 ];

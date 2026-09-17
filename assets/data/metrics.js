@@ -19,6 +19,30 @@ const DATASET_METRICS = {
     "regions": "13",
     "whatsappReady": "4,787"
   },
+  "sa-health-facilities": {
+    "cities": "328",
+    "coordinates": "3,731",
+    "dialablePct": "50.3%",
+    "directorates": "20",
+    "insured": "223",
+    "records": "4,563",
+    "types": "18"
+  },
+  "sa-health-links": {
+    "byPhone": "132",
+    "facilityTypes": "11",
+    "records": "223",
+    "withMap": "148"
+  },
+  "sa-medical-providers": {
+    "categories": "11",
+    "cchiPct": "99.9%",
+    "chains": "98",
+    "cities": "160",
+    "linked": "223",
+    "pharmacies": "2,250",
+    "records": "4,004"
+  },
   "sa-schools": {
     "areas": "16",
     "cities": "110",
