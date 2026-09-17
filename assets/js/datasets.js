@@ -181,31 +181,40 @@ const DATASETS = [
 
     /* The file's only record sheet is Arabic (office_name_ar, region_ar,
        city_ar — no English columns), so unlike the contractors dataset this
-       one does not claim delivery in English.
+       one does not claim delivery in English. Rule 4: one main sheet per
+       language the source actually carries, and no invented translation.
 
-       6,808 offices across 133 cities and all 13 regions.
-       office_classification holds "غير مصنف" (Unclassified) on 2,549 rows,
-       37.44%; the other 4,259, 62.56%, carry one of six grades — rounded to
-       63%, the same treatment the contractors card gives its own classified
-       share. organization_email is filled on 4,707 rows, 69.14%.
+       Every figure comes from assets/data/metrics.js now. Before it did, the
+       city count here said 133 against a measured 134 — small, wrong, and
+       exactly the kind of drift a hand-kept number produces.
 
-       The fifth metric is not measured from the AR sheet: Consulting_Firms
-       is a separate 290-row sheet of consulting firms (record_id prefix
-       DS-SA-CNS, against DS-SA-ENG for the offices), bundled into the same
-       file rather than folded into the office count. */
+       "Classified" counts the offices carrying one of the six grades, not the
+       seven values the column holds: غير مصنف is one of them and covers
+       37% of the file. The same treatment the contractors card gives its own
+       classified share.
+
+       The fifth metric is not from the office sheet: the consulting firms are
+       a second entity in the same workbook, keyed DS-SA-CNS against DS-SA-ENG,
+       counted separately rather than folded into the office total.
+
+       Phone is deliberately not a metric here. It would read as reachability,
+       and the REV 02 rebuild found 176 offices whose number is one digit
+       repeated — kept and flagged, never counted as dialable. The share that
+       does parse is on the dataset page's coverage chart, where it sits next
+       to what it means. */
     metrics: [
-      { icon: ICONS.rows3,     value: "6,808", labelEn: "records", labelAr: "سجل" },
-      { icon: ICONS.mapPin,    value: "133",   labelEn: "cities across 13 regions", labelAr: "مدينة في ١٣ منطقة" },
-      { icon: ICONS.layers,    value: "63%",   labelEn: "classified, across 6 grades", labelAr: "مصنّفون على ٦ درجات" },
-      { icon: ICONS.mail,      value: "69.1%", labelEn: "carry an email", labelAr: "منهم ببريد إلكتروني" },
-      { icon: ICONS.briefcase, value: "290",   labelEn: "consulting firms included", labelAr: "شركة استشارية ضمن القاعدة" },
+      { icon: ICONS.rows3,     metric: "records",       labelEn: "offices", labelAr: "مكتب" },
+      { icon: ICONS.mapPin,    metric: "cities",        labelEn: "cities across {regions} regions", labelAr: "مدينة في {regions} منطقة" },
+      { icon: ICONS.layers,    metric: "classifiedPct", labelEn: "classified, across 6 grades", labelAr: "مصنّفون على ٦ درجات" },
+      { icon: ICONS.mail,      metric: "emailPct",      labelEn: "carry an email", labelAr: "منهم ببريد إلكتروني" },
+      { icon: ICONS.briefcase, metric: "consulting",    labelEn: "consulting firms included", labelAr: "شركة استشارية ضمن القاعدة" },
     ],
 
     seo: {
       anchor: "engineering-offices-saudi-arabia",
       alternateName: "المكاتب الهندسية في السعودية",
       description:
-        "A structured dataset of 6,808 engineering offices across Saudi Arabia, cleaned and deduplicated, covering 133 cities in 13 regions, plus 290 consulting firms. 69.1% of records carry an email, and 63% are classified across 6 grades. Delivered in Arabic.",
+        "A structured dataset of 6,808 engineering offices across Saudi Arabia, cleaned and deduplicated, covering 134 cities in 13 regions, plus 290 consulting firms. 69.1% of records carry an email, and 63% are classified across 6 grades. Delivered in Arabic.",
       inLanguage: ["ar"],
       spatialCoverage: "Saudi Arabia",
       encodingFormat: ["application/vnd.ms-excel", "text/csv"],

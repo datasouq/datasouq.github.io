@@ -9,6 +9,16 @@ const DATASET_METRICS = {
     "records": "17,958",
     "regions": "13"
   },
+  "sa-engineering": {
+    "cities": "134",
+    "classifiedPct": "63%",
+    "consulting": "290",
+    "emailPct": "69.1%",
+    "mobilePct": "70.3%",
+    "records": "6,808",
+    "regions": "13",
+    "whatsappReady": "4,787"
+  },
   "sa-schools": {
     "areas": "16",
     "cities": "110",
