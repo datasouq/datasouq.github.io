@@ -283,7 +283,6 @@ NOUNS = {
     "sa-engineering": ("offices", "المكاتب", "مكتب"),
     "sa-health-facilities": ("facilities", "المنشآت", "منشأة"),
     "sa-medical-providers": ("providers", "مقدمو الخدمة", "مقدم خدمة"),
-    "sa-health-links": ("links", "الروابط", "رابط"),
 }
 
 # Labels that name the absence of a value. They are never the subject of a
@@ -1120,15 +1119,6 @@ PROVIDERS_DIR = os.environ.get(
 PROVIDERS_FILE = "DataSouq - Saudi Medical Providers Database - 2026-09-17.xlsx"
 PROVIDERS_SHEET = "DataSouq - Saudi Medical Providers"
 
-LINKS_DIR = os.environ.get(
-    "DATASOUQ_HEALTH_LINKS",
-    os.path.join(os.path.expanduser("~"), "Desktop", "DATASOUQ", "_ORGANIZED",
-                 "health-insurance-links", "1 - CURRENT REV 01 - 2026-09-17",
-                 "1 - SEND TO CLIENTS"),
-)
-LINKS_FILE = "DataSouq - Saudi Health Facility Insurance Links - 2026-09-17.xlsx"
-LINKS_SHEET = "DataSouq - Facility Insurance Links"
-
 # The facility file records a facility under one of twenty health directorates, and the Kingdom
 # has thirteen administrative regions. Jeddah, Taif and Al-Qunfudhah sit inside Makkah; Al-Ahsa
 # and Hafar Al-Batin inside the Eastern Province; Bishah inside Asir; Al-Qurayyat inside Al-Jouf.
@@ -1309,7 +1299,7 @@ def build_medical_providers(source):
                 ("A link to a facility record", "ارتباط بسجل منشأة", filled["linked"]),
             ],
             total,
-            note_en="The insurance number is what makes this a network list rather than a directory. The link to a facility record exists on %s rows — see the links dataset for what that number can and cannot be read to mean."
+            note_en="The insurance number is what makes this a network list rather than a directory. The link to a facility record exists on %s rows — a provider without one could not be matched, which is not the same as not existing."
             % format(filled["linked"], ","),
             note_ar="رقم الضمان هو ما يجعل هذا ملف شبكة تأمين لا دليلاً عاماً.",
         ),
@@ -1326,65 +1316,6 @@ def build_medical_providers(source):
                 "linked": format(filled["linked"], ","),
             },
             "charts": grouped(narrate(charts, "sa-medical-providers", total))}
-
-
-def build_health_links(source):
-    book = workbook(os.path.join(LINKS_DIR, LINKS_FILE))
-    dictionary = read_block_dictionary(book["Data_Dictionary"])
-    records = list(rows_of(book[LINKS_SHEET], "datasouq_key"))
-    book.close()
-
-    total = len(records)
-    evidence, types, categories, regions = Counter(), Counter(), Counter(), Counter()
-    filled = Counter()
-    EVIDENCE = {"both": ("Telephone and name", "هاتف واسم"),
-                "phone": ("Telephone alone", "هاتف فقط"),
-                "name": ("Name alone", "اسم فقط")}
-    for row in records:
-        evidence[str(row.get("evidence") or "")] += 1
-        types[row["facility_type_ar"]] += 1
-        categories[row["provider_category"]] += 1
-        regions[row["region_ar"]] += 1
-        if row["google_maps_url"]:
-            filled["map"] += 1
-
-    charts = [
-        split("evidence", "How each link was made", "كيف رُبط كل سجل",
-              [EVIDENCE[k] + (v,) for k, v in evidence.most_common() if k in EVIDENCE],
-              note_en="A telephone match is only accepted where the number is unique on BOTH sides — a chain switchboard reaches hundreds of providers and identifies no branch. A link made both ways is the strongest thing in the file.",
-              note_ar="الهاتف لا يُقبل إلا إذا كان فريداً على الجهتين. والرابط الذي تحقق بالطريقتين هو الأقوى في الملف."),
-        bar("types", "What kind of facility was linked", "نوع المنشأة المرتبطة",
-            counted(types, drop_blank=False),
-            note_en="No pharmacy and no optical centre appears here at all: the facility list does not contain them, so they cannot be linked to anything.",
-            note_ar="لا توجد صيدلية ولا بصريات هنا إطلاقاً: قائمة المنشآت لا تحتويها أصلاً."),
-        bar("regions", "Links by region", "الروابط حسب المنطقة",
-            counted(regions, drop_blank=False),
-            note_en="A link requires both records to agree on the region, so this is also a map of where the two files describe the same places.",
-            note_ar="الرابط يشترط اتفاق السجلين على المنطقة."),
-        coverage(
-            "coverage", "What a link carries", "ما يحمله الرابط",
-            [
-                ("An insurance number", "رقم ضمان صحي", total),
-                ("Map coordinates", "إحداثيات على الخريطة", filled["map"]),
-                ("Confirmed by telephone", "مؤكد بالهاتف",
-                 evidence["both"] + evidence["phone"]),
-            ],
-            total,
-            note_en="Every link carries an insurance number by construction — that is what a link is for. %s also carry a map pin from the facility side."
-            % format(filled["map"], ","),
-            note_ar="كل رابط يحمل رقم ضمان صحي بحكم بنائه.",
-        ),
-    ]
-
-    return {"total": total, "dictionary": dictionary,
-            "measured": {
-                "records": format(total, ","),
-                "byPhone": format(evidence["both"] + evidence["phone"], ","),
-                "withMap": format(filled["map"], ","),
-                "facilityTypes": str(len([k for k in types if k not in (None, "")])),
-            },
-            "charts": grouped(narrate(charts, "sa-health-links", total))}
-
 
 
 SCHOOLS_FILE = "DataSouq - Saudi Schools Database - 2026-09-13.xlsx"
@@ -1631,7 +1562,6 @@ BUILDERS = {
     "sa-engineering": build_engineering,
     "sa-health-facilities": build_health_facilities,
     "sa-medical-providers": build_medical_providers,
-    "sa-health-links": build_health_links,
 }
 
 
