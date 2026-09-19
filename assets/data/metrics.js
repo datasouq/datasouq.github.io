@@ -28,12 +28,6 @@ const DATASET_METRICS = {
     "records": "4,563",
     "types": "18"
   },
-  "sa-health-links": {
-    "byPhone": "132",
-    "facilityTypes": "11",
-    "records": "223",
-    "withMap": "148"
-  },
   "sa-medical-providers": {
     "categories": "11",
     "cchiPct": "99.9%",

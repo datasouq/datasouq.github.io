@@ -430,7 +430,7 @@ DATASET_DETAILS["sa-medical-providers"] = {
       "unit": "percent",
       "titleEn": "What each provider carries",
       "titleAr": "ما يحمله كل مقدم خدمة",
-      "noteEn": "The insurance number is what makes this a network list rather than a directory. The link to a facility record exists on 223 rows — see the links dataset for what that number can and cannot be read to mean.",
+      "noteEn": "The insurance number is what makes this a network list rather than a directory. The link to a facility record exists on 223 rows — a provider without one could not be matched, which is not the same as not existing.",
       "noteAr": "رقم الضمان هو ما يجعل هذا ملف شبكة تأمين لا دليلاً عاماً.",
       "items": [
         {
