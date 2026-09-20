@@ -94,13 +94,9 @@
       </div>`;
   }
 
-  function escapeHtml(value) {
-    return String(value)
-      .replace(/&/g, "&amp;")
-      .replace(/</g, "&lt;")
-      .replace(/>/g, "&gt;")
-      .replace(/"/g, "&quot;");
-  }
+  /* site.js owns this: the catalogue card and this page draw the same metric list, and two
+     copies of the escaping is how they came to disagree about whether to escape at all. */
+  const escapeHtml = window.DATASOUQ_METRIC.escape;
 
   /* ------------------------------------------------------------------
      Header — the same icon, title, body and five metrics the card shows,

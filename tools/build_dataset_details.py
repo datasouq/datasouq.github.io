@@ -836,6 +836,32 @@ def read_dictionary(ws):
 # ---------------------------------------------------------------------------
 
 
+# Three of these workbooks carry phones on their own sheet, one row per number, keyed back to
+# the record. What counts as a reachable number was asked separately in each of them, in two
+# vocabularies, with the +966 test written out twice - and dialablePct is a figure printed on a
+# card, so two copies of the rule is two cards counting different things under one word.
+#
+# The contractors workbook is NOT this shape: it carries the number on the record's own row and
+# names the line types in English. build_contractors() counts them there and says so.
+MOBILE_AR, LANDLINE_AR = "جوال", "هاتف أرضي"
+
+
+def keys_with_type(phones, kind):
+    """Records carrying at least one number of this line type."""
+    return len({row["datasouq_key"] for row in phones
+                if str(row.get("phone_type") or "") == kind})
+
+
+def keys_dialable(phones):
+    """Records carrying at least one number that parses as a real Saudi line.
+
+    +966 is the test rather than a cell that is not empty: a source that writes an absent value
+    four different ways, the literal string NULL among them, passes any emptiness check and
+    still leaves nobody to call."""
+    return len({row["datasouq_key"] for row in phones
+                if str(row.get("phone_e164") or "").startswith("+966")})
+
+
 def build_contractors(source):
     book = workbook(os.path.join(CONTRACTORS_DIR, CONTRACTORS_FILE))
 
@@ -875,6 +901,8 @@ def build_contractors(source):
 
         if row["organization_email"]:
             filled["email"] += 1
+        # Not keys_dialable(): this workbook has no phones sheet. The number is a column on the
+        # record's own row, and the line types are this file's English vocabulary.
         if row["phone_e164"] and str(row["phone_type"]).strip() in ("Mobile", "Landline", "Unified number", "Toll-free"):
             filled["phone"] += 1
         if row["company_website"]:
@@ -1028,10 +1056,8 @@ def build_engineering(source):
 
     # The line type is derived from the number itself in this edition, so the honest coverage
     # figure counts numbers that parse as a real Saudi line rather than cells that are not empty.
-    MOBILE, LANDLINE = "جوال", "هاتف أرضي"
-    mobile = len({r["datasouq_key"] for r in phones if str(r.get("phone_type") or "") == MOBILE})
-    landline = len({r["datasouq_key"] for r in phones
-                    if str(r.get("phone_type") or "") == LANDLINE})
+    mobile = keys_with_type(phones, MOBILE_AR)
+    landline = keys_with_type(phones, LANDLINE_AR)
     reachable = len({r["datasouq_key"] for r in whatsapp})
 
     blank_region = sum(v for k, v in regions.items() if k in (None, ""))
@@ -1172,11 +1198,9 @@ def build_health_facilities(source):
         if str(row.get("cchi_no") or "").strip():
             filled["insurance"] += 1
 
-    MOBILE, LANDLINE = "جوال", "هاتف أرضي"
-    dialable = len({r["datasouq_key"] for r in phones
-                    if str(r.get("phone_e164") or "").startswith("+966")})
-    mobile = len({r["datasouq_key"] for r in phones if str(r.get("phone_type")) == MOBILE})
-    landline = len({r["datasouq_key"] for r in phones if str(r.get("phone_type")) == LANDLINE})
+    dialable = keys_dialable(phones)
+    mobile = keys_with_type(phones, MOBILE_AR)
+    landline = keys_with_type(phones, LANDLINE_AR)
     any_number = len({r["datasouq_key"] for r in phones})
 
     mapped = Counter()
@@ -1260,10 +1284,8 @@ def build_medical_providers(source):
         if str(row.get("facility_key") or "").strip():
             filled["linked"] += 1
 
-    dialable = len({r["datasouq_key"] for r in phones
-                    if str(r.get("phone_e164") or "").startswith("+966")})
-    MOBILE = "جوال"
-    mobile = len({r["datasouq_key"] for r in phones if str(r.get("phone_type")) == MOBILE})
+    dialable = keys_dialable(phones)
+    mobile = keys_with_type(phones, MOBILE_AR)
 
     PHARMACY, OPTICAL = "صيدلية", "بصريات"
     distinct_cities = sum(1 for k in cities if k not in (None, ""))
