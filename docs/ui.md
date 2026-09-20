@@ -144,21 +144,36 @@ reason `CLAUDE.md` gives for Arabic digits.
 | `--text-lg` | 1rem | | `--text-4xl` | 2.125rem |
 | | | | `--text-5xl` | 2.875rem |
 
-**5.2 — Three families, each with a job.** `--font` Inter for text, and
-`--font-heading` Manrope for headings, each falling back to IBM Plex Sans
-Arabic for Arabic glyphs; `--font-brand` Space Grotesk for the wordmark alone,
-requested with `&text=DataSouq` so the browser fetches only the eight letters
-it will draw — **2,352 bytes**, against 24,836 for the next smallest family.
-**House.**
+**5.2 — Two families and a wordmark, not four.** `--font` Inter for text and
+`--font-heading` Inter for headings, each falling back to IBM Plex Sans Arabic
+for Arabic glyphs; `--font-brand` Space Grotesk for the wordmark alone,
+requested with `&text=DataSouq` so the browser fetches only the eight letters it
+will draw — **2,352 bytes**. **House.**
 
-**5.3 — What the families cost is measured, not assumed.** On a cold visit,
-measured live on 2026-09-20: Inter 48,256 bytes, IBM Plex Sans Arabic 45,296,
-Manrope 24,836, Space Grotesk 2,352. An Arabic reader downloads all four —
-120,740 bytes, against 74,295 for the whole of the landing page beside them.
-**Open question, not a rule:** whether headings keep a family of their own.
-Inter carries the weights Manrope is used for, so dropping it would save the
-24,836 bytes measured above and change every heading on the site. Decide it
-here before changing it in CSS.
+`--font-heading` stays as a token even though it names the same face as
+`--font`: `h1`–`h6` reference it, so a later decision to give headings a face of
+their own is one line here and one weight in the font URL rather than a hunt
+through the stylesheet.
+
+**5.3 — What the families cost is measured, not assumed.** Measured live on
+2026-09-20, decoded bytes on a cold visit: Inter 48,256, IBM Plex Sans Arabic
+45,296, Manrope 24,836, Space Grotesk 2,352 — and an Arabic reader paid for all
+four, **120,740 bytes against 74,295** for the whole of the landing page beside
+them.
+
+**5.4 — Manrope is gone, and it cost nothing to lose.** *(Decided 2026-09-20.)*
+It was a second Latin family for `h1`–`h6` and nothing else, and Inter covers
+the role: headings are 600, the hero is 500, and both are weights Inter has.
+Two things were checked before the change rather than assumed:
+
+- adding `600` to Inter's request **does not change the file**. Inter v20 is a
+  variable font, and the `woff2` URL in the response is byte-identical before
+  and after the weight was added — so the saving is Manrope's **24,836 bytes**
+  with nothing offsetting it, plus one fewer render-blocking font file.
+- every heading still renders in Inter at the weight it asked for: the hero
+  `h1` at 500, section `h2` and card `h3` at 600.
+
+A family earns its place by doing something the one beside it cannot. **House.**
 
 ---
 
