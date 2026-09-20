@@ -345,13 +345,11 @@ const I18N = {
   /* The detail page renders the same five metrics from the same catalogue entry, so it resolves
      them the same way rather than keeping a second copy of the rule.
 
-     `escape` is not part of that interface and nothing reads it any more. It is here because one
-     published version of dataset-page.js did read it, and a browser caches the two files
-     separately for ten minutes each: dropping the key stranded exactly the visitors the previous
-     fix was for, in the other direction. A key nobody reads costs nothing; a page that draws no
-     charts costs a buyer. Remove it once no cached copy can still be asking - a day is generous
-     for a ten-minute max-age. */
-  window.DATASOUQ_METRIC = { value: metricValue, label: metricLabel, escape: escapeHtml };
+     It carries its own escapeHtml rather than taking one from here, which is deliberate and
+     explained where the copy is. This object briefly carried an `escape` key for the one
+     published version of dataset-page.js that did read it; the key came off once no cached copy
+     could still be asking, which is ui.md 8.2's second deploy. */
+  window.DATASOUQ_METRIC = { value: metricValue, label: metricLabel };
 
   function renderDatasetCard(dataset, t) {
     const title = lang === "ar" ? dataset.titleAr : dataset.titleEn;
