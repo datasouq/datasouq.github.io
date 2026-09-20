@@ -446,10 +446,20 @@
      below steps it down. large and xlarge are plain `text-base` at every width. */
   --text-responsive-sm: var(--text-base);
 
-  /* --- Fonts: --font-sans is Inter, --font-heading is Manrope ----------- */
+  /* --- Fonts: Inter for both, headings included ------------------------ */
+  /* Headings were Manrope, a second family for the sake of h1-h6 and nothing
+     else. Measured on the live site: Inter 48,256 bytes, IBM Plex Sans Arabic
+     45,296, Manrope 24,836, Space Grotesk 2,352 - and an Arabic reader pays for
+     all four, 120,740 bytes against 74,295 for the whole of the landing page
+     beside them. Manrope was a third of the Latin font weight for one role that
+     Inter already covers at 600, so it goes (ui.md 5.2).
+
+     The token stays rather than collapsing into --font: h1-h6 name it, and the
+     day headings want a face of their own again it is one line here and one
+     weight in the font URL, not a hunt through the stylesheet. */
   --font: "Inter", "IBM Plex Sans Arabic", "Helvetica Neue", Helvetica,
     ui-sans-serif, system-ui, sans-serif;
-  --font-heading: "Manrope", "IBM Plex Sans Arabic", "Helvetica Neue", Helvetica,
+  --font-heading: "Inter", "IBM Plex Sans Arabic", "Helvetica Neue", Helvetica,
     ui-sans-serif, system-ui, sans-serif;
 
   /* The wordmark only. Kept off --font-sans so the logo never drifts with the
