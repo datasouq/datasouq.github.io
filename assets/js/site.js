@@ -332,8 +332,8 @@ const I18N = {
 
   /* A label is data, not markup: it comes from the catalogue entry and, through {braces}, from
      the measured figures. The card body IS markup - bodyEn carries its own <strong> - which is
-     why that one is written in raw and this one is not. Both pages had the same list to draw and
-     only one of them escaped it; now there is one function and one answer. */
+     why that one is written in raw and this one is not. dataset-page.js carries the same six
+     lines, on purpose: see the note there before merging them again. */
   function escapeHtml(value) {
     return String(value)
       .replace(/&/g, "&amp;")
@@ -344,7 +344,7 @@ const I18N = {
 
   /* The detail page renders the same five metrics from the same catalogue entry, so it resolves
      them the same way rather than keeping a second copy of the rule. */
-  window.DATASOUQ_METRIC = { value: metricValue, label: metricLabel, escape: escapeHtml };
+  window.DATASOUQ_METRIC = { value: metricValue, label: metricLabel };
 
   function renderDatasetCard(dataset, t) {
     const title = lang === "ar" ? dataset.titleAr : dataset.titleEn;
