@@ -229,6 +229,20 @@ dictionary at all**. Taking the key back off again, once the detail page had its
 broke the mirror image of that pair. The key is still published, read by nothing, for exactly this
 reason — the note in `site.js` says when it can go.
 
+**And some pairs cannot be staged at all, so say which kind you are shipping.** The two deploys
+work when one file *reads* what the other *publishes*, because publishing early is free. They do
+nothing when the two files have to change together — a stylesheet that stops naming a font and a
+page that stops requesting it are one change in two files, and whichever order they land in, a
+visitor can hold one half. That window is cosmetic rather than broken: when Manrope went, a warm
+cache paired the old `styles.css`, still naming it, with the new page that no longer loads it, and
+headings fell down the stack to IBM Plex Sans Arabic for ten minutes. Staging it the other way
+round — CSS first, keep requesting the font, drop the request a deploy later — closes even that,
+at the price of two deploys and one round of bytes nobody uses.
+
+So the rule is not "always two deploys". It is: work out which pair you have before you merge,
+stage it when staging helps, and when it does not, say out loud that there is a window and what
+somebody will see in it. A cosmetic ten minutes is a decision. Finding out afterwards is not.
+
 **8.3 — A six-line pure function is cheaper written twice than shared across a cache boundary.**
 No state, no policy, nothing to keep in step: `escapeHtml` is written in both files on purpose,
 with a note above each copy. What was wrong before was not the duplication — it was that the two
