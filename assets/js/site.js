@@ -330,9 +330,21 @@ const I18N = {
       figure(dataset.id, name) || whole);
   }
 
+  /* A label is data, not markup: it comes from the catalogue entry and, through {braces}, from
+     the measured figures. The card body IS markup - bodyEn carries its own <strong> - which is
+     why that one is written in raw and this one is not. Both pages had the same list to draw and
+     only one of them escaped it; now there is one function and one answer. */
+  function escapeHtml(value) {
+    return String(value)
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;");
+  }
+
   /* The detail page renders the same five metrics from the same catalogue entry, so it resolves
      them the same way rather than keeping a second copy of the rule. */
-  window.DATASOUQ_METRIC = { value: metricValue, label: metricLabel };
+  window.DATASOUQ_METRIC = { value: metricValue, label: metricLabel, escape: escapeHtml };
 
   function renderDatasetCard(dataset, t) {
     const title = lang === "ar" ? dataset.titleAr : dataset.titleEn;
@@ -342,7 +354,7 @@ const I18N = {
         (m) => `
         <li>
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${m.icon}</svg>
-          <span><strong>${t.digits(metricValue(dataset, m))}</strong> <span>${t.digits(metricLabel(dataset, lang === "ar" ? m.labelAr : m.labelEn))}</span></span>
+          <span><strong>${t.digits(metricValue(dataset, m))}</strong> <span>${escapeHtml(t.digits(metricLabel(dataset, lang === "ar" ? m.labelAr : m.labelEn)))}</span></span>
         </li>`
       )
       .join("");
