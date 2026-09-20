@@ -2560,12 +2560,22 @@ main:focus, main:focus-visible { outline: none; }
 
 /* The values a column takes, which the file's own dictionary carries in a
    third column. Kept under the description rather than beside it: some of
-   them run to a paragraph, and a third track would squeeze both. */
+   them run to a paragraph, and a third track would squeeze both.
+
+   And because some of them run to a paragraph, this column needs rule 6.8 more
+   than the description above it does, not less — it went uncapped while its
+   neighbour was capped. Measured on the longest note in the contractors table
+   at a 1024px viewport: the column ran 699px and set 124 characters on the
+   first line. The cap is measured at THIS size rather than copied from
+   .dict__desc, whose 56ch is calibrated at --text-sm: at the --text-xs here,
+   58ch lands on 75 characters and 60ch lands on exactly 80, so 58 is the last
+   step that keeps a margin under the rule. */
 .dict__notes {
   font-size: var(--text-xs);
   line-height: var(--lh-xs);
   color: var(--muted-foreground);
   margin: 4px 0 0;
+  max-inline-size: 58ch;
 }
 
 /* A count beside the section heading, so the reader knows the list's size
