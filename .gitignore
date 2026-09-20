@@ -8,6 +8,12 @@ __pycache__/
 # written without being asked, and lands exactly where `git add -A` sweeps.
 .claude/
 
+# Another tool's copy of the account pin that .claude/settings.local.json already
+# carries, written here without being asked. Same absolute path from whoever's
+# machine wrote it, same sweep by `git add -A`, and a repo this public has no use
+# for either copy.
+.codex/
+
 # A byte-identical copy of CLAUDE.md that tooling writes without being asked. Two files saying
 # the same thing drift; if the AGENTS.md convention is wanted here it should replace CLAUDE.md
 # rather than sit beside it.
