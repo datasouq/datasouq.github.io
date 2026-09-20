@@ -1565,6 +1565,15 @@ BUILDERS = {
 }
 
 
+def read_if_there(path):
+    """What is on disk at `path`, or None. Used to tell a real change from a re-run."""
+    try:
+        with io.open(path, encoding="utf-8") as handle:
+            return handle.read()
+    except IOError:
+        return None
+
+
 def write_metrics(measured):
     """One small file carrying only the headline figures.
 
@@ -1582,7 +1591,7 @@ def write_metrics(measured):
     return path
 
 
-def write_sitemap(dataset_ids, today):
+def write_sitemap(dataset_ids, today, changed_ids, home_changed):
     """Rewrite sitemap.xml: the landing page plus one URL per dataset page.
 
     Generated for the same reason the detail payloads are — otherwise adding
@@ -1593,13 +1602,25 @@ def write_sitemap(dataset_ids, today):
     root = os.path.dirname(OUT_DIR.rsplit(os.sep + "assets", 1)[0] + os.sep)
     path = os.path.join(root, "sitemap.xml")
 
+    # lastmod says when the page last changed, so it moves when the page changes and not when
+    # the script runs. Stamping today on every entry made every build produce a diff, which
+    # cost the one regression check this repo has: build again and expect nothing. The dates
+    # already in the file are read back out of it before it is replaced.
+    previous = dict(re.findall(
+        r"<loc>([^<]+)</loc>\s*<lastmod>([^<]+)</lastmod>", read_if_there(path) or ""))
+
+    def lastmod(loc, changed):
+        return today if changed or loc not in previous else previous[loc]
+
+    home = "https://datasouq.github.io/"
+
     entries = [
         '  <url>\n'
         "    <loc>https://datasouq.github.io/</loc>\n"
         "    <lastmod>%s</lastmod>\n"
         "    <changefreq>monthly</changefreq>\n"
         "    <priority>1.0</priority>\n"
-        "  </url>" % today
+        "  </url>" % lastmod(home, home_changed)
     ]
     for dataset_id in dataset_ids:
         entries.append(
@@ -1608,7 +1629,9 @@ def write_sitemap(dataset_ids, today):
             "    <lastmod>%s</lastmod>\n"
             "    <changefreq>monthly</changefreq>\n"
             "    <priority>0.8</priority>\n"
-            "  </url>" % (dataset_id, today)
+            "  </url>" % (dataset_id, lastmod(
+                "https://datasouq.github.io/dataset.html?id=" + dataset_id,
+                dataset_id in changed_ids))
         )
 
     with io.open(path, "w", encoding="utf-8", newline="\n") as handle:
@@ -1646,6 +1669,73 @@ def catalogue_ids(listed_only=False):
         if listed_only and re.search(r"^\s*hidden:\s*true", entry, re.MULTILINE):
             continue
         out.append(found.group(1))
+    return out
+
+
+def unresolved_figures(measured):
+    """Card figures named in datasets.js that nothing measured.
+
+    A card names the figure it wants - metric: "records" - and the label may name more inside
+    {braces}. Both are resolved at render time against metrics.js, and both fail soft: an unknown
+    metric renders an empty string where the number goes, and an unknown {token} renders the brace
+    and all. The card still draws, the console stays quiet, and the headline number is simply
+    missing from a page somebody is deciding whether to buy from.
+
+    So the resolution is checked here, where the measurements are, rather than left to be noticed
+    on the page. A dataset this script has no builder for is skipped: it has no measurements to
+    check against, and the missing builder is already its own note.
+    """
+    root = OUT_DIR.rsplit(os.sep + "assets", 1)[0]
+    with io.open(os.path.join(root, "assets", "js", "datasets.js"), encoding="utf-8") as handle:
+        source = handle.read()
+
+    found = []
+    for entry in source.split("\n  {"):
+        id_match = re.search(r'^\s*id:\s*"([^"]+)"', entry, re.MULTILINE)
+        if not id_match:
+            continue
+        dataset_id = id_match.group(1)
+        figures = measured.get(dataset_id)
+        if not figures:
+            continue
+        for line in entry.split("\n"):
+            if "labelEn:" not in line and "metric:" not in line:
+                continue
+            named = re.search(r'metric:\s*"([^"]+)"', line)
+            if named and named.group(1) not in figures:
+                found.append((dataset_id, "metric", named.group(1)))
+            for token in re.findall(r"\{(\w+)\}", line):
+                if token not in figures:
+                    found.append((dataset_id, "label", "{%s}" % token))
+    return found
+
+
+def structured_data(root):
+    """The JSON-LD block in each page, parsed rather than trusted.
+
+    site.js and dataset-page.js both rewrite this block at render time, and both return quietly if
+    it will not parse - the right call in a browser, since a page that cannot describe itself
+    should still show its content. But the page then ships with no Dataset node at all and looks
+    perfectly well, on a site whose whole business is being found. Nothing here opened the HTML
+    before; now a block that will not parse stops the build instead of reaching a crawler.
+    """
+    out = []
+    for name in ("index.html", "dataset.html"):
+        with io.open(os.path.join(root, name), encoding="utf-8") as handle:
+            page = handle.read()
+        block = re.search(
+            r'<script type="application/ld\+json" id="ld-json">(.*?)</script>', page, re.S)
+        if not block:
+            sys.exit("%s carries no ld-json block - the pages describe themselves through it,"
+                     " and nothing else does." % name)
+        try:
+            graph = json.loads(block.group(1))
+        except ValueError as error:
+            sys.exit("%s: the ld-json block does not parse (%s).\n"
+                     "        A browser swallows this and ships the page without it."
+                     % (name, error))
+        nodes = graph.get("@graph", [])
+        out.append((name, len(nodes), sum(1 for node in nodes if node.get("@type") == "Dataset")))
     return out
 
 
@@ -1708,12 +1798,16 @@ def main():
 
     gaps = []
     measured = {}
+    changed_ids = set()
     for dataset_id, builder in BUILDERS.items():
         payload = builder(source)
         if payload.get("measured"):
             measured[dataset_id] = payload["measured"]
         gaps.extend((dataset_id,) + entry for entry in untranslated(payload))
+        before = read_if_there(os.path.join(OUT_DIR, dataset_id + ".js"))
         path = write(dataset_id, payload)
+        if read_if_there(path) != before:
+            changed_ids.add(dataset_id)
         print(
             "%-12s %6d records  %2d dictionary fields  %d charts  ->  %s"
             % (
@@ -1734,17 +1828,39 @@ def main():
     print("map          %d regions  %d -> %d points  %d KB  ->  %s"
           % (count, before, after, size // 1024, os.path.join("assets", "data", "geo-sa-regions.js")))
 
+    before_metrics = read_if_there(os.path.join(OUT_DIR, "metrics.js"))
     path = write_metrics(measured)
+    metrics_changed = read_if_there(path) != before_metrics
     print("metrics      %d datasets  %d figures  ->  %s"
           % (len(measured), sum(len(v) for v in measured.values()), os.path.relpath(path)))
 
     # The sitemap is where this script advertises a page, so a hidden dataset stays out of it.
     ids = catalogue_ids(listed_only=True)
     hidden = len(catalogue_ids()) - len(ids)
-    sitemap = write_sitemap(ids, datetime.date.today().isoformat())
+    sitemap = write_sitemap(ids, datetime.date.today().isoformat(),
+                            changed_ids, metrics_changed)
     print("sitemap      %d dataset pages + the landing page%s  ->  %s"
           % (len(ids), ("  (%d hidden)" % hidden) if hidden else "",
              os.path.relpath(sitemap)))
+
+    # Two checks on what was just written, printed like every other step so that a failure is a
+    # line in the normal output rather than something a browser swallows later.
+    pages = structured_data(OUT_DIR.rsplit(os.sep + "assets", 1)[0])
+    print("ld-json      %d pages  %d static nodes  (Dataset nodes are added at render time)"
+          % (len(pages), sum(p[1] for p in pages)))
+
+    unresolved = unresolved_figures(measured)
+    print("figures      %d datasets measured  %s"
+          % (len(measured),
+             "every figure a card names resolves" if not unresolved
+             else "%d NAMED BY A CARD AND NOT MEASURED" % len(unresolved)))
+    if unresolved:
+        print("\nNOTE: %d figure(s) a card names are not in metrics.js. The card renders the"
+              " number as an empty string, or the {token} as itself:" % len(unresolved))
+        for dataset_id, kind, name in unresolved:
+            print("      %-22s %-8s %s" % (dataset_id, kind, name))
+        print("      Fix the name in assets/js/datasets.js, or measure it in the builder.")
+
 
     if gaps:
         print("\nNOTE: %d label(s) have no English in AR_EN and fell back to"
