@@ -189,6 +189,48 @@ value that replaced it. **House.**
 
 ---
 
+## 8 · Two files, two caches
+
+**8.1 — Every asset is cached for ten minutes, and each one separately.** GitHub Pages sends
+`Cache-Control: max-age=600` on everything it serves and the header is not ours to change.
+Measured on 2026-09-20 on `styles.css`, `site.js` and each payload. So a visitor does not hold
+"the site" at a version; they hold each file at whatever version they last fetched.
+
+**8.2 — A shared surface between two files takes two deploys, in both directions.** One deploy
+that adds the surface and starts reading it in the same breath is a broken page for anybody whose
+cache straddles it:
+
+| deploy | to add | to remove |
+|---|---|---|
+| first | publish it, read nobody | stop reading it, keep publishing |
+| then | wait out the ten minutes | wait out the ten minutes |
+| second | start reading it | stop publishing it |
+
+**House**, and it cost a live page to learn. `escapeHtml` was shared through
+`window.DATASOUQ_METRIC` in one commit: the detail page read a key the catalogue script had only
+just started publishing, and a visitor holding yesterday's `site.js` with today's
+`dataset-page.js` got `TypeError: escapeHtml is not a function` and a page with **no charts and no
+dictionary at all**. Taking the key back off again, once the detail page had its own function,
+broke the mirror image of that pair. The key is still published, read by nothing, for exactly this
+reason — the note in `site.js` says when it can go.
+
+**8.3 — A six-line pure function is cheaper written twice than shared across a cache boundary.**
+No state, no policy, nothing to keep in step: `escapeHtml` is written in both files on purpose,
+with a note above each copy. What was wrong before was not the duplication — it was that the two
+copies **disagreed** about whether to escape a label. Fix the disagreement; the duplication is
+sometimes the answer. **House.**
+
+**8.4 — This class of defect is invisible locally.** A dev server on a fresh origin always hands
+out a matched pair, so the page works perfectly on `localhost` and fails in production. The check
+that finds it is the pair matrix above, reasoned through before merging — or the published site
+loaded from a browser that already had one of the two files. Note also that a stale tab proves
+nothing on its own: tell a stale cache from a bad deploy with
+`fetch(url, { cache: "reload" })` and read `Age` and `Last-Modified` off the response, because a
+CDN edge can serve the previous version for a minute after the build says built. **House**, same
+incident.
+
+---
+
 ## Adding a rule
 
 Same procedure as `charts.md`. Find the external source first and quote it —
