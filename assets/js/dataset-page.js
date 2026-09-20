@@ -94,9 +94,21 @@
       </div>`;
   }
 
-  /* site.js owns this: the catalogue card and this page draw the same metric list, and two
-     copies of the escaping is how they came to disagree about whether to escape at all. */
-  const escapeHtml = window.DATASOUQ_METRIC.escape;
+  /* site.js has this function too, and the copy is deliberate. Sharing it through
+     window.DATASOUQ_METRIC looked like the tidier answer and shipped a broken page: the two files
+     are cached independently for ten minutes each, so a visitor holding yesterday's site.js and
+     today's dataset-page.js read `escape` off an object that did not have it yet, and this page
+     drew no charts and no dictionary at all. A six-line pure function with no state and no policy
+     in it is cheaper to write twice than a contract that has to survive two caches. What the
+     review actually found was that the two copies DISAGREED about whether to escape - that is
+     fixed, and both escape. */
+  function escapeHtml(value) {
+    return String(value)
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;");
+  }
 
   /* ------------------------------------------------------------------
      Header — the same icon, title, body and five metrics the card shows,
