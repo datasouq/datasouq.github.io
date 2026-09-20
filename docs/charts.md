@@ -364,13 +364,23 @@ The metric is rule 2.3 printed rather than left to be checked, and it is the
 one figure that differs from card to card: 100% for a chart of everything,
 71.1% for the ten biggest cities, 31.2% for the grade ladder.
 
-**6.8 — No line of prose runs past 80 characters.** *(WCAG 1.4.8 caps a
-block at 80; the comfortable range is 45–75.)* The note under the
+**6.8 — No line of prose runs past 80 characters.** *(WCAG 1.4.8 names
+80 characters as the width a mechanism must be able to reach — it asks for
+the mechanism, not the number, so applying the number directly is **House**.
+The comfortable range is 45–75.)* The note under the
 full-width map card ran **180** before this, because a full-width card gives
 its text the full width too. Capped with `max-inline-size` in `ch`
 — **58ch**, not 80ch: `ch` is the width of a "0", which is wider than the
 average letter, so 80ch measured out at 107 real characters and 58ch lands
 on 78. The number is calibrated, which is why it is written down.
+
+**The rule covers prose wherever it sits, not only a chart card.** The
+dictionary's notes column ran uncapped at **124 characters** while the
+description column beside it was capped — the same table, the same card, and
+the notes are the longer of the two by the code's own account. A cap is
+calibrated at the size it is used at: 56ch at `--text-sm` for the description,
+58ch at `--text-xs` for the notes, where 58ch measures 75 characters and 60ch
+measures exactly 80.
 
 **6.9 — An Arabic string is never built from an English one.** The map's
 "not on the map" tail was assembled from `label_en` for both languages and
