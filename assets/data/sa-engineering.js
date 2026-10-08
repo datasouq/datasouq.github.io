@@ -6,7 +6,7 @@ DATASET_DETAILS["sa-engineering"] = {
   "dictionary": [
     {
       "column": "datasouq_key",
-      "en": "Permanent identifier for this office, stable across editions. In the previous edition this column was called record_id; the values are unchanged.",
+      "en": "Permanent identifier for this office, stable across editions. In the first edition (REV 01) this column was called record_id; the values are unchanged.",
       "ar": "‏معرّف دائم للمكتب، ثابت بين الإصدارات.",
       "notes": ""
     },
@@ -18,8 +18,8 @@ DATASET_DETAILS["sa-engineering"] = {
     },
     {
       "column": "office_classification",
-      "en": "The classification as the source records it, including غير مصنف - a value, not a gap.",
-      "ar": "‏التصنيف كما ورد، و«غير مصنف» قيمة وليست نقصاً.",
+      "en": "The grade in words, written from the source's digit. Blank where no grade is known: on 702 rows the source had a grade column and left it empty, and the other 1,847 come from a list that carries no classification at all. A blank does not mean the office is unclassified.",
+      "ar": "‏الدرجة بالكلمات، مكتوبة من رقم المصدر. فارغ حيث لا تُعرف الدرجة: في 702 صفاً ترك المصدر عمود الدرجة فارغاً، والـ1,847 الباقية من قائمة لا تحمل تصنيفاً أصلاً. والفارغ لا يعني أن المكتب غير مصنّف.",
       "notes": ""
     },
     {
@@ -89,9 +89,21 @@ DATASET_DETAILS["sa-engineering"] = {
       "notes": ""
     },
     {
+      "column": "phone_e164",
+      "en": "The primary number in international form. Blank where there is no number or it is not a valid Saudi line.",
+      "ar": "‏الرقم الأساسي بالصيغة الدولية، فارغ حيث لا رقم أو حيث الرقم غير سليم.",
+      "notes": ""
+    },
+    {
       "column": "phones_count",
       "en": "How many numbers this office has on the Phone sheet.",
       "ar": "‏عدد الأرقام في ورقة Phone.",
+      "notes": ""
+    },
+    {
+      "column": "emails_count",
+      "en": "How many addresses this office has on the Email sheet.",
+      "ar": "‏عدد العناوين في ورقة Email.",
       "notes": ""
     },
     {
@@ -394,7 +406,7 @@ DATASET_DETAILS["sa-engineering"] = {
       "unit": "percent",
       "titleEn": "Contact coverage",
       "titleAr": "تغطية وسائل التواصل",
-      "noteEn": "Share of the 6,808 engineering offices carrying each channel. A number counts only where it parses as a real Saudi line — the previous edition counted 176 numbers made of one repeated digit as working ones. The 290 consulting firms sit on their own sheet and are counted separately.",
+      "noteEn": "Share of the 6,808 engineering offices carrying each channel. A number counts only where it parses as a real Saudi line. The 290 consulting firms sit on their own sheet and are counted separately.",
       "noteAr": "نسبة المكاتب التي تحمل كل وسيلة. والرقم يُحتسب فقط إن كان خطاً سعودياً سليماً. والشركات الاستشارية في شيت منفصل وتُحسب على حدة.",
       "items": [
         {
@@ -443,8 +455,8 @@ DATASET_DETAILS["sa-engineering"] = {
       "unit": "count",
       "titleEn": "Classification grades",
       "titleAr": "درجات التصنيف",
-      "noteEn": "Unclassified is a value in the source, not a gap in the data: 2,549 of the 6,808 offices carry it. Charted here are the 4,259 records on the scale, 63% of the file; 2,549 unclassified sit outside it.",
-      "noteAr": "«غير مصنّف» قيمة في المصدر وليست نقصاً في البيانات، وتحملها 2,549 من أصل 6,808 مكتب. المرسوم هنا هو 4,259 سجل على السلّم، أي 63% من الملف؛ وخارجه 2,549 غير مصنف.",
+      "noteEn": "No grade is known for 2,549 of the 6,808 offices. Those cells are blank, and a blank means unknown, not unclassified. Charted here are the 4,259 records on the scale, 63% of the file; 2,549 not recorded sit outside it.",
+      "noteAr": "لا تُعرف الدرجة لـ2,549 من أصل 6,808 مكتب. خاناتها فارغة، والفارغ يعني أنها غير معروفة لا أن المكتب غير مصنّف. المرسوم هنا هو 4,259 سجل على السلّم، أي 63% من الملف؛ وخارجه 2,549 غير مسجَّل.",
       "items": [
         {
           "labelEn": "First Classified",
