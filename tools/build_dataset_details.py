@@ -1017,11 +1017,11 @@ def build_contractors(source):
             "charts": grouped(narrate(charts, "sa-contractors", total))}
 
 
-ENGINEERING_FILE = "DataSouq - Saudi Engineering Offices Database - 2026-09-17.xlsx"
+ENGINEERING_FILE = "DataSouq - Saudi Engineering Offices Database - 2026-10-08.xlsx"
 ENGINEERING_DIR = os.environ.get(
     "DATASOUQ_ENGINEERING",
     os.path.join(os.path.expanduser("~"), "Desktop", "DATASOUQ", "_ORGANIZED", "engineering",
-                 "1 - CURRENT REV 02 - 2026-09-17", "1 - SEND TO CLIENTS"),
+                 "1 - CURRENT REV 03 - 2026-10-08", "1 - SEND TO CLIENTS"),
 )
 ENGINEERING_SHEET = "داتاسوق - المكاتب الهندسية"
 ENGINEERING_FIRMS = "داتاسوق - الشركات الاستشارية"
@@ -1063,8 +1063,13 @@ def build_engineering(source):
     blank_region = sum(v for k, v in regions.items() if k in (None, ""))
     blank_city = sum(v for k, v in cities.items() if k in (None, ""))
     distinct_cities = sum(1 for k in cities if k not in (None, ""))
+    # A blank classification means the grade is not known - not that the office is unclassified.
+    # Until the 2026-10-08 edition those cells carried the word غير مصنف, which no source had said
+    # of any of them; the note below once called it "a value in the source, not a gap", and that
+    # was false. The old word is still excluded here, so an older file cannot inflate the share.
     UNCLASSIFIED = "غير مصنف"
     classified = sum(v for k, v in classes.items() if k not in (None, "", UNCLASSIFIED))
+    no_grade = sum(v for k, v in classes.items() if k in (None, "", UNCLASSIFIED))
 
     charts = [
         bar("regions", "Offices by region", "المكاتب حسب المنطقة",
@@ -1079,10 +1084,10 @@ def build_engineering(source):
             note_ar="التظليل بالشرائح المئينية: كل شريحة تضمّ عدداً متقارباً من المناطق بدل أن تقتسم المدى بالتساوي. والمفتاح يسمّي مناطق كل شريحة وما في كل منها."),
         ordinal("classification", "Classification grades", "درجات التصنيف",
             counted(classes, drop_blank=False), GRADE_ORDER,
-            note_en="Unclassified is a value in the source, not a gap in the data: %s of the %s offices carry it."
-            % (format(classes.get(UNCLASSIFIED, 0), ","), format(total, ",")),
-            note_ar="«غير مصنّف» قيمة في المصدر وليست نقصاً في البيانات، وتحملها %s من أصل %s مكتب."
-            % (format(classes.get(UNCLASSIFIED, 0), ","), format(total, ","))),
+            note_en="No grade is known for %s of the %s offices. Those cells are blank, and a blank means unknown, not unclassified."
+            % (format(no_grade, ","), format(total, ",")),
+            note_ar="لا تُعرف الدرجة لـ%s من أصل %s مكتب. خاناتها فارغة، والفارغ يعني أنها غير معروفة لا أن المكتب غير مصنّف."
+            % (format(no_grade, ","), format(total, ","))),
         bar("types", "Office type", "نوع المكتب", counted(types, drop_blank=False),
             note_en="%s offices carry no type: the field is filled where the record came with one and left empty rather than guessed."
             % format(sum(v for k, v in types.items() if k in (None, "")), ","),
@@ -1105,8 +1110,8 @@ def build_engineering(source):
                 ("Website", "موقع إلكتروني", filled["website"]),
             ],
             total,
-            note_en="Share of the %s engineering offices carrying each channel. A number counts only where it parses as a real Saudi line — the previous edition counted %s numbers made of one repeated digit as working ones. The %s consulting firms sit on their own sheet and are counted separately."
-            % (format(total, ","), "176", format(len(firms), ",")),
+            note_en="Share of the %s engineering offices carrying each channel. A number counts only where it parses as a real Saudi line. The %s consulting firms sit on their own sheet and are counted separately."
+            % (format(total, ","), format(len(firms), ",")),
             note_ar="نسبة المكاتب التي تحمل كل وسيلة. والرقم يُحتسب فقط إن كان خطاً سعودياً سليماً. والشركات الاستشارية في شيت منفصل وتُحسب على حدة.",
         ),
     ]

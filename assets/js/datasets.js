@@ -188,10 +188,11 @@ const DATASETS = [
        city count here said 133 against a measured 134 — small, wrong, and
        exactly the kind of drift a hand-kept number produces.
 
-       "Classified" counts the offices carrying one of the six grades, not the
-       seven values the column holds: غير مصنف is one of them and covers
-       37% of the file. The same treatment the contractors card gives its own
-       classified share.
+       The share counts the offices carrying one of the six grades. The rest are
+       blank because their grade is not known. Until the 2026-10-08 edition the
+       file wrote غير مصنف in those cells. No source said it, and many of those
+       offices are classified, so the label reads "with a known grade" and not
+       "classified".
 
        The fifth metric is not from the office sheet: the consulting firms are
        a second entity in the same workbook, keyed DS-SA-CNS against DS-SA-ENG,
@@ -205,7 +206,7 @@ const DATASETS = [
     metrics: [
       { icon: ICONS.rows3,     metric: "records",       labelEn: "offices", labelAr: "مكتب" },
       { icon: ICONS.mapPin,    metric: "cities",        labelEn: "cities across {regions} regions", labelAr: "مدينة في {regions} منطقة" },
-      { icon: ICONS.layers,    metric: "classifiedPct", labelEn: "classified, across 6 grades", labelAr: "مصنّفون على ٦ درجات" },
+      { icon: ICONS.layers,    metric: "classifiedPct", labelEn: "with a known grade, of 6", labelAr: "بدرجة تصنيف معروفة من ٦" },
       { icon: ICONS.mail,      metric: "emailPct",      labelEn: "carry an email", labelAr: "منهم ببريد إلكتروني" },
       { icon: ICONS.briefcase, metric: "consulting",    labelEn: "consulting firms included", labelAr: "شركة استشارية ضمن القاعدة" },
     ],
@@ -214,7 +215,7 @@ const DATASETS = [
       anchor: "engineering-offices-saudi-arabia",
       alternateName: "المكاتب الهندسية في السعودية",
       description:
-        "A structured dataset of 6,808 engineering offices across Saudi Arabia, cleaned and deduplicated, covering 134 cities in 13 regions, plus 290 consulting firms. 69.1% of records carry an email, and 63% are classified across 6 grades. Delivered in Arabic.",
+        "A structured dataset of 6,808 engineering offices across Saudi Arabia, cleaned and deduplicated, covering 134 cities in 13 regions, plus 290 consulting firms. 69.1% of records carry an email, and 63% have a known grade on the 6-grade scale. Delivered in Arabic.",
       inLanguage: ["ar"],
       spatialCoverage: "Saudi Arabia",
       encodingFormat: ["application/vnd.ms-excel", "text/csv"],
