@@ -175,11 +175,14 @@ const DATASETS = [
     titleEn: "Engineering Offices in Saudi Arabia",
     titleAr: "المكاتب الهندسية في السعودية",
     bodyEn:
-      "<strong>A structured dataset of engineering offices and consulting firms across Saudi Arabia</strong>, cleaned and deduplicated, delivered in Arabic. Message us for the price.",
+      "<strong>A structured dataset of engineering offices and consulting firms across Saudi Arabia</strong>, cleaned, delivered in Arabic. Message us for the price.",
     bodyAr:
-      "<strong>قاعدة بيانات منظّمة للمكاتب الهندسية والشركات الاستشارية في المملكة</strong>، منقّحة وخالية من التكرار، تُسلَّم بالعربية. تواصل معنا لمعرفة السعر.",
+      "<strong>قاعدة بيانات منظّمة للمكاتب الهندسية والشركات الاستشارية في المملكة</strong>، منقّحة، تُسلَّم بالعربية. تواصل معنا لمعرفة السعر.",
 
-    /* The file's only record sheet is Arabic (office_name_ar, region_ar,
+    /* Not "deduplicated": the file keeps 8 pairs of offices that are identical on every
+       column but the key. They are kept, as the data rules require, so the word would be false.
+
+       The file's only record sheet is Arabic (office_name_ar, region_ar,
        city_ar — no English columns), so unlike the contractors dataset this
        one does not claim delivery in English. Rule 4: one main sheet per
        language the source actually carries, and no invented translation.
@@ -215,7 +218,7 @@ const DATASETS = [
       anchor: "engineering-offices-saudi-arabia",
       alternateName: "المكاتب الهندسية في السعودية",
       description:
-        "A structured dataset of 6,808 engineering offices across Saudi Arabia, cleaned and deduplicated, covering 134 cities in 13 regions, plus 290 consulting firms. 69.1% of records carry an email, and 63% have a known grade on the 6-grade scale. Delivered in Arabic.",
+        "A structured dataset of 6,808 engineering offices across Saudi Arabia, cleaned, covering 134 cities in 13 regions, plus 290 consulting firms. 69.1% of records carry an email, and 63% have a known grade on the 6-grade scale. Delivered in Arabic.",
       inLanguage: ["ar"],
       spatialCoverage: "Saudi Arabia",
       encodingFormat: ["application/vnd.ms-excel", "text/csv"],

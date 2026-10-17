@@ -51,7 +51,7 @@ const I18N = {
     /* No language promise here. Being delivered in Arabic and English is true
        of the one dataset listed today and is stated on its card; as a heading
        for the whole catalogue it would commit every future dataset to it. */
-    catalogueLead: "Structured datasets, cleaned and deduplicated before delivery.",
+    catalogueLead: "Structured datasets, cleaned before delivery.",
     /* Every dataset's title, body copy and metrics now live in
        assets/js/datasets.js, one entry per card — see that file's own header
        comment. Only the copy shared by every card (the CTA label and the
@@ -188,7 +188,7 @@ const I18N = {
 
     catalogueLabel: "الكتالوج",
     catalogueTitle: "قواعد البيانات",
-    catalogueLead: "قواعد بيانات منظّمة ومنقّحة وخالية من التكرار قبل التسليم.",
+    catalogueLead: "قواعد بيانات منظّمة ومنقّحة قبل التسليم.",
     /* عناوين ونصوص وأرقام كل قاعدة بيانات صارت في assets/js/datasets.js —
        راجع التعليق أعلى الملف. اللي فاضل هنا هو النص المشترك بين كل
        البطاقات فقط (زر الاستفسار وقالب رسالة واتساب). */

@@ -84,8 +84,8 @@ DATASET_DETAILS["sa-engineering"] = {
     },
     {
       "column": "company_website",
-      "en": "Website where the source records one.",
-      "ar": "‏الموقع إن وُجد.",
+      "en": "The office's website as REV 01 wrote it: the source's own, or the domain of the office's email where the source gave none - and only where that domain answered a live check on 2026-09-07. That check was not repeated, and a website whose domain did not answer then is not here.",
+      "ar": "‏موقع المكتب كما كتبه REV 01: موقع المصدر، أو نطاق بريد المكتب حيث لم يذكر المصدر موقعاً، ولم يُكتب إلا حيث استجاب النطاق لفحص مباشر في 2026-09-07 لم يُعد. والموقع الذي لم يستجب نطاقه يومها ليس هنا.",
       "notes": ""
     },
     {
