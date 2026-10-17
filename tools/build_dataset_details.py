@@ -1017,11 +1017,11 @@ def build_contractors(source):
             "charts": grouped(narrate(charts, "sa-contractors", total))}
 
 
-ENGINEERING_FILE = "DataSouq - Saudi Engineering Offices Database - 2026-10-08.xlsx"
+ENGINEERING_FILE = "DataSouq - Saudi Engineering Offices Database - 2026-10-17.xlsx"
 ENGINEERING_DIR = os.environ.get(
     "DATASOUQ_ENGINEERING",
     os.path.join(os.path.expanduser("~"), "Desktop", "DATASOUQ", "_ORGANIZED", "engineering",
-                 "1 - CURRENT REV 03 - 2026-10-08", "1 - SEND TO CLIENTS"),
+                 "1 - CURRENT REV 04 - 2026-10-17", "1 - SEND TO CLIENTS"),
 )
 ENGINEERING_SHEET = "داتاسوق - المكاتب الهندسية"
 ENGINEERING_FIRMS = "داتاسوق - الشركات الاستشارية"
